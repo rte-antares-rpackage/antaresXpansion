@@ -33,7 +33,7 @@ to <- function(link_name)
 
 #' Enable or disable the hurdle cost of a link or a list of links
 #' 
-#' \code{enable_hurdle_costs} which modifies the input file of an ANTARES
+#' \code{enable_hurdle_costs} is a function which modifies the input file of an ANTARES
 #' study and enable (or disable) the hurdle costs of a link
 #' 
 #' @param link_names
@@ -111,5 +111,86 @@ enable_hurdle_costs <- function(link_names, enable = TRUE, opts = simOptions())
     }
     # We write the modified property file
     write(param_data, link_file_name, sep = "/")
+  }
+}
+
+
+#' Update the properties of a link (capacity, impedance or hurdle costs)
+#' 
+#' \code{update_link} is a function which modifies the input file of an ANTARES
+#' study and update the properties of a link
+#' 
+#' @param link_name
+#'   Name of one link
+#' @param property_name
+#'   Name of the propery to change, must be equal to "direct_capacity" or "indirect_capacity" or
+#'   "impedance" or "direct_hurdle_cost" or "indirect_hurdle_cost"
+#' @param new_value
+#'   New value of the property 
+#' @param opts
+#'   list of simulation parameters returned by the function
+#'   \code{antaresRead::setSimulationPath}
+#'
+#' @return 
+#' The function does not return anything. It is  used to modify the input of an 
+#' ANTARES study
+#' 
+#' @import assertthat antaresRead utils
+#' @export
+#' 
+#' 
+update_link <- function(link_name, property_name, new_value, opts = simOptions())
+{
+  # check which column have to be updated
+  n_col <- ifelse(property_name=='direct_capacity', 1,
+          ifelse(property_name=='indirect_capacity', 2,
+          ifelse(property_name=='impedance', 3,
+          ifelse(property_name=='direct_hurdle_cost', 4,
+          ifelse(property_name=='indirect_hurdle_cost', 5,
+          NA )))))
+  
+  if(is.na(n_col)){stop("unknown property")}
+  
+  
+  #correct negative values for capacities and impedances             
+  if(n_col<=3)
+  {
+    f1 <- function(x){max(new_value[x],0)}
+    new_value = sapply(1:length(new_value), FUN=f1)
+  }
+  
+  # duplicate value if its a scalar
+  assert_that(length(new_value) == 8760 || length(new_value) == 1)
+  if (length(new_value) == 1)
+  {
+    new_value = rep(new_value,8760)
+  }
+  
+  #load file containing link properties            
+  link_file_name <- paste(opts$inputPath,"/links/" ,from(link_name),"/", to(link_name), ".txt",sep="")
+  
+  # check that this file exists
+  assert_that(file.exists(link_file_name))
+  
+  if (file.info(link_file_name)$size != 0)
+  {
+    # read file
+    param_data <- read.table(link_file_name)
+              
+    # update column with new value and write it 
+    param_data[,n_col] = new_value
+    write.table(param_data, link_file_name, sep="\t", col.names = FALSE, row.names = FALSE)
+  }
+  else if (file.info(link_file_name)$size ==0)
+  {
+    # The file exists but is empty : i.e. all column contains default value
+    # file is built from scratch
+                
+    param_data <- as.table(matrix(0,8760,5))
+    param_data[,1:2] <- 1
+
+    # update column with new value and write it 
+    param_data[,n_col] = new_value
+    write.table(param_data, link_file_name, sep="\t", col.names = FALSE, row.names = FALSE)
   }
 }
