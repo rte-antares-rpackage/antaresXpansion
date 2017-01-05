@@ -22,7 +22,7 @@
 enable_custom_filtering <- function(enable = TRUE, opts = simOptions())
 {
   # load setting file and check if it exists
-  general_parameters_file_name <- paste(simOptions()$studyPath,"/settings/generaldata.ini",sep="")
+  general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
   assert_that(file.exists(general_parameters_file_name))
   assert_that(file.info(general_parameters_file_name)$size !=0)
   
@@ -72,7 +72,7 @@ enable_custom_filtering <- function(enable = TRUE, opts = simOptions())
 enable_year_by_year <- function(enable = TRUE, opts = simOptions())
 {
   # load setting file and check if it exists
-  general_parameters_file_name <- paste(simOptions()$studyPath,"/settings/generaldata.ini",sep="")
+  general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
   assert_that(file.exists(general_parameters_file_name))
   assert_that(file.info(general_parameters_file_name)$size !=0)
   
@@ -95,4 +95,75 @@ enable_year_by_year <- function(enable = TRUE, opts = simOptions())
   
   # write updated file
   write(param_data, general_parameters_file_name, sep = "/")
+}
+
+
+
+#' Modify the filters on the output of the areas
+#' 
+#' \code{filter_output_areas} is a function which modifies the input file of an ANTARES
+#' study by updating the output filters of some areas
+#' 
+#' @param areas 
+#'   Area, or vector of areas whose filter will be changed. The special value \code{"all"} tells the
+#'   function to import all areas.
+#' @param filter
+#'   Vector of filters to adopt for the area. Can contain "annual", "monthly", "weekly", 
+#'   "daily", "hourly" or a combination of them.
+#' @param type
+#'   On which type of output the filters will applied ? The MC synthesis (\code{type = "synthesis"}) ? The 
+#'   year by year outputs (\code{type = "year-by-year"}) ? Or both(\code{type = c("synthesis", "year-by-year")}) 
+#'   ? 
+#' @param opts
+#'   list of simulation parameters returned by the function
+#'   \code{antaresRead::setSimulationPath}
+#'   
+#' @return 
+#' The function does not return anything. It is  used to modify the input of an 
+#' ANTARES study
+#' 
+#' @import assertthat antaresRead
+#' @export
+#' 
+#' 
+filter_output_areas <- function(areas, filter, type, opts = simOptions())
+{
+  # check that filter names are correct
+  assert_that(all(filter %in% c("annual", "monthly", "weekly", "daily", "hourly")))
+  
+  # check that types  are correct
+  assert_that(all(type %in% c("synthesis", "year-by-year")))
+  
+  # which are the activated types ?
+  synthesis = any(type == "synthesis")
+  yearByYear = any(type == "year-by-year")
+  
+  # for each area
+  for (a in areas)
+  {
+    # check if the file related to the area exists
+    optimization_file_name <- paste(opts$inputPath,"/areas/", a, "/optimization.ini" ,sep="")
+    
+    assert_that(file.exists(optimization_file_name))
+    assert_that(file.info(optimization_file_name)$size !=0)
+    
+    # read file
+    param_data <- scan(optimization_file_name, what=character(), sep="/", quiet = TRUE)
+    
+    # update
+    if(synthesis)
+    {
+      index = grep("filter-synthesis =",param_data,  fixed = TRUE)
+      param_data[index] = paste0("filter-synthesis = ", paste0(filter, collapse = ", "))
+    }
+    if(yearByYear)
+    {
+      index = grep("filter-year-by-year =",param_data,  fixed = TRUE)
+      param_data[index] = paste0("filter-year-by-year = ", paste0(filter, collapse = ", "))
+    }
+    
+    # write file
+    write(param_data, optimization_file_name, sep = "/")
+    
+  }
 }
