@@ -4,7 +4,6 @@
 #' 
 #' @param link_name 
 #'   Name of one link
-
 #' @return 
 #' name of the first area that the link connects
 #' 
@@ -20,7 +19,6 @@ from <- function(link_name)
 #' 
 #' @param link_name 
 #'   Name of one link
-
 #' @return 
 #' name of the second area that the link connects
 #' 
