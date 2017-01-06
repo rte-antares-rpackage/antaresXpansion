@@ -240,3 +240,115 @@ filter_output_links <- function(links, filter, type, opts = simOptions())
     write(param_data, properties_file_name, sep = "/")
   }
 }
+
+
+
+
+#' Set the unit-commitment mode of the ANTARES study
+#' 
+#' \code{set_uc_mode} is a function which modifies the input file of an ANTARES
+#' study and set the simulation setting "unit-commitment-mode"
+#' 
+#' @param mode
+#'   Unit-commitment mode. Must be equal to "fast", "accurate"
+#' @param opts
+#'   list of simulation parameters returned by the function
+#'   \code{antaresRead::setSimulationPath}
+#'
+#' @return 
+#' The function does not return anything. It is  used to modify the input of an 
+#' ANTARES study
+#' 
+#' @import assertthat antaresRead
+#' @export
+#' 
+#' 
+set_uc_mode <- function(mode, opts = simOptions())
+{
+  assert_that(mode %in% c("fast", "accurate"))
+
+  # load setting file and check if it exists
+  general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
+  assert_that(file.exists(general_parameters_file_name))
+  assert_that(file.info(general_parameters_file_name)$size !=0)
+  
+  # read file
+  param_data <- scan(general_parameters_file_name, what=character(), sep="/", quiet = TRUE)
+  
+  # find line describing the filtering setting
+  index = grep("unit-commitment-mode =",param_data,  fixed = TRUE)
+  assert_that(length(index) == 1)
+  
+  # update line
+  if (mode == "accurate") 
+  {
+    param_data[index] = "unit-commitment-mode = accurate"
+  }
+  else
+  {
+    param_data[index] = "unit-commitment-mode = fast"
+  }
+  
+  # write updated file
+  write(param_data, general_parameters_file_name, sep = "/")
+}
+
+
+#' Enable or disable the options which allow (or not) the excecution of the heuristic
+#' in fast mode
+#' 
+#' \code{enable_heuristic} is a function which modifies the input file of an ANTARES
+#' study and set the simulation setting "include-tc-minstablepower", "include-tc-min-ud-time" and
+#' "include-dayahead"
+#' 
+#' @param enable
+#'   Should the heuristic be excecuted (\code{TRUE}) or not (\code{FALSE}) ?
+#' @param opts
+#'   list of simulation parameters returned by the function
+#'   \code{antaresRead::setSimulationPath}
+#'
+#' @return 
+#' The function does not return anything. It is  used to modify the input of an 
+#' ANTARES study
+#' 
+#' @import assertthat antaresRead
+#' @export
+#' 
+#' 
+enable_heuristic <- function(enable = TRUE, opts = simOptions())
+{
+  # load setting file and check if it exists
+  general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
+  assert_that(file.exists(general_parameters_file_name))
+  assert_that(file.info(general_parameters_file_name)$size !=0)
+  
+  # read file
+  param_data <- scan(general_parameters_file_name, what=character(), sep="/", quiet = TRUE)
+  
+  # find line describing the filtering setting
+  index_pmin = grep("include-tc-minstablepower =",param_data,  fixed = TRUE)
+  index_minud = grep("include-tc-min-ud-time =",param_data,  fixed = TRUE)
+  index_dayah = grep("include-dayahead =",param_data,  fixed = TRUE)
+  
+  assert_that(length(index_pmin) == 1)
+  assert_that(length(index_minud) == 1)
+  assert_that(length(index_dayah) == 1)
+  
+  # update line
+  if (enable)
+  {
+    param_data[index_pmin] = "include-tc-minstablepower = true"
+    param_data[index_minud] = "include-tc-min-ud-time = true"
+    param_data[index_dayah] = "include-dayahead = true"
+  }
+  else
+  {
+    param_data[index_pmin] = "include-tc-minstablepower = false"
+    param_data[index_minud] = "include-tc-min-ud-time = false"
+    param_data[index_dayah] = "include-dayahead = false"
+  }
+  
+  # write updated file
+  write(param_data, general_parameters_file_name, sep = "/")
+}
+
