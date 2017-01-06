@@ -2,7 +2,8 @@
 #' Read expansion planning options
 #' 
 #' \code{read_options} is a function which read the options related to the
-#' expansion planning optimization
+#' expansion planning optimization. The options are stored in the file 
+#' antaresStudyPath/user/expansion/settings.ini.
 #' 
 #' @param opts
 #'   list of simulation parameters returned by the function
