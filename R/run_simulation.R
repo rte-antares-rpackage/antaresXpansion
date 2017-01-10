@@ -69,7 +69,7 @@ get_whole_simulation_name <- function(name,opts = simOptions())
   f1 <- function(x) {unlist(strsplit(list_simu[x], "//"))[2]}
   simu_names = sapply(1:length(list_simu),FUN=f1)
   
-  # We keep the ones which contains name
+  # We keep the ones which contains "name"
   simu_names = simu_names[grep(name,simu_names)]
   if(length(simu_names) == 0)
   {
@@ -77,7 +77,7 @@ get_whole_simulation_name <- function(name,opts = simOptions())
     return("")
   }
   
-  # if there is several of them, we take the most recent one
+  # if there are several of them, we take the most recent one
   if (length(simu_names)>1) {simu_names=simu_names[length(simu_names)]}
   return(simu_names)
 }
