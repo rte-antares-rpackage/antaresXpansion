@@ -22,11 +22,11 @@
 #' @return 
 #' The function does not return anything. It is  used to launch an 
 #' ANTARES simulation
-#' #' 
+#' 
 #' @import assertthat antaresRead
 #' @export
 #' 
-run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, opts = simOptions(), ...)
+run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, opts = simOptions())
 {
   # a few checks
   name = tolower(name)
@@ -38,4 +38,46 @@ run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, sho
   cmd <- sprintf(cmd, path_solver, opts$studyPath, name, mode)
   
   system(cmd, ignore.stdout = TRUE, wait = wait,  show.output.on.console = show_output_on_console)
+}
+
+#' Get the whole simulation name of an ANTARES simulation,
+#' as it appears in the output path,containing also the 
+#' date and hour identifier.
+#' 
+#' 
+#' @param name
+#'   Name of the simulation 
+#' @param opts
+#'   List of simulation parameters returned by the function
+#'   \code{antaresRead::setSimulationPath}
+#' 
+#' @return 
+#' The function returns the most recent simulation name which contains
+#' the argument \code{name}. The returned simulation name also includes the
+#' identifier which are automatically added by ANTARES in the output path :
+#' yyyymmdd-hhmmxxx-name.
+#' 
+#' @import assertthat antaresRead
+#' @export
+#' 
+get_whole_simulation_name <- function(name,opts = simOptions())
+{
+  # read list of the output directory of the study
+  list_simu = list.dirs(path=paste(opts$studyPath,"/output/",sep=""), recursive =FALSE)
+  
+  # We just keep the last folder name of each directory path
+  f1 <- function(x) {unlist(strsplit(list_simu[x], "//"))[2]}
+  simu_names = sapply(1:length(list_simu),FUN=f1)
+  
+  # We keep the ones which contains name
+  simu_names = simu_names[grep(name,simu_names)]
+  if(length(simu_names) == 0)
+  {
+    warning(paste0("no output folder contains this name : ", name))
+    return("")
+  }
+  
+  # if there is several of them, we take the most recent one
+  if (length(simu_names)>1) {simu_names=simu_names[length(simu_names)]}
+  return(simu_names)
 }
