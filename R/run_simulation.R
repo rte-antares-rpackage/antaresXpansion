@@ -30,7 +30,7 @@ run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, sho
 {
   # a few checks
   name = tolower(name)
-  assert_that(file.exists(solverPath))
+  assert_that(file.exists(path_solver))
   assert_that(mode %in% c("economy", "adequacy", "draft"))
   
   #Launch simulation

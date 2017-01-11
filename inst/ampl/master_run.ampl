@@ -6,14 +6,18 @@
 # study_path/user/expansion/temp/
 
 reset;
+
 model master_mod.ampl;    # load model
 data  master_dat.ampl;     # load data
+
+# include options
+include in_options.txt;
 
 option solver cbc;    # set solver (should this be an input data which could be set differently ?)
 
 
  # solver master problem
-solve;
+solve >> out_log.txt;
 
 
 # write results (in the same folder)

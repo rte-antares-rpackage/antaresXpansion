@@ -8,16 +8,19 @@
 #' @param candidates
 #'   list of investment candidates, as returned by
 #'   \code{\link{read_candidates}}
+#' @param exp_options 
+#'   list of options related to the expansion planning, as returned
+#'   by the function \code{\link{read_options()}}
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
 #'
-#' @return 
+#' @return This function does not return anything.
 #' 
 #' @import assertthat antaresRead
 #' @export
 #' 
-initiate_master <- function(candidates, opts = simOptions())
+initiate_master <- function(candidates = read_candidates(opts), exp_options = read_options(opts), opts = simOptions())
 {
   # ampl file names (stored in inst folder)
   run_file <- "ampl/master_run.ampl"
@@ -36,8 +39,11 @@ initiate_master <- function(candidates, opts = simOptions())
   in_out_files$weekly_rentability <- "in_weeklyrentability.txt"
   in_out_files$yearly_costs <- "in_yearlycosts.txt"
   in_out_files$weekly_costs <- "in_weeklycosts.txt"
+  in_out_files$options <- "in_options.txt"
   in_out_files$sol_master <- "out_solutionmaster.txt"
   in_out_files$underestimator <- "out_underestimator.txt"
+  in_out_files$log <- "out_log.txt"
+  
   
   # check if temporary folder exists, if not create it
   tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
@@ -78,4 +84,38 @@ initiate_master <- function(candidates, opts = simOptions())
     }
   }
   write(script, file = paste0(tmp_folder, "/", in_out_files$candidates))
+  
+  # 4 - in_options.txt
+  if(exp_options$master == "relaxed")
+  {
+    write("option relax_integrality 1;", file = paste0(tmp_folder, "/", in_out_files$options))
+  }
+}
+
+
+#' Solver master problem
+#' 
+#' \code{solver_master} execute the AMPL file master_run.ampl
+#' located in the temporary folder of the current expansion 
+#' planning optimisation
+#' 
+#' @param opts
+#'   list of simulation parameters returned by the function
+#'   \code{antaresRead::setSimulationPath}
+#'
+#' @return This function does not return anything.
+#' 
+#' @import assertthat antaresRead
+#' @export
+#' 
+solve_master <- function(opts = simOptions())
+{
+  tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
+  
+  assert_that(file.exists(paste0(tmp_folder, "/master_run.ampl")))
+  assert_that(file.exists(paste0(tmp_folder, "/master_mod.ampl")))
+  assert_that(file.exists(paste0(tmp_folder, "/master_dat.ampl")))
+  
+  cmd <- paste0("cd ", tmp_folder, " & ampl ", tmp_folder, "/master_run.ampl")
+  shell(cmd, wait = TRUE, intern = TRUE)
 }

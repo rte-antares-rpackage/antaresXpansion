@@ -297,7 +297,7 @@ set_uc_mode <- function(mode, opts = simOptions())
 #' Enable or disable the options which allow (or not) the excecution of the heuristic
 #' in fast mode
 #' 
-#' \code{enable_heuristic} is a function which modifies the input file of an ANTARES
+#' \code{enable_uc_heuristic} is a function which modifies the input file of an ANTARES
 #' study and set the simulation setting "include-tc-minstablepower", "include-tc-min-ud-time" and
 #' "include-dayahead"
 #' 
@@ -315,7 +315,7 @@ set_uc_mode <- function(mode, opts = simOptions())
 #' @export
 #' 
 #' 
-enable_heuristic <- function(enable = TRUE, opts = simOptions())
+enable_uc_heuristic <- function(enable = TRUE, opts = simOptions())
 {
   # load setting file and check if it exists
   general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
