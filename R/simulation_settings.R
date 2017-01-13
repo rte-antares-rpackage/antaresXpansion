@@ -400,3 +400,66 @@ set_week <- function(first_day, opts = simOptions())
   # write updated file
   write(param_data, general_parameters_file_name, sep = "/")
 }
+
+
+#' Get playlist of simulated MC years
+#' 
+#' \code{get_playlist} gives the identifier of the MC years which
+#' will be simulated, taking into account the potential use of a 
+#' playlist which can disactivate some MC years
+#' 
+#' @param opts
+#'   list of simulation parameters returned by the function
+#'   \code{antaresRead::setSimulationPath}
+#'   
+#' @return 
+#' Returns a vector of the identifier of the simulated MC year
+#' 
+#' @import assertthat antaresRead
+#' @export
+#' 
+#' 
+get_playlist <- function(opts = simOptions())
+{
+  # get all MC years
+  mc_years <- 1:opts$parameters$general$nbyears
+  
+  # if no playlist is used, return all mc years
+  if(opts$parameters$general$`user-playlist` == FALSE)
+  {
+    return(mc_years)
+  }
+  # otherwise, update the vector of mc_years by removing disabled years
+  playlist_update_type <- names(opts$parameters$playlist)
+  playlist_update_value <- opts$parameters$playlist
+  
+  # untouched playlist - no modification have been made 
+  if(length(playlist_update_type) == 0)
+  {
+    return(mc_years)
+  }
+  
+  # modified playlist - take into account the modifications
+  assert_that(all(playlist_update_type %in% c("playlist_reset", "playlist_year +", "playlist_year -")))
+  activated <- rep(TRUE, length(mc_years))
+  
+  for(i in 1:length(playlist_update_type))
+  {
+    # playlist_reset means that we start from a playlist where every MC year is disactivated
+    if(playlist_update_type[i] == "playlist_reset")
+    {
+      activated <- rep(FALSE, length(mc_years))
+    }
+    # playlist_year + means that the corresponding year is added to the playlist
+    if(playlist_update_type[i] == "playlist_year +")
+    {
+      activated[playlist_update_value[[i]]+1] <- TRUE
+    }
+    # playlist_year - means that the corresponding year is removed from the playlist
+    if(playlist_update_type[i] == "playlist_year -")
+    {
+      activated[playlist_update_value[[i]]+1] <- FALSE
+    } 
+  }
+  return(mc_years[activated])
+}
