@@ -352,3 +352,51 @@ enable_uc_heuristic <- function(enable = TRUE, opts = simOptions())
   write(param_data, general_parameters_file_name, sep = "/")
 }
 
+
+#' Set parameters week
+#' 
+#' \code{set_week} is a function which modifies the input file of an ANTARES
+#' study and set the "week" parameter. This parameters defines how the weekly output
+#' are aggregated.
+#' 
+#' @param first_day
+#'   First day of the week
+#' @param opts
+#'   list of simulation parameters returned by the function
+#'   \code{antaresRead::setSimulationPath}
+#'
+#' @return 
+#' The function does not return anything. It is  used to modify the input of an 
+#' ANTARES study
+#' 
+#' @import assertthat antaresRead
+#' @export
+#' 
+#' 
+set_week <- function(first_day, opts = simOptions())
+{
+  # check first day
+  # standardise first day
+  first_day <- tolower(first_day)
+  first_day <- paste(toupper(substring(first_day, 1,1)), substring(first_day, 2),sep="" )
+  assert_that(first_day %in% c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
+  
+  # load setting file and check if it exists
+  general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
+  assert_that(file.exists(general_parameters_file_name))
+  assert_that(file.info(general_parameters_file_name)$size !=0)
+  
+  # read file
+  param_data <- scan(general_parameters_file_name, what=character(), sep="/", quiet = TRUE)
+  
+  # find line describing the filtering setting
+  index = grep("first.weekday =",param_data,  fixed = TRUE)
+
+  assert_that(length(index) == 1)
+  
+  # update line
+  param_data[index] = paste0("first.weekday = ", first_day)
+
+  # write updated file
+  write(param_data, general_parameters_file_name, sep = "/")
+}

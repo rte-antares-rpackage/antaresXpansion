@@ -30,7 +30,7 @@ initiate_master <- function(candidates = read_candidates(opts), exp_options = re
   # master input/output files (interface with AMPL is ensured with .txt files)
   in_out_files <- list()
   in_out_files$n_mc <- "in_nmc.txt"
-  in_out_files$n_w <- "in_nw.txt"
+  in_out_files$n_w <- "in_week.txt"
   in_out_files$candidates <- "in_candidates.txt"
   in_out_files$cut  <- "in_cut.txt"
   in_out_files$z0 <- "in_z0.txt"
@@ -71,7 +71,9 @@ initiate_master <- function(candidates = read_candidates(opts), exp_options = re
   
   # 2 - in_nw.txt
   n_w <- floor((opts$parameters$general$simulation.end - opts$parameters$general$simulation.start + 1)/7)
-  write(n_w, file = paste0(tmp_folder, "/", in_out_files$n_w))
+  weeks <- (ceiling((opts$parameters$general$simulation.start - 1) /7) + 1) : (ceiling(opts$parameters$general$simulation.start/7) + n_w)
+  
+  write(paste0(weeks, collapse = " "), file = paste0(tmp_folder, "/", in_out_files$n_w))
   
   # 3 - in_candidates.txt
   script <- ""

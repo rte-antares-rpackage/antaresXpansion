@@ -14,7 +14,7 @@ data;
 param n_mc := include in_nmc.txt;
 
 #number of weeks
-param n_w := include in_nw.txt;
+set WEEK := include in_week.txt;
 
 #investment candidates description
 param : INV_CANDIDATE : c_inv  unit_size max_unit := include in_candidates.txt ;

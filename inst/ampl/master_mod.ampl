@@ -12,7 +12,7 @@
 #--- SETS ----
 #-------------
 param n_mc integer ;
-param n_w integer ;
+# param n_w integer ;
 
 # set of investment candidates
 set INV_CANDIDATE ;
@@ -21,7 +21,7 @@ set INV_CANDIDATE ;
 set YEAR := 1..n_mc;
 
 # set of weeks
-set WEEK := 1..n_w;
+set WEEK ;
 
 # set of bender cuts
 set CUT ;

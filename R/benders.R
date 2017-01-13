@@ -50,6 +50,26 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
     enable_uc_heuristic(enable = FALSE, opts = opts)
   }
   
+  #    option - week
+  #    we need to ensure the consistency between the weekly optimisation and the weekly
+  #    aggregation of the output
+    
+  month_name <- c("january", "december", "november", "october", "september", "august", "july", "june", "may", "april", "march", "february")
+  day_per_month <- c(0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 28)
+                     
+  day_name <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+  if (opts$parameters$general$leapyear)
+  {
+    day_per_month[12] <- 29
+  }
+  month_id <- which(month_name == opts$parameters$general$"first-month-in-year")
+  assert_that(length(month_id) == 1)
+  n_day <- (-sum(day_per_month[1:month_id]) + opts$parameters$general$simulation.start - 1) %% 7
+  
+  first_day_week <- day_name[((which(day_name == opts$parameters$general$january.1st) + n_day - 1) %% 7 ) +1]
+  set_week(first_day = first_day_week, opts)
+  opts <- setSimulationPath(opts$studyPath)
+  
   # initiate text files to communicate with master problem
   # and copy AMPL file into the temporary file 
   initiate_master(candidates, exp_options, opts)
@@ -57,7 +77,7 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
   # initiate a few parameters
   n_w <- floor((opts$parameters$general$simulation.end - opts$parameters$general$simulation.start + 1)/7)
   n_mc <- length(opts$mcYears)
-  has_converged <-  FALSE
+  has_converged <-FALSE
   current_iteration <- 1
   best_solution <- NA
   
@@ -105,8 +125,6 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
     
     output_antares <- setSimulationPath(paste0(opts$studyPath, "/output/", get_whole_simulation_name(simulation_name, opts)))
     
-    
-    
     # ---- 3. Assess costs and marginal rentability of each investment candidates ---- 
     
     # read output of the simulation
@@ -132,7 +150,7 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
     # read rentability 
 
     average_rentability <- sapply(candidates, 
-                          FUN = function(c){sum(as.numeric(subset(output_link, link == c$link)$"MARG. COST"))/n_mc - c$cost * n_w/52 }) 
+                          FUN = function(c){sum(as.numeric(subset(output_link, link == c$link)$"MARG. COST"))/n_mc - c$cost * n_w / 52 }) 
   
     if(current_iteration == 1)
     {
@@ -199,7 +217,7 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
         {
           script_rentability <- paste0(script_rentability, it_id, " ", candidates[[c]]$name, " ", y , " ",
                                        sum(as.numeric(subset(output_link, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")) -
-                                         candidates[[c]]$cost * n_w/52)
+                                         candidates[[c]]$cost * n_w / 52)
           if (c != n_candidates || y != opts$mcYears[n_mc])
           {
             script_rentability <- paste0(script_rentability, "\n")
@@ -214,23 +232,27 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
     {
       script_rentability  <-  ""
       script_cost <- ""
+      weeks <- unique(output_link$timeId)
+      cat(weeks)
+      cat("\n")
       
       for(y in opts$mcYears)
       {
-        for(w in 1:n_w)
+        for(w in weeks)
         {
           script_cost <- paste0(script_cost, it_id, " ", y , " ", w, " ", 
                                 sum(as.numeric(subset(output_area, mcYear == y & timeId == w)$"OV. COST")) +
                                 sum(as.numeric(subset(output_link, mcYear == y & timeId == w)$"HURDLE COST")) +
                                 inv_cost/52)
-          if (y != opts$mcYears[n_mc] || w != n_w) {script_cost <- paste0(script_cost, "\n")}
+          if (y != opts$mcYears[n_mc] || w != last(weeks)) {script_cost <- paste0(script_cost, "\n")}
         
           for(c in 1:n_candidates)
           {
             script_rentability <- paste0(script_rentability, it_id, " ", candidates[[c]]$name, " ", y , " ", w, " ", 
                                          sum(as.numeric(subset(output_link, link == candidates[[c]]$link & mcYear == y & timeId == w)$"MARG. COST")) -
                                          candidates[[c]]$cost /52)
-            if (c != n_candidates || y != opts$mcYears[n_mc] || w != n_w)
+            
+            if (c != n_candidates || y != opts$mcYears[n_mc] || w != last(weeks))
             {
               script_rentability <- paste0(script_rentability, "\n")
             }
