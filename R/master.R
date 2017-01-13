@@ -71,7 +71,10 @@ initiate_master <- function(candidates = read_candidates(opts), exp_options = re
   
   # 2 - in_nw.txt
   n_w <- floor((opts$parameters$general$simulation.end - opts$parameters$general$simulation.start + 1)/7)
-  weeks <- (ceiling((opts$parameters$general$simulation.start - 1) /7) + 1) : (ceiling(opts$parameters$general$simulation.start/7) + n_w)
+  n_w <- min(n_w, 52)
+  #     number of week does not necessarily starts at 1
+  #     it depends on the beginning of the simulated period (opts$parameters$general$simulation.start)
+  weeks <- (ceiling((opts$parameters$general$simulation.start - 1) /7) + 1) : (ceiling((opts$parameters$general$simulation.start - 1) /7) + n_w) 
   
   write(paste0(weeks, collapse = " "), file = paste0(tmp_folder, "/", in_out_files$n_w))
   

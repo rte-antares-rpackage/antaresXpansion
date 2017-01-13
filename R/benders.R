@@ -68,8 +68,7 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
   
   first_day_week <- day_name[((which(day_name == opts$parameters$general$january.1st) + n_day - 1) %% 7 ) +1]
   set_week(first_day = first_day_week, opts)
-  opts <- setSimulationPath(opts$studyPath)
-  
+
   # initiate text files to communicate with master problem
   # and copy AMPL file into the temporary file 
   initiate_master(candidates, exp_options, opts)
