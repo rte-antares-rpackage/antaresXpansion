@@ -21,7 +21,7 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
   # ---- 0. initiale benders iteration ----
   # read expansion planning options
   exp_options <- read_options(opts)
-
+  
   # read investment candidates file
   candidates <- read_candidates(opts)
   n_candidates <- length(candidates)
@@ -53,10 +53,10 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
   #    option - week
   #    we need to ensure the consistency between the weekly optimisation and the weekly
   #    aggregation of the output
-    
+  
   month_name <- c("january", "december", "november", "october", "september", "august", "july", "june", "may", "april", "march", "february")
   day_per_month <- c(0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 28)
-                     
+  
   day_name <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
   if (opts$parameters$general$leapyear)
   {
@@ -68,14 +68,15 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
   
   first_day_week <- day_name[((which(day_name == opts$parameters$general$january.1st) + n_day - 1) %% 7 ) +1]
   set_week(first_day = first_day_week, opts)
-
+  
   # initiate text files to communicate with master problem
   # and copy AMPL file into the temporary file 
   initiate_master(candidates, exp_options, opts)
   
   # initiate a few parameters
   n_w <- floor((opts$parameters$general$simulation.end - opts$parameters$general$simulation.start + 1)/7)
-  n_mc <- length(opts$mcYears)
+  mc_years <- get_playlist(opts)
+  n_mc <- length(mc_years)
   has_converged <- FALSE
   current_iteration <- 1
   best_solution <- NA
@@ -104,7 +105,7 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
     
     
     # ---- 1. Set installed capacities ---- 
-
+    
     for(c in candidates)
     {
       update_link(c$link, "direct_capacity", x$invested_capacities[c$name, it_id] , opts)
@@ -166,7 +167,6 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
     {
       for (c in candidates){cat( "     . ", c$name, " -- ", x$invested_capacities[c$name, it_id], " invested MW -- rentability = ", round(x$rentability[c$name, it_id]/1000), "ke/MW \n" , sep="")}
       cat("--- op.cost = ", op_cost/1000000, " Me --- inv.cost = ", inv_cost/1000000, " Me --- ov.cost = ", ov_cost/1000000, " Me ---\n")
-      
     }
     
     
@@ -207,20 +207,20 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
     {
       script_rentability  <-  ""
       script_cost <- ""
-      for(y in opts$mcYears)
+      for(y in mc_years)
       {
         script_cost <- paste0(script_cost, it_id, " ", y , " ",
                               sum(as.numeric(subset(output_area, mcYear == y)$"OV. COST")) +
                               sum(as.numeric(subset(output_link, mcYear == y)$"HURDLE COST")) +
                               inv_cost)
-        if (y != opts$mcYears[n_mc]) {script_cost <- paste0(script_cost, "\n")}
+        if (y != mc_years[n_mc]) {script_cost <- paste0(script_cost, "\n")}
         
         for(c in 1:n_candidates)
         {
           script_rentability <- paste0(script_rentability, it_id, " ", candidates[[c]]$name, " ", y , " ",
                                        sum(as.numeric(subset(output_link, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")) -
                                          candidates[[c]]$cost * n_w / 52)
-          if (c != n_candidates || y != opts$mcYears[n_mc])
+          if (c != n_candidates || y != mc_years[n_mc])
           {
             script_rentability <- paste0(script_rentability, "\n")
           }
@@ -236,7 +236,7 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
       script_cost <- ""
       weeks <- unique(output_link$timeId)
 
-      for(y in opts$mcYears)
+      for(y in mc_years)
       {
         for(w in weeks)
 
@@ -245,7 +245,7 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
                                 sum(as.numeric(subset(output_area, mcYear == y & timeId == w)$"OV. COST")) +
                                 sum(as.numeric(subset(output_link, mcYear == y & timeId == w)$"HURDLE COST")) +
                                 inv_cost/52)
-          if (y != opts$mcYears[n_mc] || w != last(weeks)) {script_cost <- paste0(script_cost, "\n")}
+          if (y != mc_years[n_mc] || w != last(weeks)) {script_cost <- paste0(script_cost, "\n")}
 
 
           for(c in 1:n_candidates)
@@ -254,7 +254,7 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
                                          sum(as.numeric(subset(output_link, link == candidates[[c]]$link & mcYear == y & timeId == w)$"MARG. COST")) -
                                          candidates[[c]]$cost /52)
 
-            if (c != n_candidates || y != opts$mcYears[n_mc] || w != last(weeks))
+            if (c != n_candidates || y != mc_years[n_mc] || w != last(weeks))
             {
               script_rentability <- paste0(script_rentability, "\n")
             }

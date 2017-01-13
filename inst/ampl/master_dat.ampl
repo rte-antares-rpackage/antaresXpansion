@@ -11,7 +11,7 @@
 data;
 
 #number of mc years
-param n_mc := include in_nmc.txt;
+set YEAR := include in_mc.txt;
 
 #number of weeks
 set WEEK := include in_week.txt;

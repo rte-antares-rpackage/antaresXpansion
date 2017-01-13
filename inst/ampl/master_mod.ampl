@@ -11,14 +11,12 @@
 #-------------
 #--- SETS ----
 #-------------
-param n_mc integer ;
-# param n_w integer ;
 
 # set of investment candidates
 set INV_CANDIDATE ;
 
 # set of MC years
-set YEAR := 1..n_mc;
+set YEAR ;
 
 # set of weeks
 set WEEK ;
@@ -36,7 +34,7 @@ param c_inv{INV_CANDIDATE};      	# investment costs
 param unit_size{INV_CANDIDATE};  	# unit of each investment step
 param max_unit{INV_CANDIDATE};	 	# max number of units which can be invested
 
-param prob{y in YEAR} := 1/n_mc; 	# probability of occurence of each MC year
+param prob{y in YEAR} := 1/card(YEAR) ; 	# probability of occurence of each MC year
 
 param type{CUT} symbolic ;       	# type of the cut (yearly, weekly or average)
 param z0{CUT, INV_CANDIDATE} ;      # invested capacity of each candidates for the given cut
