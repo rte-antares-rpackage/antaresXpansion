@@ -15,7 +15,6 @@ include in_options.txt;
 
 option solver cbc;    # set solver (should this be an input data which could be set differently ?)
 
-
  # solver master problem
 solve >> out_log.txt;
 

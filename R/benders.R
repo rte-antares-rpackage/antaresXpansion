@@ -300,4 +300,19 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
     current_iteration = current_iteration +1
   }
   
+  # add information in the output file
+  x$options <- read_options(opts)
+  x$candidates <- read_candidates(opts)
+  
+  # save output file
+  # copy the benders_out into a Rdata in the temporary folder
+  tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
+  if(!dir.exists(tmp_folder))
+  {
+    dir.create(tmp_folder)
+  }
+  
+  saveRDS(x, file = paste0(tmp_folder, "/data_for_report.RDS"))
+  
+  return(x)
 }
