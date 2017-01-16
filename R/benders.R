@@ -272,18 +272,16 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
     
     # load AMPL output
     #     - underestimator
-    under_estimator = read.table(paste0(tmp_folder,"/out_underestimator.txt"), header = FALSE)
-    best_under_estimator = max(under_estimator)
+    x$under_estimator  <-  unname(unlist(read.table(paste0(tmp_folder,"/out_underestimator.txt"), header = FALSE)))
+    best_under_estimator <-  max(x$under_estimator)
     
     #    - investment solution
-    benders_sol = read.table(paste0(tmp_folder,"/out_solutionmaster.txt"), sep =";")[,2]
+    benders_sol <-  read.table(paste0(tmp_folder,"/out_solutionmaster.txt"), sep =";")[,2]
    
 
-    # ---- 6. Update investment decisions ---- 
-    x$invested_capacities[[paste0("it", current_iteration+1)]] <- benders_sol
+ 
     
-    
-    # ---- 7. Check convergence ---- 
+    # ---- 6. Check convergence ---- 
     
     if( (min(x$overall_costs) - best_under_estimator) <= exp_options$optimality_gap)
     {
@@ -298,10 +296,20 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
       cat("--- lower bound on ov.cost = ", best_under_estimator/1000000 ," Me --- best solution (it ", best_solution, ") = ", x$overall_costs[best_solution]/1000000   ,"Me \n")
     }
     current_iteration = current_iteration +1
+    
+    
+    
+    
+    # ---- 7. Update investment decisions ---- 
+    if(!has_converged && current_iteration <= exp_options$max_iteration)
+    {
+        x$invested_capacities[[paste0("it", current_iteration)]] <- benders_sol
+    }
   }
   
   # add information in the output file
-  x$options <- read_options(opts)
+  x$expansion_options <- read_options(opts)
+  x$study_options <- opts
   x$candidates <- read_candidates(opts)
   
   # save output file

@@ -11,5 +11,7 @@ License: Proprietary RTE
 LazyData: TRUE
 Depends:
     antaresRead (>= 0.14.0),
-    assertthat
+    assertthat,
+    lubridate,
+    rmarkdown
 RoxygenNote: 5.0.1
