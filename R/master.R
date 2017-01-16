@@ -10,7 +10,7 @@
 #'   \code{\link{read_candidates}}
 #' @param exp_options 
 #'   list of options related to the expansion planning, as returned
-#'   by the function \code{\link{read_options()}}
+#'   by the function \code{\link{read_options}}
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
@@ -121,6 +121,6 @@ solve_master <- function(opts = simOptions())
   assert_that(file.exists(paste0(tmp_folder, "/master_mod.ampl")))
   assert_that(file.exists(paste0(tmp_folder, "/master_dat.ampl")))
   
-  cmd <- paste0("cd ", tmp_folder, " & ampl ", tmp_folder, "/master_run.ampl")
+  cmd <- paste0(substr(tmp_folder, 1, 2), " & cd ", tmp_folder, " & ampl ", tmp_folder, "/master_run.ampl")
   shell(cmd, wait = TRUE, intern = TRUE)
 }
