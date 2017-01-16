@@ -23,27 +23,20 @@ report <- function(benders_out = "last", file = default_report_file(simOptions()
   # copy the benders_out into a Rdata in the temporary folder
   # except if benders_out == "last", in that case we use the last
   # written data_for_report.RDS file
-  last <- FALSE
   if(length(benders_out) == 1)
   {
     if(benders_out == "last")
     {
-       last <- TRUE
-    }
+      tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
+      assert_that(file.exists(paste0(tmp_folder, "/data_for_report.RDS")))
+      benders_out <- readRDS(file = paste0(tmp_folder, "/data_for_report.RDS"))
+    } 
   }
-  if(!last)
-  {
-    tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
-    if(!dir.exists(tmp_folder))
-    {
-      dir.create(tmp_folder)
-    }
-    saveRDS(benders_out, file = paste0(tmp_folder, "/data_for_report.RDS"))
-    
-  }
+
+  x <- benders_out
   
   # launch Rmarkdown file
-  render(input = system.file("rmd/report.Rmd", package = "antaresXpansion"), output_file = file)
+  render(input = system.file("rmd/report.Rmd", package = "antaresXpansion"), output_file = file, params = x)
 }
 
                  
