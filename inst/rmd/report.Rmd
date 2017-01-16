@@ -146,9 +146,9 @@ costs$best_solution_until_now <- sapply(1:n_iteration, min_1_n, vect = x$overall
 # plot (ov_cost, best_bound, best_sol) = f(it)
 
 p <- plot_ly(costs, x = ~iteration, width = "100%") %>%
-  add_trace(y = ~overall_costs, name = 'Total cost',mode = 'lines+markers') %>%
-  add_trace(y = ~best_solution_until_now, name = 'Best solution until this iteration', mode = 'lines+markers') %>%
-  add_trace(y = ~best_bound, name = 'Lower bound', mode = 'lines+markers') %>% 
+  add_trace(y = ~overall_costs, name = 'Total cost',mode = 'lines+markers', type = "scatter") %>%
+  add_trace(y = ~best_solution_until_now, name = 'Best solution until this iteration', mode = 'lines+markers', type = "scatter") %>%
+  add_trace(y = ~best_bound, name = 'Lower bound', mode = 'lines+markers', type = "scatter") %>% 
   layout(yaxis = list(title = "(euros)"), legend = list(orientation = 'h'))
 
 p

@@ -7,6 +7,9 @@
 #' @param display
 #'   Logical. If \code{TRUE} the advancement of the benders decomposition
 #'   if displayed in the console
+#' @param report
+#'   Logical. If \code{TRUE} an html report of the expansion results will
+#'   be generated.
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
@@ -16,7 +19,7 @@
 #' @import assertthat antaresRead
 #' @export
 #' 
-benders <- function(path_solver, display = TRUE, opts = simOptions())
+benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOptions())
 {
   # ---- 0. initiale benders iteration ----
   # read expansion planning options
@@ -322,5 +325,15 @@ benders <- function(path_solver, display = TRUE, opts = simOptions())
   
   saveRDS(x, file = paste0(tmp_folder, "/data_for_report.RDS"))
   
-  return(x)
+  # create report
+  if(report)
+  {
+    if(display)
+    {
+      cat("Write report in user/expansion/report directory \n")
+    }
+    
+    rmarkdown::render(input = system.file("rmd/report.Rmd", package = "antaresXpansion"), 
+                      output_file = default_report_file(opts), params = x, quiet = TRUE)
+  }
 }

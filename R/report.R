@@ -18,7 +18,7 @@
 #' @import  antaresRead rmarkdown
 #' @export
 #' 
-report <- function(benders_out = "last", file = default_report_file(simOptions()), opts = simOptions())
+report <- function(benders_out = "last", file = default_report_file(opts), opts = simOptions())
 {
   # copy the benders_out into a Rdata in the temporary folder
   # except if benders_out == "last", in that case we use the last
@@ -36,7 +36,7 @@ report <- function(benders_out = "last", file = default_report_file(simOptions()
   x <- benders_out
   
   # launch Rmarkdown file
-  render(input = system.file("rmd/report.Rmd", package = "antaresXpansion"), output_file = file, params = x)
+  rmarkdown::render(input = system.file("rmd/report.Rmd", package = "antaresXpansion"), output_file = file, params = x)
 }
 
                  
