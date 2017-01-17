@@ -57,7 +57,7 @@ param lambda_weekly{CUT, INV_CANDIDATE, YEAR, WEEK} ;   #  rentability (weekly v
 var Invested_capacity{INV_CANDIDATE};       # capacity invested
 var N_invested{INV_CANDIDATE} integer >=0;  # number of units invested
 
-var Theta{YEAR, WEEK} >=0;
+var Theta{YEAR, WEEK};
 
 
 #-----------

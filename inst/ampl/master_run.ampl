@@ -30,6 +30,14 @@ for {z in INV_CANDIDATE}
 printf "%f\n", master >> out_underestimator.txt;
 
 
+# write theta
+
+for {y in YEAR, w in WEEK}
+{
+	printf "%s;%s;%s;%f\n", card(CUT), y,w, Theta[y,w] >> out_theta.txt;
+}
+
+
 ## solve the relaxed problem to compute dual variables of the cut
 
 option presolve 0;
