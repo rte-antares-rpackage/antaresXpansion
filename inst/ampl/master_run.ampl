@@ -28,3 +28,28 @@ for {z in INV_CANDIDATE}
 }
 
 printf "%f\n", master >> out_underestimator.txt;
+
+
+## solve the relaxed problem to compute dual variables of the cut
+
+option presolve 0;
+option relax_integrality 1;
+
+solve ;
+
+# write dual of the cut
+
+for {c in CUT : type[c] = "average"}
+{
+	printf "%s;%s;%f\n", card(CUT), c, cut_avg.dual[c] >> out_dualaveragecut.txt;
+}
+
+for {c in CUT, y in YEAR : type[c] = "yearly"}
+{
+	printf "%s;%s;%s;%f\n", card(CUT),c, y, cut_yearly.dual[c,y] >> out_dualyearlycut.txt;
+}
+
+for {c in CUT, y in YEAR, w in WEEK : type[c] = "weekly"}
+{
+	printf "%s;%s;%s;%s;%f\n", card(CUT),c, y,w,cut_weekly.dual[c,y,w] >> out_dualweeklycut.txt;
+}

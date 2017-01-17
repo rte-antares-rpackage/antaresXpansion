@@ -13,7 +13,7 @@ library(plotly)
 library(magrittr)
 library(dplyr)
 library(data.table)
-library(xtable)
+library(knitr)
 library(shiny)
 ```
 

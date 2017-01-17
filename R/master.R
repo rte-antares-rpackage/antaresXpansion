@@ -43,7 +43,9 @@ initiate_master <- function(candidates = read_candidates(opts), exp_options = re
   in_out_files$sol_master <- "out_solutionmaster.txt"
   in_out_files$underestimator <- "out_underestimator.txt"
   in_out_files$log <- "out_log.txt"
-  
+  in_out_files$dual_averagecut <- "out_dualaveragecut.txt"
+  in_out_files$dual_yearlycut <- "out_dualyearlycut.txt"
+  in_out_files$dual_weeklycut <- "out_dualweeklycut.txt"
   
   # check if temporary folder exists, if not create it
   tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
