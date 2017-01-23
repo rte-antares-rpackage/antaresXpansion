@@ -29,5 +29,5 @@ numeric_patch_cut <- function(x_current, x_max)
   
   # as error can be up to +/- 0.5 
   return (d_max * 0.5 + 1)
-  
 }
+

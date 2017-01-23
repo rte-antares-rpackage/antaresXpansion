@@ -289,7 +289,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     
     # ---- 6. Check convergence ---- 
     
-    if( (min(x$overall_costs) - best_under_estimator) <= exp_options$optimality_gap)
+    if( (min(x$overall_costs) - best_under_estimator) <= exp_options$optimality_gap || all(benders_sol == x$invested_capacities[[it_id]]) )
     {
       has_converged = TRUE
       if(display)
