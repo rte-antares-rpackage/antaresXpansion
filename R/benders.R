@@ -134,9 +134,9 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     # ---- 3. Assess costs and marginal rentability of each investment candidates ---- 
     
     # read output of the simulation
-    output_area = readAntares(areas = "all", links = NULL, synthesis = FALSE, 
+    output_area = readAntares(areas = "all", links = NULL, mcYears = "all", 
                               timeStep = "weekly", opts = output_antares, showProgress = FALSE)
-    output_link = readAntares(areas = NULL, links = "all", synthesis = FALSE, 
+    output_link = readAntares(areas = NULL, links = "all", mcYears = "all", 
                               timeStep = "weekly", opts = output_antares, showProgress = FALSE)
     
     # compute costs
