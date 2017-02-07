@@ -134,10 +134,21 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     # ---- 3. Assess costs and marginal rentability of each investment candidates ---- 
     
     # read output of the simulation
-    output_area = readAntares(areas = "all", links = NULL, mcYears = "all", 
+    
+    if(packageVersion("antaresRead") > "0.14.9" )
+    {
+    output_area = readAntares(areas = "all", links = NULL, mcYears = mc_years, 
                               timeStep = "weekly", opts = output_antares, showProgress = FALSE)
-    output_link = readAntares(areas = NULL, links = "all", mcYears = "all", 
+    output_link = readAntares(areas = NULL, links = "all", mcYears = mc_years, 
                               timeStep = "weekly", opts = output_antares, showProgress = FALSE)
+    }
+    else  # old package version with synthesis arguments
+    {
+      output_area = readAntares(areas = "all", links = NULL, synthesis = FALSE, 
+                                timeStep = "weekly", opts = output_antares, showProgress = FALSE)
+      output_link = readAntares(areas = NULL, links = "all", synthesis = FALSE, 
+                                timeStep = "weekly", opts = output_antares, showProgress = FALSE)
+    }
     
     # compute costs
     op_cost <-  sum(as.numeric(output_area[,"OV. COST"]))/n_mc + sum(as.numeric(output_link[,"HURDLE COST"]))/n_mc
