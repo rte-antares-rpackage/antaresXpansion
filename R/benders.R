@@ -30,59 +30,21 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   n_candidates <- length(candidates)
   
   # set ANTARES study options
-  #    option - output filtering
-  enable_custom_filtering(TRUE, opts)
-  enable_year_by_year(TRUE, opts)
-  filter_output_areas(areas = getAreas(opts = opts), filter = c("weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
-  filter_output_links(links = getLinks(opts = opts), filter = c("weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
-  
-  #    option - unit-commitment mode
-  if(exp_options$uc_type == "accurate")
-  {
-    set_uc_mode(mode = "accurate", opts = opts)
-    enable_uc_heuristic(enable = TRUE, opts = opts)
-  }
-  if(exp_options$uc_type == "fast")
-  {
-    set_uc_mode(mode = "fast", opts = opts)
-    enable_uc_heuristic(enable = TRUE, opts = opts)
-  }
-  if(exp_options$uc_type == "relaxed_fast")
-  {
-    set_uc_mode(mode = "fast", opts = opts)
-    enable_uc_heuristic(enable = FALSE, opts = opts)
-  }
-  
-  #    option - week
-  #    we need to ensure the consistency between the weekly optimisation and the weekly
-  #    aggregation of the output
-  
-  month_name <- c("january", "december", "november", "october", "september", "august", "july", "june", "may", "april", "march", "february")
-  day_per_month <- c(0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 28)
-  
-  day_name <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
-  if (opts$parameters$general$leapyear)
-  {
-    day_per_month[12] <- 29
-  }
-  month_id <- which(month_name == opts$parameters$general$"first-month-in-year")
-  assert_that(length(month_id) == 1)
-  n_day <- (-sum(day_per_month[1:month_id]) + opts$parameters$general$simulation.start - 1) %% 7
-  
-  first_day_week <- day_name[((which(day_name == opts$parameters$general$january.1st) + n_day - 1) %% 7 ) +1]
-  set_week(first_day = first_day_week, opts)
+  set_antares_options(exp_options, opts)
   
   # initiate text files to communicate with master problem
   # and copy AMPL file into the temporary file 
   initiate_master(candidates, exp_options, opts)
   
   # initiate a few parameters
-  n_w <- floor((opts$parameters$general$simulation.end - opts$parameters$general$simulation.start + 1)/7)
-  mc_years <- get_playlist(opts)
-  n_mc <- length(mc_years)
-  has_converged <- FALSE
-  current_iteration <- 1
-  best_solution <- NA
+  n_w <- floor((opts$parameters$general$simulation.end - opts$parameters$general$simulation.start + 1)/7) # number of weeks 
+  mc_years <- get_playlist(opts) # identifier of mc_years to simulate
+  n_mc <- length(mc_years) # number of mc_years
+  has_converged <- FALSE # has the benders decomposition converged ? not yet
+  current_iteration <- 1 # current iteration identifier
+  best_solution <- NA  # best solution identifier
+  full_iteration <- TRUE # is it a simulation in which we simulate all weeks and all MC years ?
+  
   
   # create output structure 
   x <- list()
@@ -105,7 +67,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   {
     it_id <- paste0("it", current_iteration)
     if(display){  cat("--- ITERATION ", current_iteration, " ---\n", sep="")}
-    
+
     
     # ---- 1. Set installed capacities ---- 
     

@@ -3,7 +3,8 @@
 \name{numeric_patch_cut}
 \alias{numeric_patch_cut}
 \title{This function update the bender cuts so as to deal with the numeric
-inaccuracy of the ANTARES output}
+inaccuracy of the ANTARES output
+Not used since v0.3}
 \usage{
 numeric_patch_cut(x_current, x_max)
 }
