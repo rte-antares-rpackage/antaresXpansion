@@ -1,5 +1,6 @@
 #' This function update the bender cuts so as to deal with the numeric
 #' inaccuracy of the ANTARES output
+#' Not used since v0.3
 #' 
 #' Marginal costs are returned in ANTARES with a 10^0 accuracy (without any decimal).
 #' This can cause numeric imprecisions in the cut of the benders decomposition and

@@ -137,10 +137,10 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     
     if(packageVersion("antaresRead") > "0.14.9" )
     {
-    output_area = readAntares(areas = "all", links = NULL, mcYears = mc_years, 
-                              timeStep = "weekly", opts = output_antares, showProgress = FALSE)
-    output_link = readAntares(areas = NULL, links = "all", mcYears = mc_years, 
-                              timeStep = "weekly", opts = output_antares, showProgress = FALSE)
+      output_area = readAntares(areas = "all", links = NULL, mcYears = mc_years, 
+                                timeStep = "weekly", opts = output_antares, showProgress = FALSE)
+      output_link = readAntares(areas = NULL, links = "all", mcYears = mc_years, 
+                                timeStep = "weekly", opts = output_antares, showProgress = FALSE)
     }
     else  # old package version with synthesis arguments
     {
@@ -190,12 +190,10 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     
     cut_type <- exp_options$cut_type
     tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
-    # corrected term to prevent numeric erors
-    corrected_term <- numeric_patch_cut(x_current = x$invested_capacities[ ,it_id], 
-                                        x_max = sapply(1:n_candidates, FUN = function(x, can){can[[x]]$max_invest}, can = candidates))
+
     
     # write in_cut.txt file 
-    script  <-  paste0(it_id, " ", ov_cost - corrected_term, " ", inv_cost, " ", op_cost, " ", cut_type)
+    script  <-  paste0(it_id, " ", ov_cost, " ", inv_cost, " ", op_cost, " ", cut_type)
     write(script, file = paste0(tmp_folder, "/in_cut.txt"), append = TRUE )      
     
     # write current invested capacity in in_z0.txt
@@ -229,7 +227,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
         script_cost <- paste0(script_cost, it_id, " ", y , " ",
                               sum(as.numeric(subset(output_area, mcYear == y)$"OV. COST")) +
                               sum(as.numeric(subset(output_link, mcYear == y)$"HURDLE COST")) +
-                              inv_cost - corrected_term)
+                              inv_cost)
         if (y != mc_years[n_mc]) {script_cost <- paste0(script_cost, "\n")}
         
         for(c in 1:n_candidates)
@@ -261,7 +259,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
           script_cost <- paste0(script_cost, it_id, " ", y , " ", w, " ", 
                                 sum(as.numeric(subset(output_area, mcYear == y & timeId == w)$"OV. COST")) +
                                 sum(as.numeric(subset(output_link, mcYear == y & timeId == w)$"HURDLE COST")) +
-                                inv_cost/52 - corrected_term)
+                                inv_cost/52)
           if (y != mc_years[n_mc] || w != last(weeks)) {script_cost <- paste0(script_cost, "\n")}
 
 
