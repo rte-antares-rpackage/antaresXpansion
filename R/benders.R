@@ -133,25 +133,54 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
 
     # ---- 3. Assess costs and marginal rentability of each investment candidates ---- 
     
-    # read output of the simulation
+    # read output of the simulation, for links and areas, 
+    # with synthetic visions and detailed annual and weekly results
+    # to avoid the sum of numeric approximations, it is advised to use the most aggregated output of ANTARES
+    # (e.g. to use annual results of ANTARES instead of the sum of the weekly results)
     
     if(packageVersion("antaresRead") > "0.14.9" )
     {
-      output_area = readAntares(areas = "all", links = NULL, mcYears = mc_years, 
+      # weekly results
+      output_area_w = readAntares(areas = "all", links = NULL, mcYears = mc_years, 
                                 timeStep = "weekly", opts = output_antares, showProgress = FALSE)
-      output_link = readAntares(areas = NULL, links = "all", mcYears = mc_years, 
+      output_link_w = readAntares(areas = NULL, links = "all", mcYears = mc_years, 
                                 timeStep = "weekly", opts = output_antares, showProgress = FALSE)
+      
+      # yearly results
+      output_area_y = readAntares(areas = "all", links = NULL, mcYears = mc_years, 
+                                  timeStep = "annual", opts = output_antares, showProgress = FALSE)
+      output_link_y = readAntares(areas = NULL, links = "all", mcYears = mc_years, 
+                                  timeStep = "annual", opts = output_antares, showProgress = FALSE)
+      
+      # synthetic results
+      output_area_s = readAntares(areas = "all", links = NULL, mcYears = NULL, 
+                                  timeStep = "annual", opts = output_antares, showProgress = FALSE)
+      output_link_s = readAntares(areas = NULL, links = "all", mcYears = NULL, 
+                                  timeStep = "annual", opts = output_antares, showProgress = FALSE)
     }
     else  # old package version with synthesis arguments
     {
-      output_area = readAntares(areas = "all", links = NULL, synthesis = FALSE, 
+      # weekly results
+      output_area_w = readAntares(areas = "all", links = NULL, synthesis = FALSE, 
                                 timeStep = "weekly", opts = output_antares, showProgress = FALSE)
-      output_link = readAntares(areas = NULL, links = "all", synthesis = FALSE, 
+      output_link_w = readAntares(areas = NULL, links = "all", synthesis = FALSE, 
                                 timeStep = "weekly", opts = output_antares, showProgress = FALSE)
+      
+      # yearly results
+      output_area_y = readAntares(areas = "all", links = NULL, synthesis = TRUE,
+                                  timeStep = "annual", opts = output_antares, showProgress = FALSE)
+      output_link_y = readAntares(areas = NULL, links = "all", synthesis = TRUE,
+                                  timeStep = "annual", opts = output_antares, showProgress = FALSE)
+      
+      # synthetic results
+      output_area_s = readAntares(areas = "all", links = NULL, synthesis = TRUE,
+                                  timeStep = "annual", opts = output_antares, showProgress = FALSE)
+      output_link_s = readAntares(areas = NULL, links = "all", synthesis = TRUE,
+                                  timeStep = "annual", opts = output_antares, showProgress = FALSE)
     }
     
     # compute costs
-    op_cost <-  sum(as.numeric(output_area[,"OV. COST"]))/n_mc + sum(as.numeric(output_link[,"HURDLE COST"]))/n_mc
+    op_cost <-  sum(as.numeric(output_area_s$"OV. COST"))  + sum(as.numeric(output_link_s$"HURDLE COST")) 
     inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * x$invested_capacities[c$name, it_id]}))
     inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation
     ov_cost <-  op_cost + inv_cost
@@ -165,10 +194,10 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     if(ov_cost <= min(x$overall_costs)) {best_solution = current_iteration}
 
     # read rentability 
-
     average_rentability <- sapply(candidates, 
-                          FUN = function(c){sum(as.numeric(subset(output_link, link == c$link)$"MARG. COST"))/n_mc - c$cost * n_w / 52 }) 
-
+                          FUN = function(c){sum(as.numeric(subset(output_link_s, link == c$link)$"MARG. COST")) - c$cost * n_w / 52 }) 
+    
+    
     if(current_iteration == 1)
     {
       x$rentability <- data.frame(it1 = average_rentability)
@@ -225,16 +254,16 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
       for(y in mc_years)
       {
         script_cost <- paste0(script_cost, it_id, " ", y , " ",
-                              sum(as.numeric(subset(output_area, mcYear == y)$"OV. COST")) +
-                              sum(as.numeric(subset(output_link, mcYear == y)$"HURDLE COST")) +
+                              sum(as.numeric(subset(output_area_y, mcYear == y)$"OV. COST")) +
+                              sum(as.numeric(subset(output_link_y, mcYear == y)$"HURDLE COST")) +
                               inv_cost)
         if (y != mc_years[n_mc]) {script_cost <- paste0(script_cost, "\n")}
         
         for(c in 1:n_candidates)
         {
-          script_rentability <- paste0(script_rentability, it_id, " ", candidates[[c]]$name, " ", y , " ",
-                                       sum(as.numeric(subset(output_link, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")) -
-                                         candidates[[c]]$cost * n_w / 52)
+          tmp_rentability <- sum(as.numeric(subset(output_link_y, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")) - candidates[[c]]$cost * n_w / 52
+
+          script_rentability <- paste0(script_rentability, it_id, " ", candidates[[c]]$name, " ", y , " ", tmp_rentability)
           if (c != n_candidates || y != mc_years[n_mc])
           {
             script_rentability <- paste0(script_rentability, "\n")
@@ -249,7 +278,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     {
       script_rentability  <-  ""
       script_cost <- ""
-      weeks <- unique(output_link$timeId)
+      weeks <- unique(output_link_w$timeId)
 
       for(y in mc_years)
       {
@@ -257,17 +286,17 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
 
         {
           script_cost <- paste0(script_cost, it_id, " ", y , " ", w, " ", 
-                                sum(as.numeric(subset(output_area, mcYear == y & timeId == w)$"OV. COST")) +
-                                sum(as.numeric(subset(output_link, mcYear == y & timeId == w)$"HURDLE COST")) +
+                                sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"OV. COST")) +
+                                sum(as.numeric(subset(output_link_w, mcYear == y & timeId == w)$"HURDLE COST")) +
                                 inv_cost/52)
           if (y != mc_years[n_mc] || w != last(weeks)) {script_cost <- paste0(script_cost, "\n")}
 
 
           for(c in 1:n_candidates)
           {
-            script_rentability <- paste0(script_rentability, it_id, " ", candidates[[c]]$name, " ", y , " ", w, " ", 
-                                         sum(as.numeric(subset(output_link, link == candidates[[c]]$link & mcYear == y & timeId == w)$"MARG. COST")) -
-                                         candidates[[c]]$cost /52)
+            tmp_rentability <- sum(as.numeric(subset(output_link_w, link == candidates[[c]]$link & mcYear == y & timeId == w)$"MARG. COST")) - candidates[[c]]$cost /52
+
+            script_rentability <- paste0(script_rentability, it_id, " ", candidates[[c]]$name, " ", y , " ", w, " ", tmp_rentability)
 
             if (c != n_candidates || y != mc_years[n_mc] || w != last(weeks))
             {
