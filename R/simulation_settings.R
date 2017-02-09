@@ -463,3 +463,103 @@ get_playlist <- function(opts = simOptions())
   }
   return(mc_years[activated])
 }
+
+
+#' Set parameter simulation start
+#' 
+#' \code{set_first_day} is a function which modifies the input file of an ANTARES
+#' study and set the "simulation_start" parameter. This parameters defines which is the first
+#' day of the study horizon which should be simulated
+#' 
+#' @param first_day
+#'   day of the beginning of the simulated period. 
+#'   Numeric between 1 and 365.
+#' @param opts
+#'   list of simulation parameters returned by the function
+#'   \code{antaresRead::setSimulationPath}
+#'
+#' @return 
+#' The function does not return anything. It is  used to modify the input of an 
+#' ANTARES study
+#' 
+#' @import assertthat antaresRead
+#' @export
+#' 
+#' 
+set_first_day <- function(first_day, opts = simOptions())
+{
+  # check first day
+  # standardise first day
+  first_day <- as.numeric(first_day)
+  assert_that(length(first_day) == 1)
+  assert_that(first_day %in% 1:365)
+
+  # load setting file and check if it exists
+  general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
+  assert_that(file.exists(general_parameters_file_name))
+  assert_that(file.info(general_parameters_file_name)$size !=0)
+  
+  # read file
+  param_data <- scan(general_parameters_file_name, what=character(), sep="/", quiet = TRUE)
+  
+  # find line describing the filtering setting
+  index = grep("simulation.start =",param_data,  fixed = TRUE)
+  
+  assert_that(length(index) == 1)
+  
+  # update line
+  param_data[index] = paste0("simulation.start = ", first_day)
+  
+  # write updated file
+  write(param_data, general_parameters_file_name, sep = "/")
+}
+
+
+#' Set parameter simulation start
+#' 
+#' \code{set_last_day} is a function which modifies the input file of an ANTARES
+#' study and set the "simulation_end" parameter. This parameters defines which is the last
+#' day of the study horizon which should be simulated
+#' 
+#' @param last_day
+#'   day of the beginning of the simulated period. 
+#'   Numeric between 1 and 365.
+#' @param opts
+#'   list of simulation parameters returned by the function
+#'   \code{antaresRead::setSimulationPath}
+#'
+#' @return 
+#' The function does not return anything. It is  used to modify the input of an 
+#' ANTARES study
+#' 
+#' @import assertthat antaresRead
+#' @export
+#' 
+#' 
+set_last_day <- function(last_day, opts = simOptions())
+{
+  # check first day
+  # standardise first day
+  last_day <- as.numeric(last_day)
+  assert_that(length(last_day) == 1)
+  assert_that(last_day %in% 1:365)
+  
+  # load setting file and check if it exists
+  general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
+  assert_that(file.exists(general_parameters_file_name))
+  assert_that(file.info(general_parameters_file_name)$size !=0)
+  
+  # read file
+  param_data <- scan(general_parameters_file_name, what=character(), sep="/", quiet = TRUE)
+  
+  # find line describing the filtering setting
+  index = grep("simulation.end =",param_data,  fixed = TRUE)
+  
+  assert_that(length(index) == 1)
+  
+  # update line
+  param_data[index] = paste0("simulation.end = ", last_day)
+  
+  # write updated file
+  write(param_data, general_parameters_file_name, sep = "/")
+}

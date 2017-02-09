@@ -241,7 +241,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
       script_rentability  <-  ""
       script_cost <- ""
       weeks <- unique(output_link_w$timeId)
-
+      cat(weeks)
       for(y in mc_years)
       {
         for(w in weeks)
