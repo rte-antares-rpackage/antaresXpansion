@@ -563,3 +563,83 @@ set_last_day <- function(last_day, opts = simOptions())
   # write updated file
   write(param_data, general_parameters_file_name, sep = "/")
 }
+
+
+
+#' Set playlist of the study
+#' 
+#' \code{set_playlist} is a function which modifies the input file of an ANTARES
+#' study and set the playlist in order to simulate only the given MC years
+#' 
+#' 
+#' @param playlist
+#'   vector of MC years identifier to be simulated
+#' @param opts
+#'   list of simulation parameters returned by the function
+#'   \code{antaresRead::setSimulationPath}
+#'   
+#' @return 
+#' The function does not return anything. It is  used to modify the input of an 
+#' ANTARES study
+#' 
+#' @import assertthat antaresRead
+#' @export
+#' 
+#' 
+set_playlist <- function(playlist, opts = simOptions())
+{
+  # get all MC years
+  mc_years <- 1:opts$parameters$general$nbyears
+  assert_that(all(playlist %in% mc_years))
+  playlist <- sort(playlist)
+  playlist <- unique(playlist)
+  
+  # load setting file and check if it exists
+  general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
+  assert_that(file.exists(general_parameters_file_name))
+  assert_that(file.info(general_parameters_file_name)$size !=0)
+  
+  # read file
+  param_data <- scan(general_parameters_file_name, what=character(), sep="/", quiet = TRUE)
+  
+  # find line describing if the playlist is used
+  index_p <- grep("user-playlist =",param_data,  fixed = TRUE)
+  assert_that(length(index_p) == 1)
+  
+  
+  # if all mc_years must be simulated, desactive playlist
+  if(length(playlist) == length(mc_years))
+  {
+    # update line to disable the playlist
+    param_data[index_p] <- paste0("user-playlist = false")
+    # write updated file
+    write(param_data, general_parameters_file_name, sep = "/")
+  }
+  
+  # otherwise, set the playlist
+  else
+  {
+    # update line to enable the playlist
+    param_data[index_p] = paste0("user-playlist = true")
+    
+    # delete lines with current playlist
+    index_d <- grep("playlist",param_data,  fixed = TRUE)
+    index_d <- index_d[index_d != index_p]
+    if(length(index_d) >= 1)
+    {
+      param_data <- param_data[- index_d]
+    }
+    
+    # create new plalist
+    new_playlist <- c("[playlist]", 
+                      "playlist_reset = false",
+                      sapply(playlist,FUN = function(x){paste0("playlist_year + = ", x-1)}))
+    
+    # add new playlist to the parameters description
+    param_data <- c(param_data, new_playlist)
+    
+    # write updated file
+    write(param_data, general_parameters_file_name, sep = "/")
+    
+  }
+}
