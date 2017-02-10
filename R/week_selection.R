@@ -21,7 +21,7 @@ set_simulation_period <- function(weeks, opts = simOptions())
   
   # change parameters of the study
   set_first_day(7*(weeks[1] - 1) + 1, opts)
-  set_last_day(7*(weeks[length(weeks)] - 1), opts)
+  set_last_day(7*(weeks[length(weeks)]), opts)
 }
 
 

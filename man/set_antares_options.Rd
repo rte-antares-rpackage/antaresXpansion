@@ -2,7 +2,7 @@
 % Please edit documentation in R/benders_tools.R
 \name{set_antares_options}
 \alias{set_antares_options}
-\title{Set ANTARES study options related}
+\title{Set ANTARES study options related to the current benders decomposition}
 \usage{
 set_antares_options(benders_options, opts = simOptions())
 }
@@ -14,9 +14,9 @@ set_antares_options(benders_options, opts = simOptions())
 \code{antaresRead::setSimulationPath}}
 }
 \value{
-
+nothing
 }
 \description{
-Set ANTARES study options related
+Set ANTARES study options related to the current benders decomposition
 }
 

@@ -21,8 +21,17 @@ set YEAR ;
 # set of weeks
 set WEEK ;
 
-# set of bender cuts
-set CUT ;
+#set of benders iterations
+set ITERATION ;
+
+# set of average bender cuts
+set AVG_CUT within {ITERATION} ;
+
+# set of yearly bender cuts
+set YEARLY_CUT within {ITERATION, YEAR} ;
+
+# set of weekly bender cuts
+set WEEKLY_CUT within {ITERATION, YEAR, WEEK} ;
 
 
 
@@ -30,25 +39,27 @@ set CUT ;
 #--- PARAMETERS ----
 #-------------------
 
+# investment candidates
 param c_inv{INV_CANDIDATE};      	# investment costs 
 param unit_size{INV_CANDIDATE};  	# unit of each investment step
 param max_unit{INV_CANDIDATE};	 	# max number of units which can be invested
 
+param z0{ITERATION, INV_CANDIDATE} ;# invested capacity of each candidates for the given iteratoin
+
+# average cut
+param c0_avg{AVG_CUT} ;                 	# total costs (operation + investment) for the given iteration
+param lambda_avg{AVG_CUT, INV_CANDIDATE} ;	#  rentability (average value over all MC years)
+
+# yearly cut
+param c0_yearly{YEARLY_CUT} ;    					# yearly total costs
+param lambda_yearly{YEARLY_CUT, INV_CANDIDATE} ;    #  rentability (yearly values)
+
+#weekly cut
+param c0_weekly{WEEKLY_CUT} ;   					# weekly total costs
+param lambda_weekly{WEEKLY_CUT, INV_CANDIDATE} ;    # rentability (weekly values)
+
+# other
 param prob{y in YEAR} := 1/card(YEAR) ; 	# probability of occurence of each MC year
-
-param type{CUT} symbolic ;       	# type of the cut (yearly, weekly or average)
-param z0{CUT, INV_CANDIDATE} ;      # invested capacity of each candidates for the given cut
-param c0{CUT} ;                  	# total costs for the combination of invested capacities from which the cut comes from
-param c0_inv{CUT};    				# investment costs (not used here)
-param c0_op{CUT};     				# production costs (not used here)
-
-param c0_yearly{CUT, YEAR} ;    	# yearly total costs
-param c0_weekly{CUT, YEAR , WEEK} ;   # weekly total costs
-
-param lambda_avg{CUT, INV_CANDIDATE} ;					#  rentability (average value over all MC years)
-param lambda_yearly{CUT, INV_CANDIDATE, YEAR} ;         #  rentability (yearly values)
-param lambda_weekly{CUT, INV_CANDIDATE, YEAR, WEEK} ;   #  rentability (weekly values)
-
 
 #------------------
 #--- VARIABLES ----
@@ -72,7 +83,9 @@ subject to bounds_on_invested_capacity{z in INV_CANDIDATE} : N_invested[z] <= ma
 subject to integer_constraint{z in INV_CANDIDATE} : Invested_capacity[z] = unit_size[z] * N_invested[z];		 
 
 # bender's cut :
-subject to cut_avg{c in CUT : type[c] = "average"} : sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) >=   c0[c] - sum{z in INV_CANDIDATE}(lambda_avg[c,z] * (Invested_capacity[z] - z0[c,z])) ;
-subject to cut_yearly{c in CUT, y in YEAR : type[c] = "yearly"} : sum{w in WEEK} Theta[y,w] >=  c0_yearly[c,y] - sum{z in INV_CANDIDATE} (lambda_yearly[c,z,y] * (Invested_capacity[z] - z0[c,z]));
-subject to cut_weekly{c in CUT, y in YEAR, w in WEEK : type[c] = "weekly"} : Theta[y,w] >=  c0_weekly[c,y,w] - sum{z in INV_CANDIDATE} (lambda_weekly[c,z,y,w] * (Invested_capacity[z] - z0[c,z]));
+subject to cut_avg{c in AVG_CUT} : sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) >=   c0_avg[c] - sum{z in INV_CANDIDATE}(lambda_avg[c,z] * (Invested_capacity[z] - z0[c,z])) ;
+
+subject to cut_yearly{(c,y) in YEARLY_CUT} : sum{w in WEEK} Theta[y,w] >=  c0_yearly[c,y] - sum{z in INV_CANDIDATE} (lambda_yearly[c,y,z] * (Invested_capacity[z] - z0[c,z]));
+
+subject to cut_weekly{(c,y,w) in WEEKLY_CUT} : Theta[y,w] >=  c0_weekly[c,y,w] - sum{z in INV_CANDIDATE} (lambda_weekly[c,y,w,z] * (Invested_capacity[z] - z0[c,z]));
 

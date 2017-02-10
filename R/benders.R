@@ -37,15 +37,14 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   initiate_master(candidates, exp_options, opts)
   
   # initiate a few parameters
+  first_sim_week <- 1 + ceiling((opts$parameters$general$simulation.start - 1)/7)
   n_w <- floor((opts$parameters$general$simulation.end - opts$parameters$general$simulation.start + 1)/7) # number of weeks 
-  mc_years <- get_playlist(opts) # identifier of mc_years to simulate
+  weeks <- first_sim_week:(first_sim_week + n_w - 1) # identifier of weeks to simulate for all expansion planning optimisation
+  mc_years <- get_playlist(opts) # identifier of mc years to simulate for all expansion planning optimisation
   n_mc <- length(mc_years) # number of mc_years
   has_converged <- FALSE # has the benders decomposition converged ? not yet
-  current_iteration <- 1 # current iteration identifier
   best_solution <- NA  # best solution identifier
-  full_iteration <- TRUE # is it a simulation in which we simulate all weeks and all MC years ?
-  
-  
+
   # create output structure 
   x <- list()
   x$invested_capacities <- data.frame()
@@ -53,7 +52,18 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   x$investment_costs <- numeric()
   x$operation_costs <- numeric()
   x$rentability <- data.frame()
+  x$iterations <- list()
   
+  # create iteration structure
+  current_it <- list()
+  current_it$n <- 1  # iteration number
+  current_it$id <- "it1"  # iteration identifier
+  current_it$full <- TRUE  # is it an iteration in which we simulate all weeks and all MC years ?
+  current_it$mc_years <- mc_years # identidier of mc years to simulate at this current iteration
+  current_it$weeks <- weeks # identidier of weeks to simulate at this current iteration
+  current_it$cut_type <- exp_options$cut_type # type of cut for this iteration (average, weekly, yearly)
+  current_it$need_full <- FALSE # is a complete iteration needed for next step ?
+
   # set initial value to each investment candidate (here put to max_invest/2)
   x$invested_capacities <- data.frame( it1 = sapply(candidates, FUN = function(c){c$max_invest/2}))
   row.names(x$invested_capacities) <- sapply(candidates, FUN = function(c){c$name})
@@ -63,37 +73,65 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   
   # ----
   # iterate until convergence or until the max number of iteration has been reached
-  while(!has_converged && current_iteration <= exp_options$max_iteration)
+  while(!has_converged && current_it$n <= exp_options$max_iteration)
   {
-    it_id <- paste0("it", current_iteration)
-    if(display){  cat("--- ITERATION ", current_iteration, " ---\n", sep="")}
-
+    # ---- 0. Initiate iteration ----
     
-    # ---- 1. Set installed capacities ---- 
+    # not much to do here
+    
+    current_it$id <- paste0("it", current_it$n)
+    
+    # ---- 1. Select weeks to simulate at this iteration ----
+    
+    # a smart selection of weeks is performed at each iteration in order to
+    # accelerate computation time by simulating only the weeks whose cuts are
+    # more likely to be activated in the master problem
+   
+    # select week to simulate
+    # return
+    #     current_it$weeks 
+    #     current_it$mc_years
+    
+    
+    # set simulation period
+    set_simulation_period(current_it$weeks, opts)
+    # set playlist
+    set_playlist(current_it$mc_years, opts)
+    
+    
+    if(current_it$full & display){
+      cat("--- ITERATION ", current_it$n, " (complete iteration, ", n_w * n_mc, " simulated weeks) ---\n", sep="")
+    }
+    if(!current_it$full & display){
+      cat("--- ITERATION ", current_it$n, " (partial iteration, ", length(current_it$mc_years) * length(current_it$weeks), " simulated weeks) ---\n", sep="")
+    }
+    
+    
+    # ---- 2. Set installed capacities ---- 
+    
+    # update study with current invested capacities on links
     
     for(c in candidates)
     {
-      update_link(c$link, "direct_capacity", x$invested_capacities[c$name, it_id] , opts)
-      update_link(c$link, "indirect_capacity", x$invested_capacities[c$name, it_id], opts)
+      update_link(c$link, "direct_capacity", x$invested_capacities[c$name, current_it$id ] , opts)
+      update_link(c$link, "indirect_capacity", x$invested_capacities[c$name, current_it$id ], opts)
     }
     
     
     
     
     
-    # ---- 2. Simulate ---- 
+    # ---- 3. Simulate ---- 
     
-    simulation_name <- paste0("benders-", it_id)
+    # run the ANTARES simulation, load the path related to this
+    # simulation and read the outputs
+    
+    simulation_name <- paste0("benders-", current_it$id)
     if(display){  cat("   ANTARES simulation running ... ", sep="")}
     run_simulation(simulation_name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, opts)
     if(display){  cat("[done] \n", sep="")}
     
     output_antares <- setSimulationPath(paste0(opts$studyPath, "/output/", get_whole_simulation_name(simulation_name, opts)))
-    
-
-    
-
-    # ---- 3. Assess costs and marginal rentability of each investment candidates ---- 
     
     # read output of the simulation, for links and areas, 
     # with synthetic visions and detailed annual and weekly results
@@ -104,9 +142,9 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     {
       # weekly results
       output_area_w = readAntares(areas = "all", links = NULL, mcYears = mc_years, 
-                                timeStep = "weekly", opts = output_antares, showProgress = FALSE)
+                                  timeStep = "weekly", opts = output_antares, showProgress = FALSE)
       output_link_w = readAntares(areas = NULL, links = "all", mcYears = mc_years, 
-                                timeStep = "weekly", opts = output_antares, showProgress = FALSE)
+                                  timeStep = "weekly", opts = output_antares, showProgress = FALSE)
       
       # yearly results
       output_area_y = readAntares(areas = "all", links = NULL, mcYears = mc_years, 
@@ -124,9 +162,9 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     {
       # weekly results
       output_area_w = readAntares(areas = "all", links = NULL, synthesis = FALSE, 
-                                timeStep = "weekly", opts = output_antares, showProgress = FALSE)
+                                  timeStep = "weekly", opts = output_antares, showProgress = FALSE)
       output_link_w = readAntares(areas = NULL, links = "all", synthesis = FALSE, 
-                                timeStep = "weekly", opts = output_antares, showProgress = FALSE)
+                                  timeStep = "weekly", opts = output_antares, showProgress = FALSE)
       
       # yearly results
       output_area_y = readAntares(areas = "all", links = NULL, synthesis = TRUE,
@@ -141,137 +179,113 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
     }
     
-    # compute costs
-    op_cost <-  sum(as.numeric(output_area_s$"OV. COST"))  + sum(as.numeric(output_link_s$"HURDLE COST")) 
-    inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * x$invested_capacities[c$name, it_id]}))
-    inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation
-    ov_cost <-  op_cost + inv_cost
+
+    # ---- 4. Assess system costs and marginal rentability of each investment candidate ---- 
+    
+    # analyse some outputs of the just finished ANTARES simulation
+    
+    
+    # compute system costs (can only be assessed if a complete
+    # simulation - with all weeks and all mc - has been run)
+    if(current_it$full)
+    {
+      op_cost <-  sum(as.numeric(output_area_s$"OV. COST"))  + sum(as.numeric(output_link_s$"HURDLE COST")) 
+      inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * x$invested_capacities[c$name, current_it$id]}))
+      inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation
+      ov_cost <-  op_cost + inv_cost
+    }
+    else
+    {
+      op_cost <- NA
+      inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * x$invested_capacities[c$name, current_it$id]}))
+      ov_cost <- NA
+    }
     
     # update output structure
     x$investment_costs<- c(x$investment_costs, inv_cost)
     x$operation_costs <- c(x$operation_costs, op_cost)
     x$overall_costs <- c(x$overall_costs, ov_cost)
     
-    # check if the current iteration provides the best solution
-    if(ov_cost <= min(x$overall_costs)) {best_solution = current_iteration}
+    if(current_it$full)
+    {
+      # check if the current iteration provides the best solution
+      if(ov_cost <= min(x$overall_costs)) {best_solution = current_it$n}
+    }
 
-    # read rentability 
-    average_rentability <- sapply(candidates, 
+    # compute average rentability of each candidate (can only
+    # be assessed if a complete simulation has been run)
+    if(current_it$full)
+    {
+      average_rentability <- sapply(candidates, 
                           FUN = function(c){sum(as.numeric(subset(output_link_s, link == c$link)$"MARG. COST")) - c$cost * n_w / 52 }) 
+    }
+    else
+    {
+      average_rentability <- rep(NA, n_candidates)
+    }
     
-    
-    if(current_iteration == 1)
+    # update output structure
+    if(current_it$n == 1)
     {
       x$rentability <- data.frame(it1 = average_rentability)
       row.names(x$rentability) <- sapply(candidates, FUN = function(c){c$name})
     }
-    else {x$rentability[[it_id]] <- average_rentability}
+    else {x$rentability[[current_it$id]] <- average_rentability}
     
     # print results of the ANTARES simulation
-    if(display)
+    if(display & current_it$full)
     {
-      for (c in candidates){cat( "     . ", c$name, " -- ", x$invested_capacities[c$name, it_id], " invested MW -- rentability = ", round(x$rentability[c$name, it_id]/1000), "ke/MW \n" , sep="")}
+      for (c in candidates){cat( "     . ", c$name, " -- ", x$invested_capacities[c$name, current_it$id], " invested MW -- rentability = ", round(x$rentability[c$name, current_it$id]/1000), "ke/MW \n" , sep="")}
       cat("--- op.cost = ", op_cost/1000000, " Me --- inv.cost = ", inv_cost/1000000, " Me --- ov.cost = ", ov_cost/1000000, " Me ---\n")
     }
     
     
     
     
-    # ---- 4. Update cuts ---- 
+    # ---- 5. Update cuts ---- 
     
-    cut_type <- exp_options$cut_type
+    # update cuts of the benders master problem, based on the marginal
+    # rentability of each investment candidates and on the obtained system
+    # costs
+    # cuts can be averaged on all MC years, yearly or weekly
+    
+    
+    # select temporary folder 
     tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
-
-    
-    # write in_cut.txt file 
-    script  <-  paste0(it_id, " ", ov_cost, " ", inv_cost, " ", op_cost, " ", cut_type)
-    write(script, file = paste0(tmp_folder, "/in_cut.txt"), append = TRUE )      
+  
+    # update iteration file
+    write(current_it$id, file = paste0(tmp_folder, "/in_iterations.txt"), append = TRUE )  
     
     # write current invested capacity in in_z0.txt
     script <-  ""
     for (c in 1:n_candidates)
     {
-      script <- paste0(script, it_id, " ", candidates[[c]]$name, " ", x$invested_capacities[candidates[[c]]$name, it_id])
+      script <- paste0(script, current_it$id, " ", candidates[[c]]$name, " ", x$invested_capacities[candidates[[c]]$name, current_it$id])
       if (c != n_candidates) {script <- paste0(script, "\n")}
     }
-    write(script, file = paste0(tmp_folder, "/in_z0.txt"), append = TRUE )      
+    write(script, file = paste0(tmp_folder, "/in_z0.txt"), append = TRUE )  
     
-    # write cost and rentability files (depending on cut type)
-    if(cut_type == "average")
+    # write costs and cuts files 
+    if(current_it$cut_type == "average")
     {
-      script  <-  ""
-      for (c in 1:n_candidates)
-      {
-        script <- paste0(script, it_id, " ", candidates[[c]]$name, " ",
-                         x$rentability[candidates[[c]]$name, it_id])
-        if (c != n_candidates) { script <- paste0(script, "\n")}
-      }
-      write(script, file = paste0(tmp_folder, "/in_avgrentability.txt"), append = TRUE )
+      assert_that(current_it$full)
+      update_average_cuts(current_it, candidates, output_link_s, ov_cost, n_w, tmp_folder)
+    }
+    if(current_it$cut_type == "yearly")
+    {
+      update_yearly_cuts(current_it,candidates, output_area_y, output_link_y, inv_cost, n_w, tmp_folder)
+    }
+    if(current_it$cut_type == "weekly")
+    {
+      update_weekly_cuts(current_it, candidates, output_area_w, output_link_w, inv_cost, tmp_folder)
     }
     
-    if(cut_type == "yearly")
-    {
-      script_rentability  <-  ""
-      script_cost <- ""
-      for(y in mc_years)
-      {
-        script_cost <- paste0(script_cost, it_id, " ", y , " ",
-                              sum(as.numeric(subset(output_area_y, mcYear == y)$"OV. COST")) +
-                              sum(as.numeric(subset(output_link_y, mcYear == y)$"HURDLE COST")) +
-                              inv_cost)
-        if (y != mc_years[n_mc]) {script_cost <- paste0(script_cost, "\n")}
-        
-        for(c in 1:n_candidates)
-        {
-          tmp_rentability <- sum(as.numeric(subset(output_link_y, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")) - candidates[[c]]$cost * n_w / 52
-
-          script_rentability <- paste0(script_rentability, it_id, " ", candidates[[c]]$name, " ", y , " ", tmp_rentability)
-          if (c != n_candidates || y != mc_years[n_mc])
-          {
-            script_rentability <- paste0(script_rentability, "\n")
-          }
-        }
-      }
-      write(script_rentability, file = paste0(tmp_folder, "/in_yearlyrentability.txt"), append = TRUE )
-      write(script_cost, file = paste0(tmp_folder, "/in_yearlycosts.txt"), append = TRUE )
-    }
     
-    if(cut_type == "weekly")
-    {
-      script_rentability  <-  ""
-      script_cost <- ""
-      weeks <- unique(output_link_w$timeId)
-      cat(weeks)
-      for(y in mc_years)
-      {
-        for(w in weeks)
-
-        {
-          script_cost <- paste0(script_cost, it_id, " ", y , " ", w, " ", 
-                                sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"OV. COST")) +
-                                sum(as.numeric(subset(output_link_w, mcYear == y & timeId == w)$"HURDLE COST")) +
-                                inv_cost/52)
-          if (y != mc_years[n_mc] || w != last(weeks)) {script_cost <- paste0(script_cost, "\n")}
-
-
-          for(c in 1:n_candidates)
-          {
-            tmp_rentability <- sum(as.numeric(subset(output_link_w, link == candidates[[c]]$link & mcYear == y & timeId == w)$"MARG. COST")) - candidates[[c]]$cost /52
-
-            script_rentability <- paste0(script_rentability, it_id, " ", candidates[[c]]$name, " ", y , " ", w, " ", tmp_rentability)
-
-            if (c != n_candidates || y != mc_years[n_mc] || w != last(weeks))
-            {
-              script_rentability <- paste0(script_rentability, "\n")
-            }
-          }
-        }
-      }
-      write(script_rentability, file = paste0(tmp_folder, "/in_weeklyrentability.txt"), append = TRUE )
-      write(script_cost, file = paste0(tmp_folder, "/in_weeklycosts.txt"), append = TRUE )
-    }
     
-    # ---- 5. Solve master problem ---- 
+    # ---- 6. Solve master problem ---- 
+    
+    # solve master optimisation problem (using AMPL) and read results of
+    # this problem
     
     # run AMPL with system command
     log <- solve_master(opts)
@@ -284,32 +298,61 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     #    - investment solution
     benders_sol <-  read.table(paste0(tmp_folder,"/out_solutionmaster.txt"), sep =";")[,2]
    
-
- 
-    
-    # ---- 6. Check convergence ---- 
-    
-    if( (min(x$overall_costs) - best_under_estimator) <= exp_options$optimality_gap || all(benders_sol == x$invested_capacities[[it_id]]) )
-    {
-      has_converged = TRUE
-      if(display)
-      {
-        cat("--- CONVERGENCE : best solution = it ", best_solution, " --- ov.cost = ", min(x$overall_costs)/1000000 ," Me --- Best Lower Bound = ",best_under_estimator/1000000 , " Me \n")
-      }
-    }
     if(display)
     {
       cat("--- lower bound on ov.cost = ", best_under_estimator/1000000 ," Me --- best solution (it ", best_solution, ") = ", x$overall_costs[best_solution]/1000000   ,"Me \n")
     }
-    current_iteration = current_iteration +1
+ 
     
+    # ---- 7. Check convergence ---- 
     
+    # check convergence of the benders decomposition
     
+    # if difference between the under estimator and the best solution
+    # is lower than the optimality gap, then the convergence has been reached
     
-    # ---- 7. Update investment decisions ---- 
-    if(!has_converged && current_iteration <= exp_options$max_iteration)
+    if( (min(x$overall_costs) - best_under_estimator) <= exp_options$optimality_gap ) 
     {
-        x$invested_capacities[[paste0("it", current_iteration)]] <- benders_sol
+      has_converged <- TRUE
+    }
+    
+    # if master problem solution didn't evolve at this (full) iteration, then the decomposition has
+    # converged
+    
+    if(all(abs(benders_sol - x$invested_capacities[[current_it$id]]) <= 0.1) )
+    {
+     if(current_it$full)
+     { 
+       has_converged <- TRUE  
+     }
+     else
+     {
+       current_it$need_full <- TRUE
+     }
+    }
+    
+    # display end messages
+    if(has_converged & display)
+    { 
+        cat("--- CONVERGENCE within optimality gap: best solution = it ", best_solution, " --- ov.cost = ", min(x$overall_costs)/1000000 ," Me --- Best Lower Bound = ",best_under_estimator/1000000 , " Me \n")
+    }
+    if(display & current_it$n >= exp_options$max_iteration)
+    { 
+      cat("--- END, the maximum number of iteration (", exp_options$max_iteration, ") has been reached \n", sep ="")
+    }
+    
+    # go to next iteration
+    x$iterations[[current_it$n]] <- current_it
+    current_it$n = current_it$n +1
+    
+    
+    # ---- 8. Update investment decisions ---- 
+    
+    # update investment decision to prepare next iteration
+    
+    if(!has_converged && current_it$n <= exp_options$max_iteration)
+    {
+        x$invested_capacities[[paste0("it", current_it$n)]] <- benders_sol
     }
   }
   
