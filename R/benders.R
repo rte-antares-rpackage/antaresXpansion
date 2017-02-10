@@ -44,7 +44,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   n_mc <- length(mc_years) # number of mc_years
   has_converged <- FALSE # has the benders decomposition converged ? not yet
   best_solution <- NA  # best solution identifier
-
+  tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")   # temporary folder
+  
   # create output structure 
   x <- list()
   x$invested_capacities <- data.frame()
@@ -63,7 +64,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   current_it$weeks <- weeks # identidier of weeks to simulate at this current iteration
   current_it$cut_type <- exp_options$cut_type # type of cut for this iteration (average, weekly, yearly)
   current_it$need_full <- FALSE # is a complete iteration needed for next step ?
-
+  current_it$last_full <- 1 # last iteration with full simulation
+  
   # set initial value to each investment candidate (here put to max_invest/2)
   x$invested_capacities <- data.frame( it1 = sapply(candidates, FUN = function(c){c$max_invest/2}))
   row.names(x$invested_capacities) <- sapply(candidates, FUN = function(c){c$name})
@@ -87,11 +89,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     # accelerate computation time by simulating only the weeks whose cuts are
     # more likely to be activated in the master problem
    
-    # select week to simulate
-    # return
-    #     current_it$weeks 
-    #     current_it$mc_years
-    
+    current_it <- week_selection(current_it, mc_years, weeks, tmp_folder, exp_options)
     
     # set simulation period
     set_simulation_period(current_it$weeks, opts)
@@ -141,15 +139,15 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     if(packageVersion("antaresRead") > "0.14.9" )
     {
       # weekly results
-      output_area_w = readAntares(areas = "all", links = NULL, mcYears = mc_years, 
+      output_area_w = readAntares(areas = "all", links = NULL, mcYears = current_it$mc_years, 
                                   timeStep = "weekly", opts = output_antares, showProgress = FALSE)
-      output_link_w = readAntares(areas = NULL, links = "all", mcYears = mc_years, 
+      output_link_w = readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
                                   timeStep = "weekly", opts = output_antares, showProgress = FALSE)
       
       # yearly results
-      output_area_y = readAntares(areas = "all", links = NULL, mcYears = mc_years, 
+      output_area_y = readAntares(areas = "all", links = NULL, mcYears = current_it$mc_years, 
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
-      output_link_y = readAntares(areas = NULL, links = "all", mcYears = mc_years, 
+      output_link_y = readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
       
       # synthetic results
@@ -209,7 +207,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     if(current_it$full)
     {
       # check if the current iteration provides the best solution
-      if(ov_cost <= min(x$overall_costs)) {best_solution = current_it$n}
+      if(ov_cost <= min(x$overall_costs, na.rm = TRUE)) {best_solution = current_it$n}
     }
 
     # compute average rentability of each candidate (can only
@@ -250,9 +248,6 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     # cuts can be averaged on all MC years, yearly or weekly
     
     
-    # select temporary folder 
-    tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
-  
     # update iteration file
     write(current_it$id, file = paste0(tmp_folder, "/in_iterations.txt"), append = TRUE )  
     
@@ -273,6 +268,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     }
     if(current_it$cut_type == "yearly")
     {
+      assert_that(all(current_it$weeks == weeks))
       update_yearly_cuts(current_it,candidates, output_area_y, output_link_y, inv_cost, n_w, tmp_folder)
     }
     if(current_it$cut_type == "weekly")
@@ -311,7 +307,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     # if difference between the under estimator and the best solution
     # is lower than the optimality gap, then the convergence has been reached
     
-    if( (min(x$overall_costs) - best_under_estimator) <= exp_options$optimality_gap ) 
+    if( (min(x$overall_costs, na.rm = TRUE) - best_under_estimator) <= exp_options$optimality_gap ) 
     {
       has_converged <- TRUE
     }
@@ -334,7 +330,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     # display end messages
     if(has_converged & display)
     { 
-        cat("--- CONVERGENCE within optimality gap: best solution = it ", best_solution, " --- ov.cost = ", min(x$overall_costs)/1000000 ," Me --- Best Lower Bound = ",best_under_estimator/1000000 , " Me \n")
+        cat("--- CONVERGENCE within optimality gap: best solution = it ", best_solution, " --- ov.cost = ", min(x$overall_costs, na.rm = TRUE)/1000000 ," Me --- Best Lower Bound = ",best_under_estimator/1000000 , " Me \n")
     }
     if(display & current_it$n >= exp_options$max_iteration)
     { 
@@ -356,10 +352,19 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     }
   }
   
+  
+  
   # add information in the output file
   x$expansion_options <- read_options(opts)
   x$study_options <- opts
   x$candidates <- read_candidates(opts)
+  
+  # reset some options of the ANTARES study to their initial values
+  # set simulation period
+  set_simulation_period(weeks, opts)
+  # set playlist
+  set_playlist(mc_years, opts)
+  
   
   # save output file
   # copy the benders_out into a Rdata in the temporary folder

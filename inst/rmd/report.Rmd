@@ -48,7 +48,7 @@ packageVersion("antaresXpansion")
 
 ```{r get_best_cost, echo = FALSE, eval = TRUE}
 
-best_solutions <- which(x$overall_costs == min(x$overall_costs))
+best_solutions <- which(x$overall_costs == min(x$overall_costs, na.rm = TRUE))
 sol_id <- paste0("it", best_solutions)
 
 n_best_solution <- length(best_solutions)
@@ -140,15 +140,15 @@ costs$investment_costs <- x$investment_costs
 costs$operation_costs <- x$operation_costs
 costs$best_bound  <-  x$under_estimator
 
-min_1_n <- function(n, vect){return(min(vect[1:n]))}
+min_1_n <- function(n, vect){return(min(vect[1:n], na.rm = TRUE))}
 costs$best_solution_until_now <- sapply(1:n_iteration, min_1_n, vect = x$overall_costs)
 
 # plot (ov_cost, best_bound, best_sol) = f(it)
 
 p <- plot_ly(costs, x = ~iteration, width = "100%") %>%
-  add_trace(y = ~overall_costs, name = 'Total cost',mode = 'lines+markers', type = "scatter") %>%
   add_trace(y = ~best_solution_until_now, name = 'Best solution until this iteration', mode = 'lines+markers', type = "scatter") %>%
-  add_trace(y = ~best_bound, name = 'Lower bound', mode = 'lines+markers', type = "scatter") %>% 
+  add_trace(y = ~best_bound, name = 'Lower bound', mode = 'lines+markers', type = "scatter") %>%
+  add_trace(x = ~iteration[!is.na(overall_costs)], y = ~na.omit(overall_costs), name = 'Total cost',mode = 'lines+markers', type = "scatter") %>%
   layout(yaxis = list(title = "(euros)"), legend = list(orientation = 'h'))
 
 p
