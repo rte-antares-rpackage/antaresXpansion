@@ -13,5 +13,6 @@ Depends:
     antaresRead (>= 0.14.0),
     assertthat,
     lubridate,
-    rmarkdown
+    rmarkdown,
+    dplyr
 RoxygenNote: 5.0.1
