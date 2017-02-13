@@ -45,6 +45,13 @@ week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
     make_full_iteration <- TRUE
   } 
   
+  # if cut_type is average
+  if(current_it$cut_type == "average")
+  {
+    make_full_iteration <- TRUE
+  } 
+  
+  
   # ### temporary
   # current_it$cut_type <- sample(c("average", "yearly", "weekly"),1)
   # 
@@ -93,38 +100,84 @@ week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
       current_it$last_full <- current_it$n
       return(current_it)
     }
+    # otherwise, we rerturn a partial iteration
+    else
+    {
+      current_it$full <- FALSE
+      current_it$weeks <- converted$weeks
+      current_it$mc_years <- converted$mc_years
+      if(current_it$cut_type == "yearly")
+      {
+        current_it$mc_years <- mc_years
+      }
+      current_it$need_full <- FALSE
+      return(current_it)
+    }
+  }
+  
+  # look at the differences between thetas at two consecutives iterations
+  {
+    # compute the difference between two iterations
+    diff_theta <- merge(x = filter(theta, it == (current_it$n - 1)),
+          y = rename(filter(theta, it == (current_it$n - 2)), theta_previous = theta),
+          by = c("year", "week"))
+    diff_theta <- mutate(diff_theta, diff = theta - theta_previous)
+    
+    avg_diff <- mean(diff_theta$diff)
+    max_diff <- max(diff_theta$diff)
+    
+    hist(diff_theta$diff)
+    
+    # for now, really basic weight construction 
+    # could further be improved
+    
+    # add column weight
+    diff_theta$weight <- 1
+    
+    # weight is put to zero if diff_theta is below average:
+    diff_theta$weight[diff_theta$diff < 2* avg_diff] <- 0
+    
+    if(sum(diff_theta$weight) == 0)
+    {
+      diff_theta$weight[diff_theta$diff < avg_diff] <- 0
+    }
+    
+    
+    
+    
+    # convert (year,week) couples into a playlist and/or a period selection
+    to_simulate <- select(diff_theta, it.x, year, week, weight)
+    
+    # write.table(to_simulate, paste0(tmp_folder, "/week_select.csv"), col.names = c("it", "year", "week", "weight"), sep = ";", append = TRUE)
+    
+    converted <- convert(to_simulate, mc_years, weeks)
+    
+    # if there is too many weeks, year we go for a full iteration
+    # too many weeks = more than 75% of all weeks
+    if(length(converted$weeks) * length(converted$mc_years) >= 0.75 * length(mc_years) * length(weeks))
+    {
+      current_it$full <- TRUE
+      current_it$weeks <- weeks
+      current_it$mc_years <- mc_years
+      current_it$need_full <- FALSE
+      current_it$last_full <- current_it$n
+      return(current_it)
+    }
     # otherwise, we return a partiel iteration
     else
     {
       current_it$full <- FALSE
       current_it$weeks <- converted$weeks
       current_it$mc_years <- converted$mc_years
+      if(current_it$cut_type == "yearly")
+      {
+        current_it$mc_years <- mc_years
+      }
       current_it$need_full <- FALSE
       return(current_it)
     }
   }
   
-  
-  
-  # for now, to test the robustness of the other function, select randomly
-  # current_it$cut_type <- sample(c("average", "yearly", "weekly"),1)
-  # 
-  # if(current_it$cut_type == "yearly")
-  # {
-  #   current_it$weeks <- weeks
-  #   current_it$mc_years <- sort(unique(sample(mc_years, sample(1:length(mc_years),1))))
-  #   current_it$full <- FALSE
-  # } 
-  # if(current_it$cut_type == "weekly")
-  # {
-  #   current_it$mc_years <- sort(unique(sample(mc_years, sample(1:length(mc_years),1))))
-  #   rand_weeks <- sample(weeks,2)
-  #   current_it$weeks <- min(rand_weeks):max(rand_weeks)
-  #   current_it$full <- FALSE
-  # } 
-  # 
-  # 
-  return(current_it)
 }
 
 #' Convert to_simulate file into independent mc_years and weeks list
