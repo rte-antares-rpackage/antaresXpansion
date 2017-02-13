@@ -64,7 +64,7 @@ read_options <- function(opts = simOptions())
     }
     else if (option_name == "master")
     {
-      assert_that(option_value %in% c("integer", "relaxed"))
+      assert_that(option_value %in% c("integer", "relaxed", "relaxed_then_integer"))
       options$master <- option_value
     }
     else if (option_name == "optimality_gap")

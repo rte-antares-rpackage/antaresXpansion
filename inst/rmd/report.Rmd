@@ -119,6 +119,15 @@ Number of iterations :
 cat(n_iteration)
 ```
 
+Number of simulated weeks :
+```{r print_number_of_simulated_weeks, echo=FALSE, eval = TRUE}
+
+n_weeks <- sum(sapply(1:n_iteration, FUN = function(i){length(x$iterations[[i]]$weeks) * length(x$iterations[[i]]$mc_years)}))
+
+cat(n_weeks)
+```
+
+
 Iteration with the (first) best solution :
 ```{r print_iteration_best, echo=FALSE, eval = TRUE}
 cat(min(best_solutions))
@@ -140,7 +149,15 @@ costs$investment_costs <- x$investment_costs
 costs$operation_costs <- x$operation_costs
 costs$best_bound  <-  x$under_estimator
 
-min_1_n <- function(n, vect){return(min(vect[1:n], na.rm = TRUE))}
+min_1_n <- function(n, vect)
+{
+  if(!all(is.na(vect[1:n])))
+  {
+    return(min(vect[1:n], na.rm = TRUE))
+  }
+  else{return(NA)}
+}
+
 costs$best_solution_until_now <- sapply(1:n_iteration, min_1_n, vect = x$overall_costs)
 
 # plot (ov_cost, best_bound, best_sol) = f(it)

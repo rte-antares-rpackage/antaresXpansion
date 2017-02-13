@@ -108,7 +108,7 @@ week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
       current_it$mc_years <- converted$mc_years
       if(current_it$cut_type == "yearly")
       {
-        current_it$mc_years <- mc_years
+        current_it$weeks <- weeks
       }
       current_it$need_full <- FALSE
       return(current_it)
@@ -171,7 +171,7 @@ week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
       current_it$mc_years <- converted$mc_years
       if(current_it$cut_type == "yearly")
       {
-        current_it$mc_years <- mc_years
+        current_it$weeks <- weeks
       }
       current_it$need_full <- FALSE
       return(current_it)

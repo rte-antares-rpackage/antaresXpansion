@@ -94,11 +94,11 @@ initiate_master <- function(candidates = read_candidates(opts), exp_options = re
   }
   write(script, file = paste0(tmp_folder, "/", in_out_files$candidates))
   
-  # 4 - in_options.txt
-  if(exp_options$master == "relaxed")
-  {
-    write("option relax_integrality 1;", file = paste0(tmp_folder, "/", in_out_files$options))
-  }
+  # 4 - in_options.txt (has been shifted to function solve)
+  #if(exp_options$master == "relaxed")
+  #{
+  #  write("option relax_integrality 1;", file = paste0(tmp_folder, "/", in_out_files$options))
+  #}
 }
 
 
@@ -117,9 +117,19 @@ initiate_master <- function(candidates = read_candidates(opts), exp_options = re
 #' @import assertthat antaresRead
 #' @export
 #' 
-solve_master <- function(opts = simOptions())
+solve_master <- function(opts = simOptions(), relax_integrality = FALSE)
 {
   tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
+  
+  if(relax_integrality)
+  {
+    write("option relax_integrality 1;", file = paste0(tmp_folder, "/in_options.txt"))
+  }
+  else
+  {
+    write("option relax_integrality 0;", file = paste0(tmp_folder, "/in_options.txt"))
+  }
+
   
   assert_that(file.exists(paste0(tmp_folder, "/master_run.ampl")))
   assert_that(file.exists(paste0(tmp_folder, "/master_mod.ampl")))

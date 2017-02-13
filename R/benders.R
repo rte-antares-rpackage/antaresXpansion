@@ -45,6 +45,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   has_converged <- FALSE # has the benders decomposition converged ? not yet
   best_solution <- NA  # best solution identifier
   tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")   # temporary folder
+  relax_integrality <- exp_options$master %in% c("relaxed", "relaxed_then_integer")
   
   # create output structure 
   x <- list()
@@ -283,8 +284,22 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     # solve master optimisation problem (using AMPL) and read results of
     # this problem
     
+    # if option "relaxed_then_integer" has been chosen, should the integrality be relaxed ?
+    if(exp_options$master == "relaxed_then_integer" && current_it$n > 1 && relax_integrality)
+    {
+      if((min(x$overall_costs, na.rm = TRUE) - best_under_estimator) <= max(2*exp_options$optimality_gap, abs(best_under_estimator)*0.1/100)) 
+      {
+        relax_integrality <- FALSE
+        # reintialize ov.cost and op.costs (which are not admissible because computed with relaxed investments decisions)
+        x$operation_costs <- rep(NA, current_it$n)
+        x$overall_costs <- rep(NA, current_it$n)
+        
+        if (display){cat("--- Addition of integer variables into investment decisions --- \n")}
+      }
+    }
+    
     # run AMPL with system command
-    log <- solve_master(opts)
+    log <- solve_master(opts, relax_integrality)
     
     # load AMPL output
     #     - underestimator
@@ -306,11 +321,13 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     
     # if difference between the under estimator and the best solution
     # is lower than the optimality gap, then the convergence has been reached
-    
-    if( (min(x$overall_costs, na.rm = TRUE) - best_under_estimator) <= exp_options$optimality_gap ) 
+    if(!all(is.na(x$overall_costs)))
     {
-      has_converged <- TRUE
-    }
+      if( (min(x$overall_costs, na.rm = TRUE) - best_under_estimator) <= exp_options$optimality_gap ) 
+      {
+        has_converged <- TRUE
+      }
+    }  
     
     # if master problem solution didn't evolve at this (full) iteration, then the decomposition has
     # converged
@@ -326,6 +343,13 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
        current_it$need_full <- TRUE
      }
     }
+    
+    # if option relaxed_then_integer has been chosen and integer has not yet been used, convergence cannot be reached
+    if(exp_options$master == "relaxed_then_integer" && relax_integrality)
+    {
+      has_converged <- FALSE
+    }
+    
     
     # display end messages
     if(has_converged & display)
@@ -350,6 +374,9 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     {
         x$invested_capacities[[paste0("it", current_it$n)]] <- benders_sol
     }
+    
+    
+
   }
   
   

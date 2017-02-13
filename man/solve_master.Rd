@@ -4,7 +4,7 @@
 \alias{solve_master}
 \title{Solver master problem}
 \usage{
-solve_master(opts = simOptions())
+solve_master(opts = simOptions(), relax_integrality = FALSE)
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function
