@@ -34,6 +34,7 @@ read_options <- function(opts = simOptions())
   options$optimality_gap <- 0
   options$max_iteration <- Inf
   options$cut_type <- "average"
+  options$week_selection <- TRUE
     
     
   # go through every line of the file
@@ -81,6 +82,11 @@ read_options <- function(opts = simOptions())
     {
       assert_that(option_value %in% c("average", "yearly", "weekly"))
       options$cut_type <- option_value
+    }
+    else if (option_name == "week_selection")
+    {
+      assert_that(option_value %in% c("true", "false"))
+      options$week_selection <- as.logical(option_value)
     }
     else
     {

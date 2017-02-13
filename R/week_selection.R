@@ -33,6 +33,12 @@ week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
     make_full_iteration <- TRUE
   }
   
+  # if week_selection option is not activated, run all the weeks
+  if(!exp_options$week_selection)
+  {
+    make_full_iteration <- TRUE
+  }
+  
   # if full iteration was needed, run all the weeks
   if(current_it$need_full)
   {
@@ -126,7 +132,7 @@ week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
     avg_diff <- mean(diff_theta$diff)
     max_diff <- max(diff_theta$diff)
     
-    hist(diff_theta$diff)
+    
     
     # for now, really basic weight construction 
     # could further be improved

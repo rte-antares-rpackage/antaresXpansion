@@ -293,8 +293,9 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
         # reintialize ov.cost and op.costs (which are not admissible because computed with relaxed investments decisions)
         x$operation_costs <- rep(NA, current_it$n)
         x$overall_costs <- rep(NA, current_it$n)
+        current_it$need_full <- TRUE
         
-        if (display){cat("--- Addition of integer variables into investment decisions --- \n")}
+        if (display){cat("--- ADDITION of INTEGER variables into investment decisions --- \n")}
       }
     }
     
