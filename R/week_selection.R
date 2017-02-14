@@ -122,6 +122,7 @@ week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
   }
   
   # look at the differences between thetas at two consecutives iterations
+  if(current_it$n >= 3)
   {
     # compute the difference between two iterations
     diff_theta <- merge(x = filter(theta, it == (current_it$n - 1)),
@@ -182,6 +183,16 @@ week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
       current_it$need_full <- FALSE
       return(current_it)
     }
+  }
+  
+  # if none of the previous condition is fullfilled, by default we go for a complete iteration
+  {
+    current_it$full <- TRUE
+    current_it$weeks <- weeks
+    current_it$mc_years <- mc_years
+    current_it$need_full <- FALSE
+    current_it$last_full <- current_it$n
+    return(current_it)
   }
   
 }
