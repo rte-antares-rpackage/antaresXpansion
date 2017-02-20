@@ -35,7 +35,7 @@ read_options <- function(opts = simOptions())
   options$max_iteration <- Inf
   options$cut_type <- "average"
   options$week_selection <- TRUE
-    
+  options$relaxed_optimality_gap <- 1000000 # 1 million euros
     
   # go through every line of the file
   for(line in 1:length(param_data))
@@ -87,6 +87,11 @@ read_options <- function(opts = simOptions())
     {
       assert_that(option_value %in% c("true", "false"))
       options$week_selection <- as.logical(option_value)
+    }
+    else if (option_name == "relaxed_optimality_gap")
+    {
+      assert_that(!is.na(as.numeric(option_value)))
+      options$relaxed_optimality_gap <- round(as.numeric(option_value))
     }
     else
     {

@@ -287,7 +287,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     # if option "relaxed_then_integer" has been chosen, should the integrality be relaxed ?
     if(exp_options$master == "relaxed_then_integer" && current_it$n > 1 && relax_integrality)
     {
-      if((min(x$overall_costs, na.rm = TRUE) - best_under_estimator) <= max(2*exp_options$optimality_gap, abs(best_under_estimator)*0.1/100)) 
+      if((min(x$overall_costs, na.rm = TRUE) - best_under_estimator) <= max(2*exp_options$optimality_gap, exp_options$relaxed_optimality_gap) )
       {
         relax_integrality <- FALSE
         # reintialize ov.cost and op.costs (which are not admissible because computed with relaxed investments decisions)
