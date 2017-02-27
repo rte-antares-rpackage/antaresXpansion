@@ -28,11 +28,10 @@ The user of the package defines investiment candidates. Each investment candidat
 * __name__: name of the investment candidate 
 * __link__: link whose capacity will be invested
 * __annual cost per MW__: investment cost, per year and per MW
-* __unit size__: size, in MW, of an investment (e.g. one group of 300 MW)
+* __unit size__: size, in MW, of an investment unit (e.g. one group of 300 MW)
 * __maximum units__: maximum number of units which can be built
 
-
-Concretely, the investiment decision will affect only the capacity of the ANTARES' links. Investing in interconnections can be made directly with the package, while investing in generation capacity or storage capacity can be made using the so-called concept of "virtual nodes"" with ANTARES.
+Concretely, the investiment decision will affect only the capacity of the ANTARES' links. Investing in interconnections can be made directly with the package, while investing in generation capacity or storage capacity can be made using the so-called concept of "virtual nodes" with ANTARES.
 
 The definition of all the investment candidates is given in a new input file, located in the user folder of the study: `./user/expansion/candidates.ini`. The syntax used within this file is illustrated in the example below.
 
@@ -46,7 +45,7 @@ The invested semi-base generation in area 1 is shifted in the "virtual node" inv
 
 The `candidates.ini` file for this example will be the following one:
 
-```r
+```txt
 [1]
 name = semibase
 link = area1 - invest_semibase
@@ -61,6 +60,11 @@ annual-cost-per-mw = 3000
 unit-size = 500
 max-units = 4
 ```
+
+#### Distributed generation
+
+For the case of distributed generation and storage, the investment variables can be *continuous*, without steps of several MW. In that case, the properties `unit-size`and `max-units`can be replaced by the property `max-investment`, and the invested capacity will be able to take any real value between `0` and `max-investment` (in MW).
+
 
 ## Method and settings
 

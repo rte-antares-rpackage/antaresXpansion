@@ -51,7 +51,8 @@ read_candidates <- function(opts = simOptions())
     candidate$unit_size <- 0
     candidate$max_unit <- 0
     candidate$max_invest <- 0
-    
+    candidate$relaxed <- FALSE
+      
     # read candidate characteristics
     for(line in (index[pr]+1):(index[pr+1]-1))
     {
@@ -100,15 +101,32 @@ read_candidates <- function(opts = simOptions())
         assert_that(!is.na(as.numeric(option_value)))
         candidate$unit_size <- as.numeric(option_value)
       }
+      else if (option_name == "max-investment")
+      {
+        assert_that(!is.na(as.numeric(option_value)))
+        candidate$max_invest <- as.numeric(option_value)
+        candidate$relaxed <- TRUE
+      }
       else
       {
         warning(paste0("Unknown candidate characteristic : ", option_name))
       }
     }
     
-    # update max_invest and do not add the candidate the to the list if its value equals 0
-    candidate$max_invest <- candidate$max_unit * candidate$unit_size
+    # update max_invest, max_units and unit_size to fil with all options
+    if(!candidate$relaxed)
+    {
+      candidate$max_invest <- candidate$max_unit * candidate$unit_size
+    }
+    if(candidate$relaxed)
+    {
+      candidate$unit_size <- 1
+      candidate$max_unit <-  candidate$max_invest
+    }
+    
+    #  do not add the candidate the to the list if its max possible capacity equals 0
     if(candidate$max_invest == 0){next}
+      
     
     # check that candidate is valid 
     assert_that(candidate$unit_size >= 0)

@@ -86,7 +86,11 @@ initiate_master <- function(candidates = read_candidates(opts), exp_options = re
   script <- ""
   for(i in 1:length(candidates))
   {
-    script <- paste0(script, candidates[[i]]$name, " ", candidates[[i]]$cost, " ", candidates[[i]]$unit_size, " ", candidates[[i]]$max_unit)
+    script <- paste0(script, candidates[[i]]$name, " ", 
+                     candidates[[i]]$cost, " ", 
+                     candidates[[i]]$unit_size, " ", 
+                     candidates[[i]]$max_unit, " ",
+                     tolower(as.character(candidates[[i]]$relaxed)))
     if(i != length(candidates))
     {
       script <- paste0(script, "\n")

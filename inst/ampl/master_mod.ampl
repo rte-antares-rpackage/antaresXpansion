@@ -43,6 +43,7 @@ set WEEKLY_CUT within {ITERATION, YEAR, WEEK} ;
 param c_inv{INV_CANDIDATE};      	# investment costs 
 param unit_size{INV_CANDIDATE};  	# unit of each investment step
 param max_unit{INV_CANDIDATE};	 	# max number of units which can be invested
+param relaxed{INV_CANDIDATE} symbolic ;	  # (true or false) is the investment made continuously, or with steps ?
 
 param z0{ITERATION, INV_CANDIDATE} ;# invested capacity of each candidates for the given iteratoin
 
@@ -65,7 +66,7 @@ param prob{y in YEAR} := 1/card(YEAR) ; 	# probability of occurence of each MC y
 #--- VARIABLES ----
 #------------------
 
-var Invested_capacity{INV_CANDIDATE};       # capacity invested
+var Invested_capacity{INV_CANDIDATE} >= 0;       # capacity invested
 var N_invested{INV_CANDIDATE} integer >=0;  # number of units invested
 
 var Theta{YEAR, WEEK};
@@ -79,8 +80,10 @@ var Theta{YEAR, WEEK};
 minimize master : sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) ;
 
 # description of invested capacity :
-subject to bounds_on_invested_capacity{z in INV_CANDIDATE} : N_invested[z] <= max_unit[z];
-subject to integer_constraint{z in INV_CANDIDATE} : Invested_capacity[z] = unit_size[z] * N_invested[z];		 
+subject to bounds_on_invested_capacity_relaxed{z in INV_CANDIDATE : relaxed[z] == "true"} : Invested_capacity[z] <= max_unit[z] * unit_size[z]; 
+		 
+subject to bounds_on_invested_capacity_integer{z in INV_CANDIDATE : relaxed[z] != "true"} : N_invested[z] <= max_unit[z];
+subject to integer_constraint{z in INV_CANDIDATE : relaxed[z] != "true"} : Invested_capacity[z] = unit_size[z] * N_invested[z];		 
 
 # bender's cut :
 subject to cut_avg{c in AVG_CUT} : sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) >=   c0_avg[c] - sum{z in INV_CANDIDATE}(lambda_avg[c,z] * (Invested_capacity[z] - z0[c,z])) ;

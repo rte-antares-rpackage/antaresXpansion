@@ -24,7 +24,7 @@ param z0 := include in_z0.txt ;
 
 
 #investment candidates description
-param : INV_CANDIDATE : c_inv  unit_size max_unit := include in_candidates.txt ;
+param : INV_CANDIDATE : c_inv  unit_size max_unit relaxed := include in_candidates.txt ;
 
 #bender cuts 
 param : AVG_CUT : c0_avg := include in_avgcuts.txt ;

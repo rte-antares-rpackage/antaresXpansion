@@ -36,7 +36,7 @@ read_options <- function(opts = simOptions())
   options$cut_type <- "average"
   options$week_selection <- TRUE
   options$relaxed_optimality_gap <- 1000000 # 1 million euros
-    
+
   # go through every line of the file
   for(line in 1:length(param_data))
   {
