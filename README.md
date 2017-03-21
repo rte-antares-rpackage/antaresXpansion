@@ -21,7 +21,7 @@ The investment decisions are optimized by running ANTARES' simulations iterative
 ## Definition of investment candidates
 
 
-#### Concept
+### Concept
 
 The user of the package defines investiment candidates. Each investment candidate is characterized with the following properties:
 
@@ -35,7 +35,7 @@ Concretely, the investiment decision will affect only the capacity of the ANTARE
 
 The definition of all the investment candidates is given in a new input file, located in the user folder of the study: `./user/expansion/candidates.ini`. The syntax used within this file is illustrated in the example below.
 
-#### Example
+### Example
 
 An example with two investments candidates, one in semi-base generation and one in network capacity, is given below.
 
@@ -61,14 +61,14 @@ unit-size = 500
 max-units = 4
 ```
 
-#### Distributed generation
+### Distributed generation
 
 For the case of distributed generation and storage, the investment variables can be *continuous*, without steps of several MW. In that case, the properties `unit-size`and `max-units`can be replaced by the property `max-investment`, and the invested capacity will be able to take any real value between `0` and `max-investment` (in MW).
 
 
 ## Method and settings
 
-#### Benders decomposition
+### Benders decomposition
 
 The method used to perform the optimal expansion is a __benders decomposition__ in which:
 
@@ -81,7 +81,7 @@ The objective function which is minimized, is the sum of the expected annual ope
 Concretely, the package will run ANTARES iteratively. Depending on the number of candidates, the convergence to the optimal solution can be quite long (several hundreds iterations, and so several hundreds ANTARES' simulations). Some algorithmic settings are however available and propose different tradeoffs between the accuracy of the solution and the computation time. 
 
 
-#### Settings
+### Settings
 
 The different settings can be modified by the user of the package. All the settings are saved in a file `settings.ini` located in the foler `user/expansion/`. 
 
@@ -102,7 +102,7 @@ optimality_gap = 0
 Note that the optimality gap can also be given relatively to be best found solution by entering a `%` after the numeric value of the setting. 
 
 
-#### Which settings should I use for my expansion problem ?
+### Which settings should I use for my expansion problem ?
 
 
 

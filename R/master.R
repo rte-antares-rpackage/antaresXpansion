@@ -115,7 +115,9 @@ initiate_master <- function(candidates = read_candidates(opts), exp_options = re
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
-#'
+#' @param relax_integrality
+#'   logical, indicating whether (TRUE) or not (FALSE) the integer variables
+#'   should be relaxed
 #' @return This function does not return anything.
 #' 
 #' @import assertthat antaresRead

@@ -9,6 +9,9 @@ solve_master(opts = simOptions(), relax_integrality = FALSE)
 \arguments{
 \item{opts}{list of simulation parameters returned by the function
 \code{antaresRead::setSimulationPath}}
+
+\item{relax_integrality}{logical, indicating whether (TRUE) or not (FALSE) the integer variables
+should be relaxed}
 }
 \value{
 This function does not return anything.

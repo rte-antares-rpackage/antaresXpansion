@@ -19,6 +19,7 @@
 #' updated current iteration characteristics
 #' 
 #' @import assertthat dplyr
+# @importFrom dplyr 
 #' 
 week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
 {

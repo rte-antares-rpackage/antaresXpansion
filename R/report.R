@@ -49,7 +49,7 @@ report <- function(benders_out = "last", file = default_report_file(opts), opts 
 #' @return 
 #' name of the first area that the link connects
 #' 
-#' @import lubridate
+#' @importFrom lubridate now
 #'                                       
 default_report_file <- function(opts = simOptions())
 {
@@ -61,5 +61,5 @@ default_report_file <- function(opts = simOptions())
   }
   
   # return default file name
-  paste0(simOptions()$studyPath, "/user/expansion/report/" , as.character.Date(now(), format = "%Y%m%d-%H%M") ,"_report.html") 
+  paste0(simOptions()$studyPath, "/user/expansion/report/" , as.character.Date(lubridate::now(), format = "%Y%m%d-%H%M") ,"_report.html") 
 }
