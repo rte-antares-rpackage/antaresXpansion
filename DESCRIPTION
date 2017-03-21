@@ -14,5 +14,6 @@ Depends:
     assertthat,
     lubridate,
     rmarkdown,
-    dplyr
+    dplyr,
+    data.table
 RoxygenNote: 5.0.1

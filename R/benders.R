@@ -45,7 +45,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   has_converged <- FALSE # has the benders decomposition converged ? not yet
   best_solution <- NA  # best solution identifier
   tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")   # temporary folder
-  relax_integrality <- exp_options$master %in% c("relaxed", "relaxed_then_integer")
+  relax_integrality <- exp_options$master %in% c("relaxed", "integer")
   
   # create output structure 
   x <- list()
@@ -67,10 +67,19 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   current_it$need_full <- FALSE # is a complete iteration needed for next step ?
   current_it$last_full <- 1 # last iteration with full simulation
   
+  # prepare cuts tables
+  # cuts <- list()
+  # cuts$avg <- data.table(name = character(), candidate = character(), lambda = double())
+  # cuts$yearly <- data.table(name = character(), mc_year = integer(), candidate = character(), lambda = double())
+  # cuts$weekly <- data.table(name = character(), mc_year = integer(), week = integer(), candidate = character(), lambda = double())
+  # cuts$avg_cost <- data.table(name = character(), cost = double())
+  # cuts$yearly_cost <- data.table(name = character(), mc_year = integer(), cost = double())
+  # cuts$weekly_cost <- data.table(name = character(), mc_year = integer(), week = integer(), cost = double())
+  # 
+
   # set initial value to each investment candidate (here put to max_invest/2)
   x$invested_capacities <- data.frame( it1 = sapply(candidates, FUN = function(c){c$max_invest/2}))
   row.names(x$invested_capacities) <- sapply(candidates, FUN = function(c){c$name})
-  
   
   
   
@@ -284,8 +293,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     # solve master optimisation problem (using AMPL) and read results of
     # this problem
     
-    # if option "relaxed_then_integer" has been chosen, should the integrality be relaxed ?
-    if(exp_options$master == "relaxed_then_integer" && current_it$n > 1 && relax_integrality)
+    # if option "integer" has been chosen, should the integrality be added ?
+    if(exp_options$master == "integer" && current_it$n > 1 && relax_integrality)
     {
       if((min(x$overall_costs, na.rm = TRUE) - best_under_estimator) <= max(2*exp_options$optimality_gap, exp_options$relaxed_optimality_gap) )
       {
@@ -345,8 +354,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
      }
     }
     
-    # if option relaxed_then_integer has been chosen and integer has not yet been used, convergence cannot be reached
-    if(exp_options$master == "relaxed_then_integer" && relax_integrality)
+    # if option integer has been chosen and integer has not yet been used, convergence cannot be reached
+    if(exp_options$master == "integer" && relax_integrality)
     {
       has_converged <- FALSE
     }
