@@ -99,6 +99,7 @@ uc_type = relaxed_fast
 master = integer
 optimality_gap = 0
 ```
+Note that the optimality gap can also be given relatively to be best found solution by entering a `%` after the numeric value of the setting. 
 
 
 #### Which settings should I use for my expansion problem ?

@@ -35,7 +35,7 @@ read_options <- function(opts = simOptions())
   options$max_iteration <- Inf
   options$cut_type <- "average"
   options$week_selection <- TRUE
-  options$relaxed_optimality_gap <- 1000000 # 1 million euros
+  options$relaxed_optimality_gap <- "0.01%"
 
   # go through every line of the file
   for(line in 1:length(param_data))
@@ -70,8 +70,21 @@ read_options <- function(opts = simOptions())
     }
     else if (option_name == "optimality_gap")
     {
-      assert_that(!is.na(as.numeric(option_value)))
-      options$optimality_gap <- as.numeric(option_value)
+      # if the value is numeric, it is the optimality gap in euros
+      if (!is.na(suppressWarnings(as.numeric(option_value)))) 
+      {
+        options$optimality_gap <- as.numeric(option_value)
+
+      }
+      # else, the optimality gap is in % of the best found solution
+      else
+      {
+        option_value <- gsub(" ", "", option_value, fixed = TRUE)
+        assert_that(grepl("%$", option_value))
+        option_value_bis <- gsub("%$", "", option_value) 
+        assert_that(!is.na(as.numeric(option_value_bis)))
+        options$optimality_gap <- option_value
+      }
     }
     else if (option_name == "max_iteration")
     {
@@ -90,8 +103,22 @@ read_options <- function(opts = simOptions())
     }
     else if (option_name == "relaxed_optimality_gap")
     {
-      assert_that(!is.na(as.numeric(option_value)))
-      options$relaxed_optimality_gap <- round(as.numeric(option_value))
+      # if the value is numeric, it is the optimality gap in euros
+      if (!is.na(suppressWarnings(as.numeric(option_value)))) 
+      {
+        options$relaxed_optimality_gap <- as.numeric(option_value)
+        
+      }
+      # else, the optimality gap is in % of the best found solution
+      else
+      {
+        option_value <- gsub(" ", "", option_value, fixed = TRUE)
+        assert_that(grepl("%$", option_value))
+        option_value_bis <- gsub("%$", "", option_value) 
+        assert_that(!is.na(as.numeric(option_value_bis)))
+        options$relaxed_optimality_gap <- option_value
+      }
+      
     }
     else
     {

@@ -296,7 +296,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     # if option "integer" has been chosen, should the integrality be added ?
     if(exp_options$master == "integer" && current_it$n > 1 && relax_integrality)
     {
-      if((min(x$overall_costs, na.rm = TRUE) - best_under_estimator) <= max(2*exp_options$optimality_gap, exp_options$relaxed_optimality_gap) )
+      if(convergence_relaxed(best_sol = min(x$overall_costs, na.rm = TRUE), best_under_estimator, exp_options))
       {
         relax_integrality <- FALSE
         # reintialize ov.cost and op.costs (which are not admissible because computed with relaxed investments decisions)
@@ -333,7 +333,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     # is lower than the optimality gap, then the convergence has been reached
     if(!all(is.na(x$overall_costs)))
     {
-      if( (min(x$overall_costs, na.rm = TRUE) - best_under_estimator) <= exp_options$optimality_gap ) 
+      if(convergence(best_sol = min(x$overall_costs, na.rm = TRUE), best_under_estimator, exp_options)) 
       {
         has_converged <- TRUE
       }
