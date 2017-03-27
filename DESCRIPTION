@@ -17,3 +17,6 @@ Depends:
     dplyr,
     data.table
 RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

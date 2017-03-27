@@ -1,7 +1,17 @@
+---
+title: "Read me"
+author: "Baptiste Seguinot"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Read Me}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 # antares-rpackageXpansion
 
 
-![](vignettes/antareslogo.png)
+![](antareslogo.png)
 
 This package works along with RTE's adequacy software ANTARES : https://antares.rte-france.com/
 
@@ -39,7 +49,7 @@ The definition of all the investment candidates is given in a new input file, lo
 
 An example with two investments candidates, one in semi-base generation and one in network capacity, is given below.
 
-![](vignettes/example2nodes.png)
+![](example2nodes.png)
 
 The invested semi-base generation in area 1 is shifted in the "virtual node" invest_semibase. Within the optimization process, the capacity of the link between area 1 and invest_semibase will be updated with the new invested capacity.
 
