@@ -197,7 +197,17 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     # simulation - with all weeks and all mc - has been run)
     if(current_it$full)
     {
-      op_cost <-  sum(as.numeric(output_area_s$"OV. COST"))  + sum(as.numeric(output_link_s$"HURDLE COST")) 
+      if (exp_options$uc_type == "relaxed_fast")
+      {
+        # in that case, non-linear cost has to be removed because they are computed in a post-processing and are not
+        # part of the ANTARES optimization
+        op_cost <-  sum(as.numeric(output_area_s$"OV. COST"))  + sum(as.numeric(output_link_s$"HURDLE COST")) -
+                    sum(as.numeric(output_area_s$"NP COST"))
+      }
+      else
+      {
+        op_cost <-  sum(as.numeric(output_area_s$"OV. COST"))  + sum(as.numeric(output_link_s$"HURDLE COST")) 
+      }
       inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * x$invested_capacities[c$name, current_it$id]}))
       inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation
       ov_cost <-  op_cost + inv_cost
@@ -274,16 +284,16 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     if(current_it$cut_type == "average")
     {
       assert_that(current_it$full)
-      update_average_cuts(current_it, candidates, output_link_s, ov_cost, n_w, tmp_folder)
+      update_average_cuts(current_it, candidates, output_link_s, ov_cost, n_w, tmp_folder, exp_options)
     }
     if(current_it$cut_type == "yearly")
     {
       assert_that(all(current_it$weeks == weeks))
-      update_yearly_cuts(current_it,candidates, output_area_y, output_link_y, inv_cost, n_w, tmp_folder)
+      update_yearly_cuts(current_it,candidates, output_area_y, output_link_y, inv_cost, n_w, tmp_folder, exp_options)
     }
     if(current_it$cut_type == "weekly")
     {
-      update_weekly_cuts(current_it, candidates, output_area_w, output_link_w, inv_cost, tmp_folder)
+      update_weekly_cuts(current_it, candidates, output_area_w, output_link_w, inv_cost, tmp_folder, exp_options)
     }
     
     

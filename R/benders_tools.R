@@ -77,12 +77,15 @@ set_antares_options <- function(benders_options, opts = simOptions())
 #'   number of weeks per year
 #' @param tmp_folder
 #'   temporary folder in which to write the files
+#' @param benders_options
+#'   list of benders decomposition options, as returned by
+#'   \code{\link{read_options}}.
 #'   
 #' @return nothing
 #' 
 #' @import antaresRead
 #' 
-update_average_cuts <- function(current_it, candidates, output_link_s, ov_cost, n_w, tmp_folder)
+update_average_cuts <- function(current_it, candidates, output_link_s, ov_cost, n_w, tmp_folder, benders_options)
 {
   n_candidates <- length(candidates)
   
@@ -121,13 +124,15 @@ update_average_cuts <- function(current_it, candidates, output_link_s, ov_cost, 
 #'   number of weeks per year
 #' @param tmp_folder
 #'   temporary folder in which to write the files
-
+#' @param benders_options
+#'   list of benders decomposition options, as returned by
+#'   \code{\link{read_options}}.
 #'   
 #' @return nothing
 #' 
 #' @import antaresRead
 #' 
-update_yearly_cuts <- function(current_it,candidates, output_area_y, output_link_y, inv_cost, n_w, tmp_folder)
+update_yearly_cuts <- function(current_it,candidates, output_area_y, output_link_y, inv_cost, n_w, tmp_folder, benders_options)
 {
   # compute a few intermediate variables
   n_candidates <- length(candidates)
@@ -140,10 +145,25 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y, output_link
   # for every mc years and every week
   for(y in current_it$mc_years)
   {
-    script_cost <- paste0(script_cost, current_it$id, " ", y , " ",
-                          sum(as.numeric(subset(output_area_y, mcYear == y)$"OV. COST")) +
-                            sum(as.numeric(subset(output_link_y, mcYear == y)$"HURDLE COST")) +
-                            inv_cost)
+    if(benders_options$uc_type == "relaxed_fast")
+    {
+      # in that case, non-linear cost has to be removed because they are computed in a post-processing and are not
+      # part of the ANTARES optimization  
+      y_cost <- sum(as.numeric(subset(output_area_y, mcYear == y)$"OV. COST")) +
+          sum(as.numeric(subset(output_link_y, mcYear == y)$"HURDLE COST")) -
+          sum(as.numeric(subset(output_area_y, mcYear == y)$"NP COST")) +
+          inv_cost
+    }
+    else
+    {
+      y_cost <- sum(as.numeric(subset(output_area_y, mcYear == y)$"OV. COST")) +
+          sum(as.numeric(subset(output_link_y, mcYear == y)$"HURDLE COST")) +
+          inv_cost
+    }
+    
+    
+    script_cost <- paste0(script_cost, current_it$id, " ", y , " ",y_cost)
+    
     if (y != last_y) {script_cost <- paste0(script_cost, "\n")}
     
     for(c in 1:n_candidates)
@@ -181,12 +201,15 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y, output_link
 #'   investments costs of this iteration
 #' @param tmp_folder
 #'   temporary folder in which to write the files
+#' @param benders_options
+#'   list of benders decomposition options, as returned by
+#'   \code{\link{read_options}}.
 #'   
 #' @return nothing
 #' 
 #' @import antaresRead
 #' 
-update_weekly_cuts <- function(current_it, candidates, output_area_w, output_link_w, inv_cost, tmp_folder)
+update_weekly_cuts <- function(current_it, candidates, output_area_w, output_link_w, inv_cost, tmp_folder, benders_options)
 {
   
   # compute a few intermediate variables
@@ -204,10 +227,28 @@ update_weekly_cuts <- function(current_it, candidates, output_area_w, output_lin
     for(w in current_it$weeks)
       
     {
-      script_cost <- paste0(script_cost, current_it$id, " ", y , " ", w, " ", 
-                            sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"OV. COST")) +
-                            sum(as.numeric(subset(output_link_w, mcYear == y & timeId == w)$"HURDLE COST")) +
-                            inv_cost/52)
+      
+      if(benders_options$uc_type == "relaxed_fast")
+      {
+        # in that case, non-linear cost has to be removed because they are computed in a post-processing and are not
+        # part of the ANTARES optimization  
+        w_cost <- sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"OV. COST")) +
+            sum(as.numeric(subset(output_link_w, mcYear == y & timeId == w)$"HURDLE COST")) -
+            sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"NP COST")) +
+            inv_cost/52
+      }
+      else
+      {
+        w_cost <- sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"OV. COST")) +
+            sum(as.numeric(subset(output_link_w, mcYear == y & timeId == w)$"HURDLE COST")) +
+            inv_cost/52
+      }
+      
+      script_cost <- paste0(script_cost, current_it$id, " ", y , " ", w, " ", w_cost)
+      
+      
+      
+      
       if (y != last_y || w != last_w) {script_cost <- paste0(script_cost, "\n")}
       
       
