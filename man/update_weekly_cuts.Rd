@@ -7,7 +7,7 @@ Create files in_weeklyrentability.txt and in_weeklycuts.txt which
 will be later read by AMPL as input of the master problem}
 \usage{
 update_weekly_cuts(current_it, candidates, output_area_w, output_link_w,
-  inv_cost, tmp_folder)
+  inv_cost, tmp_folder, benders_options)
 }
 \arguments{
 \item{current_it}{list of current iteration characteristics}
@@ -22,6 +22,9 @@ update_weekly_cuts(current_it, candidates, output_area_w, output_link_w,
 \item{inv_cost}{investments costs of this iteration}
 
 \item{tmp_folder}{temporary folder in which to write the files}
+
+\item{benders_options}{list of benders decomposition options, as returned by
+\code{\link{read_options}}.}
 }
 \value{
 nothing

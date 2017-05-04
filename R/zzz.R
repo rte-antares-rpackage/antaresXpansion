@@ -10,3 +10,4 @@ globalVariables(c("theta",
                   "weight", 
                   "sum_over_week", 
                   "sum_over_year"))
+
