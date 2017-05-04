@@ -347,22 +347,22 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
       {
         has_converged <- TRUE
       }
+      
+      # if master problem solution didn't evolve at this (full) iteration, then the decomposition has
+      # converged
+      
+      if(all(abs(benders_sol - x$invested_capacities[[current_it$id]]) <= 0.1) )
+      {
+        if(current_it$full)
+        { 
+          has_converged <- TRUE  
+        }
+        else
+        {
+          current_it$need_full <- TRUE
+        }
+      }
     }  
-    
-    # if master problem solution didn't evolve at this (full) iteration, then the decomposition has
-    # converged
-    
-    if(all(abs(benders_sol - x$invested_capacities[[current_it$id]]) <= 0.1) )
-    {
-     if(current_it$full)
-     { 
-       has_converged <- TRUE  
-     }
-     else
-     {
-       current_it$need_full <- TRUE
-     }
-    }
     
     # if option integer has been chosen and integer has not yet been used, convergence cannot be reached
     if(exp_options$master == "integer" && relax_integrality)
