@@ -21,7 +21,7 @@
 #' 
 benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOptions())
 {
-  # ---- 0. initiale benders iteration ----
+  # ---- 0. initialize benders iteration ----
   # read expansion planning options
   exp_options <- read_options(opts)
   
@@ -77,8 +77,18 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   # cuts$weekly_cost <- data.table(name = character(), mc_year = integer(), week = integer(), cost = double())
   # 
 
-  # set initial value to each investment candidate (here put to max_invest/2)
-  x$invested_capacities <- data.frame( it1 = sapply(candidates, FUN = function(c){c$max_invest/2}))
+  # set initial value to each investment candidate 
+  # (here put to closest multiple of unit-size below max_invest/2)
+  x$invested_capacities <- data.frame( it1 = sapply(candidates, FUN = function(c){
+    if(c$unit_size > 0)
+    {
+      out <- floor(c$max_invest/2/c$unit_size) * c$unit_size
+      out <- max(0, min(c$max_invest, out))
+    }
+    else
+    { out <- c$max_invest/2}
+    return(out)}))
+  
   row.names(x$invested_capacities) <- sapply(candidates, FUN = function(c){c$name})
   
   
