@@ -141,6 +141,8 @@ solve_master <- function(opts = simOptions(), relax_integrality = FALSE)
   assert_that(file.exists(paste0(tmp_folder, "/master_mod.ampl")))
   assert_that(file.exists(paste0(tmp_folder, "/master_dat.ampl")))
   
-  cmd <- paste0(substr(tmp_folder, 1, 2), " & cd ", tmp_folder, " & ampl ", tmp_folder, "/master_run.ampl")
-  shell(cmd, wait = TRUE, intern = TRUE)
+  cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & ampl "', tmp_folder, '/master_run.ampl" ')
+
+  a <- shell(cmd, wait = TRUE, intern = TRUE)
+  #cat(a)
 }
