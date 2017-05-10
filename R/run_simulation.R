@@ -33,6 +33,18 @@ run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, sho
   assert_that(file.exists(path_solver))
   assert_that(mode %in% c("economy", "adequacy", "draft"))
   
+  
+  ##Test version of antares solver
+  solver <- unlist(gsub("-solver.exe", "", path_solver))
+  solver <- strsplit(solver, "antares-")[[1]]
+  solver <- solver[[length(solver)]]
+  version_solver <- substr(solver, 1, 1)
+  version_study <- substr(opts$antaresVersion,1,1)
+  
+  if(version_solver != version_study){
+    stop(paste0("Imcompatibility between antares solver version (", version_solver, ") and study version (", version_study), ")")
+  }
+  
   #Launch simulation
   cmd <- '"%s" "%s" -n "%s" --"%s"'
   cmd <- sprintf(cmd, path_solver, opts$studyPath, name, mode)
