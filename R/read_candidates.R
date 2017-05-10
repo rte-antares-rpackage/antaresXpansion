@@ -84,6 +84,8 @@ read_candidates <- function(opts = simOptions())
       }
       else if (option_name == "link")
       {
+        option_value <- tolower(option_value)
+        if(!(option_value %in% opts$linkList)) stop("Unknown link in candidates.ini : ", option_value)
         candidate$link <- option_value
       }
       else if (option_name == "annual-cost-per-mw")
