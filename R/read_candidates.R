@@ -142,5 +142,16 @@ read_candidates <- function(opts = simOptions())
     inv[[i]] <- candidate
     i <- i + 1
   }
+  
+  # check that candidates names are unique
+  if(anyDuplicated(sapply(inv, FUN = function(c){c$name})) > 0)
+  {
+    stop("investment candidate name must be unique")
+  }
+  # check that candidates links are unique
+  if(anyDuplicated(sapply(inv, FUN = function(c){c$link})) > 0)
+  {
+    stop("investment candidate link must be unique")
+  }
   return(inv)
 }
