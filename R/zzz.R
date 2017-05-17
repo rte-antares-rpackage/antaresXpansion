@@ -9,5 +9,9 @@ globalVariables(c("theta",
                   "it.x", 
                   "weight", 
                   "sum_over_week", 
-                  "sum_over_year"))
+                  "sum_over_year",
+                  "marginal.cost",
+                  "market.bid.cost",
+                  "year",
+                  "week"))
 

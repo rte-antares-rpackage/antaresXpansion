@@ -32,6 +32,9 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   # set ANTARES study options
   set_antares_options(exp_options, opts)
   
+  # check that the study is appropriately set for the expansion problem
+  assert_that(benders_check(exp_options, opts))
+  
   # initiate text files to communicate with master problem
   # and copy AMPL file into the temporary file 
   initiate_master(candidates, exp_options, opts)
