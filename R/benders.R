@@ -28,6 +28,13 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   # read investment candidates file
   candidates <- read_candidates(opts)
   n_candidates <- length(candidates)
+  assert_that(n_candidates > 0)
+  
+  # if all investments are distributed (no integer variables), relax master problem
+  if(all(sapply(candidates, FUN = function(c){return(c$relaxed)})))
+  {
+    exp_options$master <- "relaxed"
+  }
   
   # set ANTARES study options
   set_antares_options(exp_options, opts)
