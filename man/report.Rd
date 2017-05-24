@@ -6,7 +6,7 @@
 planning}
 \usage{
 report(benders_out = "last", file = default_report_file(opts),
-  opts = simOptions())
+  opts = antaresRead::simOptions())
 }
 \arguments{
 \item{benders_out}{Output file of the benders decomposition function, as returned by

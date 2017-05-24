@@ -12,16 +12,17 @@
 #' @return 
 #' Returns a list containing the different investment candidates. 
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
 #' 
 #' 
-read_candidates <- function(opts = simOptions())
+read_candidates <- function(opts = antaresRead::simOptions())
 {
   candidates_file_name <- paste(opts$studyPath,"/user/expansion/candidates.ini",sep="")
-  assert_that(file.exists(candidates_file_name))
-  assert_that(file.info(candidates_file_name)$size !=0)
+  assertthat::assert_that(file.exists(candidates_file_name))
+  assertthat::assert_that(file.info(candidates_file_name)$size !=0)
   
   # read file
   param_data <- scan(candidates_file_name, what=character(), sep="/", quiet = TRUE)
@@ -75,7 +76,7 @@ read_candidates <- function(opts = simOptions())
       }
       else if (option_name == "candidate-type")
       {
-        assert_that(option_value %in% c("investment", "decommissioning"))
+        assertthat::assert_that(option_value %in% c("investment", "decommissioning"))
         candidate$candidate_type <- option_value
       }
       else if (option_name == "investment-type")
@@ -90,22 +91,22 @@ read_candidates <- function(opts = simOptions())
       }
       else if (option_name == "annual-cost-per-mw")
       {
-        assert_that(!is.na(as.numeric(option_value)))
+        assertthat::assert_that(!is.na(as.numeric(option_value)))
         candidate$cost <- as.numeric(option_value)
       }
       else if (option_name == "max-units")
       {
-        assert_that(!is.na(as.numeric(option_value)))
+        assertthat::assert_that(!is.na(as.numeric(option_value)))
         candidate$max_unit <- round(as.numeric(option_value))
       }
       else if (option_name == "unit-size")
       {
-        assert_that(!is.na(as.numeric(option_value)))
+        assertthat::assert_that(!is.na(as.numeric(option_value)))
         candidate$unit_size <- as.numeric(option_value)
       }
       else if (option_name == "max-investment")
       {
-        assert_that(!is.na(as.numeric(option_value)))
+        assertthat::assert_that(!is.na(as.numeric(option_value)))
         candidate$max_invest <- as.numeric(option_value)
         candidate$relaxed <- TRUE
       }
@@ -131,12 +132,12 @@ read_candidates <- function(opts = simOptions())
       
     
     # check that candidate is valid 
-    assert_that(candidate$unit_size >= 0)
-    assert_that(candidate$max_unit >= 0)
-    assert_that(candidate$max_invest >= 0)
-    assert_that(!is.na(candidate$name))
-    assert_that(!is.na(candidate$link))
-    assert_that(candidate$link %in% opts$linkList)
+    assertthat::assert_that(candidate$unit_size >= 0)
+    assertthat::assert_that(candidate$max_unit >= 0)
+    assertthat::assert_that(candidate$max_invest >= 0)
+    assertthat::assert_that(!is.na(candidate$name))
+    assertthat::assert_that(!is.na(candidate$link))
+    assertthat::assert_that(candidate$link %in% opts$linkList)
     
     # update candidate list
     inv[[i]] <- candidate

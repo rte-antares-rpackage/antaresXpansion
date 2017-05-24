@@ -13,5 +13,7 @@ globalVariables(c("theta",
                   "marginal.cost",
                   "market.bid.cost",
                   "year",
-                  "week"))
+                  "week",
+                  "area",
+                  "cluster"))
 

@@ -5,7 +5,7 @@
 \title{Set period on which we want the ANTARES simulation to run.
 Update "first day" and "last day" parameters of the ANTARES study.}
 \usage{
-set_simulation_period(weeks, opts = simOptions())
+set_simulation_period(weeks, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{weeks}{vector of weeks identiers which should be simulated}

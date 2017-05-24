@@ -4,7 +4,7 @@
 \alias{filter_output_links}
 \title{Modify the filters on the output of the links}
 \usage{
-filter_output_links(links, filter, type, opts = simOptions())
+filter_output_links(links, filter, type, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{links}{Link, or vector of links whose filter will be changed.}

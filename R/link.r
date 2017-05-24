@@ -46,12 +46,13 @@ to <- function(link_name)
 #' The function does not return anything. It is  used to modify the input of an 
 #' ANTARES study
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
 #' 
 
-enable_hurdle_costs <- function(link_names, enable = TRUE, opts = simOptions())
+enable_hurdle_costs <- function(link_names, enable = TRUE, opts = antaresRead::simOptions())
 {
   
   for(link in link_names)
@@ -60,15 +61,15 @@ enable_hurdle_costs <- function(link_names, enable = TRUE, opts = simOptions())
     link_file_name <- paste(opts$inputPath,"/links/" ,from(link),"/properties.ini",sep="")
     
     # check that this file exists
-    assert_that(file.exists(link_file_name))
-    assert_that(file.info(link_file_name)$size != 0)
+    assertthat::assert_that(file.exists(link_file_name))
+    assertthat::assert_that(file.info(link_file_name)$size != 0)
 
     # load the file
     param_data <-scan(link_file_name, what=character(), sep="/", quiet = TRUE)
        
     # get the line which correspond to the link we look at
     index = grep(paste("[",to(link),"]",sep=""),param_data,  fixed = TRUE)
-    assert_that(length(index)==1)
+    assertthat::assert_that(length(index)==1)
 
     # Iterate on the following lines until we find the one we should be modified    
     change_property <- FALSE  
@@ -133,11 +134,13 @@ enable_hurdle_costs <- function(link_names, enable = TRUE, opts = simOptions())
 #' The function does not return anything. It is  used to modify the input of an 
 #' ANTARES study
 #' 
-#' @import assertthat antaresRead utils
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
+#' @importFrom utils write.table
 #' @export
 #' 
 #' 
-update_link <- function(link_name, property_name, new_value, opts = simOptions())
+update_link <- function(link_name, property_name, new_value, opts = antaresRead::simOptions())
 {
   # check which column have to be updated
   n_col <- ifelse(property_name=='direct_capacity', 1,
@@ -158,7 +161,7 @@ update_link <- function(link_name, property_name, new_value, opts = simOptions()
   }
   
   # duplicate value if its a scalar
-  assert_that(length(new_value) == 8760 || length(new_value) == 1)
+  assertthat::assert_that(length(new_value) == 8760 || length(new_value) == 1)
   if (length(new_value) == 1)
   {
     new_value = rep(new_value,8760)
@@ -168,7 +171,7 @@ update_link <- function(link_name, property_name, new_value, opts = simOptions()
   link_file_name <- paste(opts$inputPath,"/links/" ,from(link_name),"/", to(link_name), ".txt",sep="")
   
   # check that this file exists
-  assert_that(file.exists(link_file_name))
+  assertthat::assert_that(file.exists(link_file_name))
   
   if (file.info(link_file_name)$size != 0)
   {
@@ -177,7 +180,7 @@ update_link <- function(link_name, property_name, new_value, opts = simOptions()
               
     # update column with new value and write it 
     param_data[,n_col] = new_value
-    write.table(param_data, link_file_name, sep="\t", col.names = FALSE, row.names = FALSE)
+    utils::write.table(param_data, link_file_name, sep="\t", col.names = FALSE, row.names = FALSE)
   }
   else if (file.info(link_file_name)$size ==0)
   {
@@ -189,6 +192,6 @@ update_link <- function(link_name, property_name, new_value, opts = simOptions()
 
     # update column with new value and write it 
     param_data[,n_col] = new_value
-    write.table(param_data, link_file_name, sep="\t", col.names = FALSE, row.names = FALSE)
+    utils::write.table(param_data, link_file_name, sep="\t", col.names = FALSE, row.names = FALSE)
   }
 }

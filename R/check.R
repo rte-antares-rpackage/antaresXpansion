@@ -11,11 +11,11 @@
 #'
 #' @return boolean, indicating whether or not the test are fullfilled 
 #' 
-#' @import  antaresRead
+#' @importFrom  antaresRead simOptions readClusterDesc
 #' @export
 #' 
 #' 
-benders_check <- function(benders_options, opts)
+benders_check <- function(benders_options, opts = antaresRead::simOptions())
 {
  
   checked  <-  TRUE

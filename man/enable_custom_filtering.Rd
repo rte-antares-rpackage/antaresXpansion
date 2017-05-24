@@ -4,7 +4,7 @@
 \alias{enable_custom_filtering}
 \title{Enable or disable the custom filtering of the output}
 \usage{
-enable_custom_filtering(enable = TRUE, opts = simOptions())
+enable_custom_filtering(enable = TRUE, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{enable}{Should the custom filtering be enabled (\code{TRUE}) or disabled (\code{FALSE}) ?}

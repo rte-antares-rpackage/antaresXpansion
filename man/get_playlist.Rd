@@ -4,7 +4,7 @@
 \alias{get_playlist}
 \title{Get playlist of simulated MC years}
 \usage{
-get_playlist(opts = simOptions())
+get_playlist(opts = antaresRead::simOptions())
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function

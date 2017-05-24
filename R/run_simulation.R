@@ -23,15 +23,16 @@
 #' The function does not return anything. It is  used to launch an 
 #' ANTARES simulation
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
-run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, opts = simOptions())
+run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, opts = antaresRead::simOptions())
 {
   # a few checks
   name = tolower(name)
-  assert_that(file.exists(path_solver))
-  assert_that(mode %in% c("economy", "adequacy", "draft"))
+  assertthat::assert_that(file.exists(path_solver))
+  assertthat::assert_that(mode %in% c("economy", "adequacy", "draft"))
   
   
   ##Test version of antares solver
@@ -69,10 +70,10 @@ run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, sho
 #' identifier which are automatically added by ANTARES in the output path :
 #' yyyymmdd-hhmmxxx-name.
 #' 
-#' @import assertthat antaresRead
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
-get_whole_simulation_name <- function(name,opts = simOptions())
+get_whole_simulation_name <- function(name,opts = antaresRead::simOptions())
 {
   # read list of the output directory of the study
   list_simu = list.dirs(path=paste(opts$studyPath,"/output/",sep=""), recursive =FALSE)

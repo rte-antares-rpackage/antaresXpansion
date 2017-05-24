@@ -4,7 +4,7 @@
 \alias{read_candidates}
 \title{Read investment candidates with their characteristics}
 \usage{
-read_candidates(opts = simOptions())
+read_candidates(opts = antaresRead::simOptions())
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function

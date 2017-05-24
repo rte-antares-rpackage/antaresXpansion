@@ -5,7 +5,7 @@
 \title{Run an Antares Simulation}
 \usage{
 run_simulation(name, mode = "economy", path_solver, wait = TRUE,
-  show_output_on_console = FALSE, opts = simOptions())
+  show_output_on_console = FALSE, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{name}{Name of the simulation}

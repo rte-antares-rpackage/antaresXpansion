@@ -6,7 +6,7 @@
 as it appears in the output path,containing also the 
 date and hour identifier.}
 \usage{
-get_whole_simulation_name(name, opts = simOptions())
+get_whole_simulation_name(name, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{name}{Name of the simulation}

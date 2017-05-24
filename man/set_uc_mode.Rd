@@ -4,7 +4,7 @@
 \alias{set_uc_mode}
 \title{Set the unit-commitment mode of the ANTARES study}
 \usage{
-set_uc_mode(mode, opts = simOptions())
+set_uc_mode(mode, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{mode}{Unit-commitment mode. Must be equal to "fast", "accurate"}

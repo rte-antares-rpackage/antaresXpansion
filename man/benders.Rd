@@ -4,7 +4,8 @@
 \alias{benders}
 \title{Launch benders decomposition}
 \usage{
-benders(path_solver, display = TRUE, report = TRUE, opts = simOptions())
+benders(path_solver, display = TRUE, report = TRUE,
+  opts = antaresRead::simOptions())
 }
 \arguments{
 \item{path_solver}{Character containing the Antares Solver path}

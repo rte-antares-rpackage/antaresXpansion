@@ -16,10 +16,13 @@
 #'
 #' @return 
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions readAntares setSimulationPath
+#' @importFrom rmarkdown render
+#' @importFrom utils packageVersion
 #' @export
 #' 
-benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOptions())
+benders <- function(path_solver, display = TRUE, report = TRUE, opts = antaresRead::simOptions())
 {
   # ---- 0. initialize benders iteration ----
   # read expansion planning options
@@ -28,7 +31,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   # read investment candidates file
   candidates <- read_candidates(opts)
   n_candidates <- length(candidates)
-  assert_that(n_candidates > 0)
+  assertthat::assert_that(n_candidates > 0)
   
   # if all investments are distributed (no integer variables), relax master problem
   if(all(sapply(candidates, FUN = function(c){return(c$relaxed)})))
@@ -40,7 +43,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   set_antares_options(exp_options, opts)
   
   # check that the study is appropriately set for the expansion problem
-  assert_that(benders_check(exp_options, opts))
+  assertthat::assert_that(benders_check(exp_options, opts))
   
   # initiate text files to communicate with master problem
   # and copy AMPL file into the temporary file 
@@ -159,51 +162,51 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     run_simulation(simulation_name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, opts)
     if(display){  cat("[done] \n", sep="")}
     
-    output_antares <- setSimulationPath(paste0(opts$studyPath, "/output/", get_whole_simulation_name(simulation_name, opts)))
+    output_antares <- antaresRead::setSimulationPath(paste0(opts$studyPath, "/output/", get_whole_simulation_name(simulation_name, opts)))
     
     # read output of the simulation, for links and areas, 
     # with synthetic visions and detailed annual and weekly results
     # to avoid the sum of numeric approximations, it is advised to use the most aggregated output of ANTARES
     # (e.g. to use annual results of ANTARES instead of the sum of the weekly results)
     
-    if(packageVersion("antaresRead") > "0.14.9" )
+    if(utils::packageVersion("antaresRead") > "0.14.9" )
     {
       # weekly results
-      output_area_w = readAntares(areas = "all", links = NULL, mcYears = current_it$mc_years, 
+      output_area_w = antaresRead::readAntares(areas = "all", links = NULL, mcYears = current_it$mc_years, 
                                   timeStep = "weekly", opts = output_antares, showProgress = FALSE)
-      output_link_w = readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
+      output_link_w = antaresRead::readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
                                   timeStep = "weekly", opts = output_antares, showProgress = FALSE)
       
       # yearly results
-      output_area_y = readAntares(areas = "all", links = NULL, mcYears = current_it$mc_years, 
+      output_area_y = antaresRead::readAntares(areas = "all", links = NULL, mcYears = current_it$mc_years, 
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
-      output_link_y = readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
+      output_link_y = antaresRead::readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
       
       # synthetic results
-      output_area_s = readAntares(areas = "all", links = NULL, mcYears = NULL, 
+      output_area_s = antaresRead::readAntares(areas = "all", links = NULL, mcYears = NULL, 
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
-      output_link_s = readAntares(areas = NULL, links = "all", mcYears = NULL, 
+      output_link_s = antaresRead::readAntares(areas = NULL, links = "all", mcYears = NULL, 
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
     }
     else  # old package version with synthesis arguments
     {
       # weekly results
-      output_area_w = readAntares(areas = "all", links = NULL, synthesis = FALSE, 
+      output_area_w = antaresRead::readAntares(areas = "all", links = NULL, synthesis = FALSE, 
                                   timeStep = "weekly", opts = output_antares, showProgress = FALSE)
-      output_link_w = readAntares(areas = NULL, links = "all", synthesis = FALSE, 
+      output_link_w = antaresRead::readAntares(areas = NULL, links = "all", synthesis = FALSE, 
                                   timeStep = "weekly", opts = output_antares, showProgress = FALSE)
       
       # yearly results
-      output_area_y = readAntares(areas = "all", links = NULL, synthesis = TRUE,
+      output_area_y = antaresRead::readAntares(areas = "all", links = NULL, synthesis = TRUE,
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
-      output_link_y = readAntares(areas = NULL, links = "all", synthesis = TRUE,
+      output_link_y = antaresRead::readAntares(areas = NULL, links = "all", synthesis = TRUE,
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
       
       # synthetic results
-      output_area_s = readAntares(areas = "all", links = NULL, synthesis = TRUE,
+      output_area_s = antaresRead::readAntares(areas = "all", links = NULL, synthesis = TRUE,
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
-      output_link_s = readAntares(areas = NULL, links = "all", synthesis = TRUE,
+      output_link_s = antaresRead::readAntares(areas = NULL, links = "all", synthesis = TRUE,
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
     }
     
@@ -303,12 +306,12 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     # write costs and cuts files 
     if(current_it$cut_type == "average")
     {
-      assert_that(current_it$full)
+      assertthat::assert_that(current_it$full)
       update_average_cuts(current_it, candidates, output_link_s, ov_cost, n_w, tmp_folder, exp_options)
     }
     if(current_it$cut_type == "yearly")
     {
-      assert_that(all(current_it$weeks == weeks))
+      assertthat::assert_that(all(current_it$weeks == weeks))
       update_yearly_cuts(current_it,candidates, output_area_y, output_link_y, inv_cost, n_w, tmp_folder, exp_options)
     }
     if(current_it$cut_type == "weekly")

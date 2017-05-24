@@ -10,15 +10,16 @@
 #'
 #' @return nothing
 #' 
-#' @import antaresRead assertthat
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions getLinks getAreas
 #' @export
-set_antares_options <- function(benders_options, opts = simOptions())
+set_antares_options <- function(benders_options, opts = antaresRead::simOptions())
 {
   # 1 - set output filtering options
   enable_custom_filtering(TRUE, opts)
   enable_year_by_year(TRUE, opts)
-  filter_output_areas(areas = getAreas(opts = opts), filter = c("weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
-  filter_output_links(links = getLinks(opts = opts), filter = c("weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
+  filter_output_areas(areas = antaresRead::getAreas(opts = opts), filter = c("weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
+  filter_output_links(links = antaresRead::getLinks(opts = opts), filter = c("weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
   
   # 2 - set unit-commitment mode
   if(benders_options$uc_type == "accurate")
@@ -50,7 +51,7 @@ set_antares_options <- function(benders_options, opts = simOptions())
     day_per_month[12] <- 29
   }
   month_id <- which(month_name == opts$parameters$general$"first-month-in-year")
-  assert_that(length(month_id) == 1)
+  assertthat::assert_that(length(month_id) == 1)
   n_day <- (-sum(day_per_month[1:month_id]) + opts$parameters$general$simulation.start - 1) %% 7
   
   first_day_week <- day_name[((which(day_name == opts$parameters$general$january.1st) + n_day - 1) %% 7 ) +1]
@@ -82,8 +83,6 @@ set_antares_options <- function(benders_options, opts = simOptions())
 #'   \code{\link{read_options}}.
 #'   
 #' @return nothing
-#' 
-#' @import antaresRead
 #' 
 update_average_cuts <- function(current_it, candidates, output_link_s, ov_cost, n_w, tmp_folder, benders_options)
 {
@@ -130,7 +129,6 @@ update_average_cuts <- function(current_it, candidates, output_link_s, ov_cost, 
 #'   
 #' @return nothing
 #' 
-#' @import antaresRead
 #' 
 update_yearly_cuts <- function(current_it,candidates, output_area_y, output_link_y, inv_cost, n_w, tmp_folder, benders_options)
 {
@@ -207,7 +205,6 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y, output_link
 #'   
 #' @return nothing
 #' 
-#' @import antaresRead
 #' 
 update_weekly_cuts <- function(current_it, candidates, output_area_w, output_link_w, inv_cost, tmp_folder, benders_options)
 {
@@ -284,7 +281,7 @@ update_weekly_cuts <- function(current_it, candidates, output_area_w, output_lin
 #'   
 #' @return logical, indicating weither or not the relaxed problem has converged within the optimality gap
 #' 
-#' @import assertthat
+#' @importFrom assertthat assert_that
 #' 
 convergence_relaxed <-  function(best_sol, best_under, benders_options)
 {
@@ -312,8 +309,8 @@ convergence_relaxed <-  function(best_sol, best_under, benders_options)
   }
   
   # check that optimality gaps are not NA
-  assert_that(!is.na(opt_gap))
-  assert_that(!is.na(opt_gap_r))
+  assertthat::assert_that(!is.na(opt_gap))
+  assertthat::assert_that(!is.na(opt_gap_r))
   
   # is convergence of the relaxed problem reached ?
   return((best_sol - best_under) <= max(opt_gap * 1.1, opt_gap_r))
@@ -334,7 +331,7 @@ convergence_relaxed <-  function(best_sol, best_under, benders_options)
 #'   
 #' @return logical, indicating weither or not the expansion problem has converged within the optimality gap
 #' 
-#' @import assertthat
+#' @importFrom assertthat assert_that
 #' 
 convergence <-  function(best_sol, best_under, benders_options)
 {
@@ -352,7 +349,7 @@ convergence <-  function(best_sol, best_under, benders_options)
   }
   
   # check that optimality gap is not NA
-  assert_that(!is.na(opt_gap))
+  assertthat::assert_that(!is.na(opt_gap))
 
   # is convergence of the relaxed problem reached ?
   return((best_sol - best_under) <= opt_gap)

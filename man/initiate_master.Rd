@@ -5,7 +5,7 @@
 \title{Initiate master problem}
 \usage{
 initiate_master(candidates = read_candidates(opts),
-  exp_options = read_options(opts), opts = simOptions())
+  exp_options = read_options(opts), opts = antaresRead::simOptions())
 }
 \arguments{
 \item{candidates}{list of investment candidates, as returned by

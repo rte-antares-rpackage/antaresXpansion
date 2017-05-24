@@ -15,10 +15,12 @@
 #'
 #' @return 
 #' 
-#' @import  antaresRead rmarkdown
+#' @importFrom antaresRead simOptions
+#' @importFrom rmarkdown render
+#' @importFrom assertthat assert_that
 #' @export
 #' 
-report <- function(benders_out = "last", file = default_report_file(opts), opts = simOptions())
+report <- function(benders_out = "last", file = default_report_file(opts), opts = antaresRead::simOptions())
 {
   # copy the benders_out into a Rdata in the temporary folder
   # except if benders_out == "last", in that case we use the last
@@ -28,7 +30,7 @@ report <- function(benders_out = "last", file = default_report_file(opts), opts 
     if(benders_out == "last")
     {
       tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
-      assert_that(file.exists(paste0(tmp_folder, "/data_for_report.RDS")))
+      assertthat::assert_that(file.exists(paste0(tmp_folder, "/data_for_report.RDS")))
       benders_out <- readRDS(file = paste0(tmp_folder, "/data_for_report.RDS"))
     } 
   }
@@ -49,9 +51,10 @@ report <- function(benders_out = "last", file = default_report_file(opts), opts 
 #' @return 
 #' name of the first area that the link connects
 #' 
+#' @importFrom antaresRead simOptions
 #' @importFrom lubridate now
 #'                                       
-default_report_file <- function(opts = simOptions())
+default_report_file <- function(opts = antaresRead::simOptions())
 {
   # check that report folder exists, if not create it
   report_folder <- paste(opts$studyPath,"/user/expansion/report",sep="")

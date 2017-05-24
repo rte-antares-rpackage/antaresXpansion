@@ -23,7 +23,7 @@ the weight is between zero and one :
    - a null weight implies that the pair (mc_year, week) shouldn't be
      simulated in the next benders iteration
    - a weight equal to 1 implies that the pair is particularly relevant
-     ans should be simulated in the next benders iteration
+     and should be simulated in the next benders iteration
      
 this function therefore choses a mc_years list and a weeks list which  
 covers most of the weeks with strictly positive weight, but not too many 

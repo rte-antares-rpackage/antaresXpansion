@@ -4,7 +4,7 @@
 \alias{set_antares_options}
 \title{Set ANTARES study options related to the current benders decomposition}
 \usage{
-set_antares_options(benders_options, opts = simOptions())
+set_antares_options(benders_options, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{benders_options}{list of benders decomposition options, as returned by

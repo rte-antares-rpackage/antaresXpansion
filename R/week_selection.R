@@ -18,8 +18,8 @@
 #' @return 
 #' updated current iteration characteristics
 #' 
-#' @import assertthat dplyr
-# @importFrom dplyr 
+#' @importFrom dplyr filter rename mutate select
+#' @importFrom utils read.table
 #' 
 week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
 {
@@ -81,7 +81,7 @@ week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
   }
   
   # read theta values
-  theta <- read.table(paste0(tmp_folder, "/out_theta.txt"), sep =";", dec = ".", col.names = c("it", "year", "week", "theta"))
+  theta <- utils::read.table(paste0(tmp_folder, "/out_theta.txt"), sep =";", dec = ".", col.names = c("it", "year", "week", "theta"))
   
   # look for negative values of theta in the last iteration
   neg_theta <- dplyr::filter(theta, it == (current_it$n - 1), theta < 0)
@@ -127,9 +127,9 @@ week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
   {
     # compute the difference between two iterations
     diff_theta <- merge(x = filter(theta, it == (current_it$n - 1)),
-          y = rename(filter(theta, it == (current_it$n - 2)), theta_previous = theta),
+          y = dplyr::rename(filter(theta, it == (current_it$n - 2)), theta_previous = theta),
           by = c("year", "week"))
-    diff_theta <- mutate(diff_theta, diff = theta - theta_previous)
+    diff_theta <- dplyr::mutate(diff_theta, diff = theta - theta_previous)
     
     avg_diff <- mean(diff_theta$diff)
     max_diff <- max(diff_theta$diff)
@@ -154,7 +154,7 @@ week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
     
     
     # convert (year,week) couples into a playlist and/or a period selection
-    to_simulate <- select(diff_theta, it.x, year, week, weight)
+    to_simulate <- dplyr::select(diff_theta, it.x, year, week, weight)
     
     # write.table(to_simulate, paste0(tmp_folder, "/week_select.csv"), col.names = c("it", "year", "week", "weight"), sep = ";", append = TRUE)
     
@@ -205,7 +205,7 @@ week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
 #'    - a null weight implies that the pair (mc_year, week) shouldn't be
 #'      simulated in the next benders iteration
 #'    - a weight equal to 1 implies that the pair is particularly relevant
-#'      ans should be simulated in the next benders iteration
+#'      and should be simulated in the next benders iteration
 #'      
 #' this function therefore choses a mc_years list and a weeks list which  
 #' covers most of the weeks with strictly positive weight, but not too many 
@@ -222,7 +222,9 @@ week_selection <- function(current_it, mc_years, weeks, tmp_folder, exp_options)
 #' return a list of output containing the playlist of mc years (out$mc_years)
 #' and the playlist of weeks (out$weeks)
 #' 
-#' @import  dplyr assertthat
+#' @importFrom assertthat assert_that
+#' @importFrom dplyr  group_by summarise filter
+#' @importFrom magrittr %>%
 #' 
 
 convert <- function(to_simulate, mc_years, weeks)
@@ -241,11 +243,11 @@ convert <- function(to_simulate, mc_years, weeks)
   # 1 - start by selecting weeks
   # sum of all weights
   total_weight <- sum(to_simulate$weight)
-  assert_that(total_weight>0)
-  weight_per_week <- to_simulate %>%  group_by(week) %>% summarise(sum_over_week = sum(weight))
+  assertthat::assert_that(total_weight>0)
+  weight_per_week <- to_simulate %>%  dplyr::group_by(week) %>% dplyr::summarise(sum_over_week = sum(weight))
   
   # compute consecutive weeks which wrap all positive weights
-  weeks_with_positive_weight <- filter(weight_per_week, sum_over_week > 0)
+  weeks_with_positive_weight <- dplyr::filter(weight_per_week, sum_over_week > 0)
   first_week <- weeks_with_positive_weight$week[1]
   last_week <- weeks_with_positive_weight$week[nrow(weeks_with_positive_weight)]
   
@@ -266,7 +268,7 @@ convert <- function(to_simulate, mc_years, weeks)
 
   
   # 2 - select mc_years
-  weight_per_mc_year <- to_simulate %>%  group_by(year) %>% summarise(sum_over_year = sum(weight))
+  weight_per_mc_year <- to_simulate %>%  dplyr::group_by(year) %>% dplyr::summarise(sum_over_year = sum(weight))
   
   if(alpha_years <= 0)
   {
@@ -275,7 +277,7 @@ convert <- function(to_simulate, mc_years, weeks)
   else
   {
     selection_criterion <-  alpha_years * total_weight / length(mc_years)
-    out$mc_years <- filter(weight_per_mc_year, sum_over_year >= selection_criterion)$year
+    out$mc_years <- dplyr::filter(weight_per_mc_year, sum_over_year >= selection_criterion)$year
   }
   
   return(out)

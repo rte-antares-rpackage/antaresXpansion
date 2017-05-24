@@ -4,7 +4,7 @@
 \alias{benders_check}
 \title{Check that the ANTARES study is ready for benders decomposition}
 \usage{
-benders_check(benders_options, opts)
+benders_check(benders_options, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{benders_options}{list of benders decomposition options, as returned by
