@@ -16,7 +16,8 @@ Imports:
     rmarkdown,
     dplyr,
     data.table,
-    magrittr
+    magrittr,
+    plotly
 RoxygenNote: 5.0.1
 Suggests: knitr
 VignetteBuilder: knitr
