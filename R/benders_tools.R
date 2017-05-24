@@ -12,7 +12,7 @@
 #' 
 #' @importFrom assertthat assert_that
 #' @importFrom antaresRead simOptions getLinks getAreas
-#' @export
+#' 
 set_antares_options <- function(benders_options, opts = antaresRead::simOptions())
 {
   # 1 - set output filtering options

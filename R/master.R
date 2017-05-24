@@ -19,7 +19,6 @@
 #' 
 #' @importFrom antaresRead simOptions
 #' @importFrom assertthat assert_that
-#' @export
 #' 
 initiate_master <- function(candidates = read_candidates(opts), exp_options = read_options(opts), opts = antaresRead::simOptions())
 {
@@ -123,7 +122,6 @@ initiate_master <- function(candidates = read_candidates(opts), exp_options = re
 #' 
 #' @importFrom antaresRead simOptions
 #' @importFrom assertthat assert_that
-#' @export
 #' 
 solve_master <- function(opts = antaresRead::simOptions(), relax_integrality = FALSE)
 {
