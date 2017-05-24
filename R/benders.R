@@ -43,7 +43,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = antaresRe
   set_antares_options(exp_options, opts)
   
   # check that the study is appropriately set for the expansion problem
-  assertthat::assert_that(benders_check(exp_options, opts))
+  assertthat::assert_that(benders_check(opts))
   
   # initiate text files to communicate with master problem
   # and copy AMPL file into the temporary file 
@@ -59,6 +59,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = antaresRe
   best_solution <- NA  # best solution identifier
   tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")   # temporary folder
   relax_integrality <- exp_options$master %in% c("relaxed", "integer")
+  unique_key <- paste(sample(c(0:9, letters), size = 3, replace = TRUE),collapse = "")
   
   # create output structure 
   x <- list()
@@ -157,7 +158,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = antaresRe
     # run the ANTARES simulation, load the path related to this
     # simulation and read the outputs
     
-    simulation_name <- paste0("benders-", current_it$id)
+    simulation_name <- paste0("benders-", unique_key, "-", current_it$id)
     if(display){  cat("   ANTARES simulation running ... ", sep="")}
     run_simulation(simulation_name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, opts)
     if(display){  cat("[done] \n", sep="")}
