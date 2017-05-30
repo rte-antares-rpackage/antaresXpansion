@@ -83,7 +83,7 @@ Concretely, the package will run ANTARES iteratively. Depending on the number of
 
 ### Settings
 
-The different settings can be modified by the user of the package. All the settings are saved in a file `settings.ini` located in the foler `user/expansion/`. 
+The different settings can be modified by the user of the package. All the settings are saved in a file `settings.ini` located in the folder `user/expansion/`. 
 
   * `optimality_gap`: The optimality gap can take any numeric value. The optimality gap is theoretically the maximum possible distance (in euros) between the solution returned by the method and the optimal solution. 
   
@@ -99,7 +99,7 @@ uc_type = relaxed_fast
 master = integer
 optimality_gap = 0
 ```
-Note that the optimality gap can also be given relatively to be best found solution by entering a `%` after the numeric value of the setting. 
+Note that the optimality gap can also be given relatively to be best found solution by entering a `%` after the numeric value of the setting. In that case, the optimality is between `0%`and `100%` and the decimal separator is a point (`.`).
 
 
 ### Which settings should I use for my expansion problem ?
