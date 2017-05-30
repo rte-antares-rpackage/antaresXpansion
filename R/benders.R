@@ -10,6 +10,10 @@
 #' @param report
 #'   Logical. If \code{TRUE} an html report of the expansion results will
 #'   be generated.
+#' @param clean
+#'   Logical. If \code{TRUE} the output of the ANTARES simulations run by the
+#'   package will be deleted (except for the output of the simulation which brings
+#'   to the best solution).
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
@@ -22,7 +26,7 @@
 #' @importFrom utils packageVersion
 #' @export
 #' 
-benders <- function(path_solver, display = TRUE, report = TRUE, opts = antaresRead::simOptions())
+benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, opts = antaresRead::simOptions())
 {
   # ---- 0. initialize benders iteration ----
   # read expansion planning options
@@ -158,7 +162,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = antaresRe
     # run the ANTARES simulation, load the path related to this
     # simulation and read the outputs
     
-    simulation_name <- paste0("benders-", unique_key, "-", current_it$id)
+    simulation_name <- paste0("expansion-benders-", unique_key, "-", current_it$id)
     if(display){  cat("   ANTARES simulation running ... ", sep="")}
     run_simulation(simulation_name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, opts)
     if(display){  cat("[done] \n", sep="")}
@@ -420,6 +424,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = antaresRe
     }
     
     
+    # ---- 9. Clean ANTARES output ----
+    if(clean) { clean_output_benders(best_solution, unique_key, opts)}
 
   }
   

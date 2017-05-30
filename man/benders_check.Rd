@@ -4,12 +4,9 @@
 \alias{benders_check}
 \title{Check that the ANTARES study is ready for benders decomposition}
 \usage{
-benders_check(benders_options, opts = antaresRead::simOptions())
+benders_check(opts = antaresRead::simOptions())
 }
 \arguments{
-\item{benders_options}{list of benders decomposition options, as returned by
-\code{\link{read_options}}.}
-
 \item{opts}{list of simulation parameters returned by the function
 \code{antaresRead::setSimulationPath}}
 }
