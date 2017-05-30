@@ -21,7 +21,7 @@
 #' @return 
 #' 
 #' @importFrom assertthat assert_that
-#' @importFrom antaresRead simOptions readAntares setSimulationPath
+#' @importFrom antaresRead simOptions readAntares setSimulationPath getAreas
 #' @importFrom rmarkdown render
 #' @importFrom utils packageVersion
 #' @export
@@ -64,6 +64,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, op
   tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")   # temporary folder
   relax_integrality <- exp_options$master %in% c("relaxed", "integer")
   unique_key <- paste(sample(c(0:9, letters), size = 3, replace = TRUE),collapse = "")
+  all_areas <- antaresRead::getAreas(opts = opts)
   
   # create output structure 
   x <- list()
@@ -73,6 +74,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, op
   x$operation_costs <- numeric()
   x$rentability <- data.frame()
   x$iterations <- list()
+  x$digest <- list()
+  x$digest$lole <- data.frame()
   
   # create iteration structure
   current_it <- list()
@@ -260,14 +263,17 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, op
 
     # compute average rentability of each candidate (can only
     # be assessed if a complete simulation has been run)
+    # + compute LOLE for each area
     if(current_it$full)
     {
       average_rentability <- sapply(candidates, 
                           FUN = function(c){sum(as.numeric(subset(output_link_s, link == c$link)$"MARG. COST")) - c$cost * n_w / 52 }) 
+      lole <- sapply(all_areas, FUN = function(a){as.numeric(subset(output_area_s, area == a)$"LOLD")}) 
     }
     else
     {
       average_rentability <- rep(NA, n_candidates)
+      lole <- rep(NA, length(all_areas))
     }
     
     # update output structure
@@ -275,8 +281,16 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, op
     {
       x$rentability <- data.frame(it1 = average_rentability)
       row.names(x$rentability) <- sapply(candidates, FUN = function(c){c$name})
+      x$digest$lole <- data.frame(it1 = lole)
+      row.names(x$digest$lole) <- all_areas
     }
-    else {x$rentability[[current_it$id]] <- average_rentability}
+    else 
+    {
+      x$rentability[[current_it$id]] <- average_rentability
+      x$digest$lole[[current_it$id]] <- lole
+    }
+  
+    
     
     # print results of the ANTARES simulation
     if(display & current_it$full)
