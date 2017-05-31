@@ -52,6 +52,7 @@ read_candidates <- function(opts = simOptions())
     candidate$max_unit <- 0
     candidate$max_invest <- 0
     candidate$relaxed <- FALSE
+    candidate$link_profile <- data.frame(rep(1,8760))
       
     # read candidate characteristics
     for(line in (index[pr]+1):(index[pr+1]-1))
@@ -100,6 +101,20 @@ read_candidates <- function(opts = simOptions())
       {
         assert_that(!is.na(as.numeric(option_value)))
         candidate$unit_size <- as.numeric(option_value)
+      }
+      else if (option_name == "link-profile")
+      {
+        profile_file <- paste0(paste(opts$studyPath,"/user/expansion/capa/", sep=""), option_value)
+        assert_that(file.exists(profile_file))
+        
+        if (file.info(profile_file)$size !=0) 
+        {
+          # read file
+          profile_data <-  read.table(profile_file, header=FALSE)
+          candidate$link_profile <- profile_data
+        }
+        
+        
       }
       else if (option_name == "max-investment")
       {

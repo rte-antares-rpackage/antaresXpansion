@@ -139,6 +139,8 @@ enable_hurdle_costs <- function(link_names, enable = TRUE, opts = simOptions())
 #' 
 update_link <- function(link_name, property_name, new_value, opts = simOptions())
 {
+  new_value <- as.matrix(new_value)
+  
   # check which column have to be updated
   n_col <- ifelse(property_name=='direct_capacity', 1,
           ifelse(property_name=='indirect_capacity', 2,

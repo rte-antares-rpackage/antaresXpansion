@@ -18,7 +18,7 @@ set_antares_options <- function(benders_options, opts = simOptions())
   enable_custom_filtering(TRUE, opts)
   enable_year_by_year(TRUE, opts)
   filter_output_areas(areas = getAreas(opts = opts), filter = c("weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
-  filter_output_links(links = getLinks(opts = opts), filter = c("weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
+  filter_output_links(links = getLinks(opts = opts), filter = c("hourly", "weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
   
   # 2 - set unit-commitment mode
   if(benders_options$uc_type == "accurate")
@@ -85,7 +85,7 @@ set_antares_options <- function(benders_options, opts = simOptions())
 #' 
 #' @import antaresRead
 #' 
-update_average_cuts <- function(current_it, candidates, output_link_s, ov_cost, n_w, tmp_folder, benders_options)
+update_average_cuts <- function(current_it, candidates, output_link_h, ov_cost, n_w, tmp_folder, benders_options)
 {
   n_candidates <- length(candidates)
   
@@ -97,7 +97,8 @@ update_average_cuts <- function(current_it, candidates, output_link_s, ov_cost, 
   script  <-  ""
   for (c in 1:n_candidates)
   {
-    tmp_rentability <- sum(as.numeric(subset(output_link_s, link == candidates[[c]]$link)$"MARG. COST")) - candidates[[c]]$cost * n_w / 52
+    len = length(subset(output_link_h, link == candidates[[c]]$link)$"MARG. COST")
+    tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link)$"MARG. COST")*candidates[[c]]$link_profile[1:len, 1]) - candidates[[c]]$cost * n_w / 52
     script <- paste0(script, current_it$id, " ", candidates[[c]]$name, " ", tmp_rentability)
     if (c != n_candidates) { script <- paste0(script, "\n")}
   }
@@ -132,7 +133,7 @@ update_average_cuts <- function(current_it, candidates, output_link_s, ov_cost, 
 #' 
 #' @import antaresRead
 #' 
-update_yearly_cuts <- function(current_it,candidates, output_area_y, output_link_y, inv_cost, n_w, tmp_folder, benders_options)
+update_yearly_cuts <- function(current_it,candidates, output_area_y,output_link_y, output_link_h, inv_cost, n_w, tmp_folder, benders_options)
 {
   # compute a few intermediate variables
   n_candidates <- length(candidates)
@@ -168,8 +169,8 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y, output_link
     
     for(c in 1:n_candidates)
     {
-      tmp_rentability <- sum(as.numeric(subset(output_link_y, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")) - candidates[[c]]$cost * n_w / 52
-      
+      len = length(subset(output_link_h, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")
+      tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")*candidates[[c]]$link_profile[1:len, 1]) - candidates[[c]]$cost * n_w / 52
       script_rentability <- paste0(script_rentability, current_it$id, " ", y, " ", candidates[[c]]$name, " ", tmp_rentability)
       if (c != n_candidates || y != last_y)
       {
@@ -209,7 +210,7 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y, output_link
 #' 
 #' @import antaresRead
 #' 
-update_weekly_cuts <- function(current_it, candidates, output_area_w, output_link_w, inv_cost, tmp_folder, benders_options)
+update_weekly_cuts <- function(current_it, candidates, output_area_w, output_link_w, output_link_h, inv_cost, tmp_folder, benders_options, opts)
 {
   
   # compute a few intermediate variables
@@ -254,7 +255,11 @@ update_weekly_cuts <- function(current_it, candidates, output_area_w, output_lin
       
       for(c in 1:n_candidates)
       {
-        tmp_rentability <- sum(as.numeric(subset(output_link_w, link == candidates[[c]]$link & mcYear == y & timeId == w)$"MARG. COST")) - candidates[[c]]$cost /52
+       
+        first_h <- 7*24*(w-1)+1
+        last_h <- 7*24*w
+        
+        tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y & timeId >= first_h & timeId <= last_h)$"MARG. COST")* candidates[[c]]$link_profile[first_h:last_h,1]) - candidates[[c]]$cost /52
 
         script_rentability <- paste0(script_rentability, current_it$id, " ", y , " ", w , " ", candidates[[c]]$name, " ", tmp_rentability)
         
@@ -284,8 +289,8 @@ update_weekly_cuts <- function(current_it, candidates, output_area_w, output_lin
 #'   
 #' @return logical, indicating weither or not the relaxed problem has converged within the optimality gap
 #' 
-#' @import assertthat
 #' 
+#' @import assertthat
 convergence_relaxed <-  function(best_sol, best_under, benders_options)
 {
   # is the optimality gap given in percentage or absolute value ?

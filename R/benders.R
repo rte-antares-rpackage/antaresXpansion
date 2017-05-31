@@ -121,8 +121,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     
     for(c in candidates)
     {
-      update_link(c$link, "direct_capacity", x$invested_capacities[c$name, current_it$id ] , opts)
-      update_link(c$link, "indirect_capacity", x$invested_capacities[c$name, current_it$id ], opts)
+      update_link(c$link, "direct_capacity", c$link_profile*x$invested_capacities[c$name, current_it$id ] , opts)
+      update_link(c$link, "indirect_capacity", c$link_profile*x$invested_capacities[c$name, current_it$id ], opts)
     }
     
     
@@ -148,6 +148,12 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     
     if(packageVersion("antaresRead") > "0.14.9" )
     {
+      # hourly results
+      output_link_h = readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
+                                  timeStep = "hourly", opts = output_antares, showProgress = FALSE)
+      output_link_h_s = readAntares(areas = NULL, links = "all", mcYears = NULL, 
+                                  timeStep = "hourly", opts = output_antares, showProgress = FALSE)
+      
       # weekly results
       output_area_w = readAntares(areas = "all", links = NULL, mcYears = current_it$mc_years, 
                                   timeStep = "weekly", opts = output_antares, showProgress = FALSE)
@@ -168,6 +174,10 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     }
     else  # old package version with synthesis arguments
     {
+      # hourly results
+      output_link_h = readAntares(areas = NULL, links = "all", synthesis = FALSE, 
+                                  timeStep = "hourly", opts = output_antares, showProgress = FALSE)
+      
       # weekly results
       output_area_w = readAntares(areas = "all", links = NULL, synthesis = FALSE, 
                                   timeStep = "weekly", opts = output_antares, showProgress = FALSE)
@@ -235,7 +245,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     if(current_it$full)
     {
       average_rentability <- sapply(candidates, 
-                          FUN = function(c){sum(as.numeric(subset(output_link_s, link == c$link)$"MARG. COST")) - c$cost * n_w / 52 }) 
+                          FUN = function(c){sum(as.numeric(subset(output_link_h_s, link == c$link)$"MARG. COST")*c$link_profile) - c$cost * n_w / 52 }) 
     }
     else
     {
@@ -284,16 +294,16 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     if(current_it$cut_type == "average")
     {
       assert_that(current_it$full)
-      update_average_cuts(current_it, candidates, output_link_s, ov_cost, n_w, tmp_folder, exp_options)
+      update_average_cuts(current_it, candidates, output_link_h_s, ov_cost, n_w, tmp_folder, exp_options)
     }
     if(current_it$cut_type == "yearly")
     {
       assert_that(all(current_it$weeks == weeks))
-      update_yearly_cuts(current_it,candidates, output_area_y, output_link_y, inv_cost, n_w, tmp_folder, exp_options)
+      update_yearly_cuts(current_it,candidates, output_area_y, output_link_y, output_link_h, inv_cost, n_w, tmp_folder, exp_options)
     }
     if(current_it$cut_type == "weekly")
     {
-      update_weekly_cuts(current_it, candidates, output_area_w, output_link_w, inv_cost, tmp_folder, exp_options)
+      update_weekly_cuts(current_it, candidates, output_area_w, output_link_w, output_link_h, inv_cost, tmp_folder, exp_options, opts)
     }
     
     
