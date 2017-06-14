@@ -30,6 +30,12 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, op
 {
   # ---- 0. initialize benders iteration ----
 
+  # save current settings of the ANTARES study into a temporary file
+  assertthat::assert_that(file.exists(paste0(opts$studyPath, "/settings/generaldata.ini")))
+  assertthat::assert_that(file.copy(from = paste0(opts$studyPath, "/settings/generaldata.ini"), 
+            to = paste0(opts$studyPath, "/settings/generaldata_tmpsvg.ini"),
+            overwrite = TRUE))
+  
   # read expansion planning options
   exp_options <- read_options(opts)
   
@@ -451,11 +457,15 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, op
   x$study_options <- opts
   x$candidates <- read_candidates(opts)
   
-  # reset some options of the ANTARES study to their initial values
+  # reset options of the ANTARES study to their initial values
+  assertthat::assert_that(file.remove(paste0(opts$studyPath, "/settings/generaldata.ini")))
+  assertthat::assert_that(file.rename(from = paste0(opts$studyPath, "/settings/generaldata_tmpsvg.ini"), 
+                                    to = paste0(opts$studyPath, "/settings/generaldata.ini")))
+  
   # set simulation period
-  set_simulation_period(weeks, opts)
+  #set_simulation_period(weeks, opts)
   # set playlist
-  set_playlist(mc_years, opts)
+  #set_playlist(mc_years, opts)
   
   # set link capacities to their optimal value
   for(c in candidates)
