@@ -4,7 +4,8 @@
 \alias{update_link}
 \title{Update the properties of a link (capacity, impedance or hurdle costs)}
 \usage{
-update_link(link_name, property_name, new_value, opts = simOptions())
+update_link(link_name, property_name, new_value,
+  opts = antaresRead::simOptions())
 }
 \arguments{
 \item{link_name}{Name of one link}

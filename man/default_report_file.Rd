@@ -4,7 +4,7 @@
 \alias{default_report_file}
 \title{Return the default file name for the report}
 \usage{
-default_report_file(opts = simOptions())
+default_report_file(opts = antaresRead::simOptions())
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function

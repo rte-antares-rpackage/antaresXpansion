@@ -15,23 +15,24 @@
 #' The function does not return anything. It is  used to modify the input of an 
 #' ANTARES study
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
 #' 
-enable_custom_filtering <- function(enable = TRUE, opts = simOptions())
+enable_custom_filtering <- function(enable = TRUE, opts = antaresRead::simOptions())
 {
   # load setting file and check if it exists
   general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
-  assert_that(file.exists(general_parameters_file_name))
-  assert_that(file.info(general_parameters_file_name)$size !=0)
+  assertthat::assert_that(file.exists(general_parameters_file_name))
+  assertthat::assert_that(file.info(general_parameters_file_name)$size !=0)
   
   # read file
   param_data <- scan(general_parameters_file_name, what=character(), sep="/", quiet = TRUE)
   
   # find line describing the filtering setting
   index = grep("filtering =",param_data,  fixed = TRUE)
-  assert_that(length(index) == 1)
+  assertthat::assert_that(length(index) == 1)
   
   # update line
   if (enable) 
@@ -65,23 +66,23 @@ enable_custom_filtering <- function(enable = TRUE, opts = simOptions())
 #' The function does not return anything. It is  used to modify the input of an 
 #' ANTARES study
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
-#' 
-enable_year_by_year <- function(enable = TRUE, opts = simOptions())
+enable_year_by_year <- function(enable = TRUE, opts = antaresRead::simOptions())
 {
   # load setting file and check if it exists
   general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
-  assert_that(file.exists(general_parameters_file_name))
-  assert_that(file.info(general_parameters_file_name)$size !=0)
+  assertthat::assert_that(file.exists(general_parameters_file_name))
+  assertthat::assert_that(file.info(general_parameters_file_name)$size !=0)
   
   # read file
   param_data <- scan(general_parameters_file_name, what=character(), sep="/", quiet = TRUE)
   
   # find line describing the filtering setting
   index = grep("year-by-year =",param_data,  fixed = TRUE)
-  assert_that(length(index) == 1)
+  assertthat::assert_that(length(index) == 1)
   
   # update line
   if (enable) 
@@ -121,17 +122,18 @@ enable_year_by_year <- function(enable = TRUE, opts = simOptions())
 #' The function does not return anything. It is  used to modify the input of an 
 #' ANTARES study
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
 #' 
-filter_output_areas <- function(areas, filter, type, opts = simOptions())
+filter_output_areas <- function(areas, filter, type, opts = antaresRead::simOptions())
 {
   # check that filter names are correct
-  assert_that(all(filter %in% c("annual", "monthly", "weekly", "daily", "hourly")))
+  assertthat::assert_that(all(filter %in% c("annual", "monthly", "weekly", "daily", "hourly")))
   
   # check that types  are correct
-  assert_that(all(type %in% c("synthesis", "year-by-year")))
+  assertthat::assert_that(all(type %in% c("synthesis", "year-by-year")))
   
   # which are the activated types ?
   synthesis <-  any(type == "synthesis")
@@ -143,8 +145,8 @@ filter_output_areas <- function(areas, filter, type, opts = simOptions())
     # check if the file related to the area exists
     optimization_file_name <- paste(opts$inputPath,"/areas/", a, "/optimization.ini" ,sep="")
     
-    assert_that(file.exists(optimization_file_name))
-    assert_that(file.info(optimization_file_name)$size !=0)
+    assertthat::assert_that(file.exists(optimization_file_name))
+    assertthat::assert_that(file.info(optimization_file_name)$size !=0)
     
     # read file
     param_data <- scan(optimization_file_name, what=character(), sep="/", quiet = TRUE)
@@ -189,17 +191,18 @@ filter_output_areas <- function(areas, filter, type, opts = simOptions())
 #' The function does not return anything. It is  used to modify the input of an 
 #' ANTARES study
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
 #' 
-filter_output_links <- function(links, filter, type, opts = simOptions())
+filter_output_links <- function(links, filter, type, opts = antaresRead::simOptions())
 {
   # check that filter names are correct
-  assert_that(all(filter %in% c("annual", "monthly", "weekly", "daily", "hourly")))
+  assertthat::assert_that(all(filter %in% c("annual", "monthly", "weekly", "daily", "hourly")))
   
   # check that types  are correct
-  assert_that(all(type %in% c("synthesis", "year-by-year")))
+  assertthat::assert_that(all(type %in% c("synthesis", "year-by-year")))
   
   # which are the activated types ?
   synthesis  <-  any(type == "synthesis")
@@ -211,8 +214,8 @@ filter_output_links <- function(links, filter, type, opts = simOptions())
     # check if the file related to the area exists
     properties_file_name <- paste(opts$inputPath,"/links/", from(link), "/properties.ini" ,sep="")
     
-    assert_that(file.exists(properties_file_name))
-    assert_that(file.info(properties_file_name)$size !=0)
+    assertthat::assert_that(file.exists(properties_file_name))
+    assertthat::assert_that(file.info(properties_file_name)$size !=0)
     
     # read file
     param_data <- scan(properties_file_name, what=character(), sep="/", quiet = TRUE)
@@ -221,7 +224,7 @@ filter_output_links <- function(links, filter, type, opts = simOptions())
     indexes = grep("^\\[",param_data)
     indexes = c(indexes, length(param_data))
     min_id = grep(paste("\\[",to(link), "\\]",sep=""),param_data)
-    assert_that(length(min_id) == 1)
+    assertthat::assert_that(length(min_id) == 1)
     max_id = min(indexes[(indexes > min_id)])
     id = min_id:max_id
     
@@ -259,25 +262,26 @@ filter_output_links <- function(links, filter, type, opts = simOptions())
 #' The function does not return anything. It is  used to modify the input of an 
 #' ANTARES study
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
 #' 
-set_uc_mode <- function(mode, opts = simOptions())
+set_uc_mode <- function(mode, opts = antaresRead::simOptions())
 {
-  assert_that(mode %in% c("fast", "accurate"))
+  assertthat::assert_that(mode %in% c("fast", "accurate"))
 
   # load setting file and check if it exists
   general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
-  assert_that(file.exists(general_parameters_file_name))
-  assert_that(file.info(general_parameters_file_name)$size !=0)
+  assertthat::assert_that(file.exists(general_parameters_file_name))
+  assertthat::assert_that(file.info(general_parameters_file_name)$size !=0)
   
   # read file
   param_data <- scan(general_parameters_file_name, what=character(), sep="/", quiet = TRUE)
   
   # find line describing the filtering setting
   index = grep("unit-commitment-mode =",param_data,  fixed = TRUE)
-  assert_that(length(index) == 1)
+  assertthat::assert_that(length(index) == 1)
   
   # update line
   if (mode == "accurate") 
@@ -311,16 +315,17 @@ set_uc_mode <- function(mode, opts = simOptions())
 #' The function does not return anything. It is  used to modify the input of an 
 #' ANTARES study
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
 #' 
-enable_uc_heuristic <- function(enable = TRUE, opts = simOptions())
+enable_uc_heuristic <- function(enable = TRUE, opts = antaresRead::simOptions())
 {
   # load setting file and check if it exists
   general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
-  assert_that(file.exists(general_parameters_file_name))
-  assert_that(file.info(general_parameters_file_name)$size !=0)
+  assertthat::assert_that(file.exists(general_parameters_file_name))
+  assertthat::assert_that(file.info(general_parameters_file_name)$size !=0)
   
   # read file
   param_data <- scan(general_parameters_file_name, what=character(), sep="/", quiet = TRUE)
@@ -330,9 +335,9 @@ enable_uc_heuristic <- function(enable = TRUE, opts = simOptions())
   index_minud = grep("include-tc-min-ud-time =",param_data,  fixed = TRUE)
   index_dayah = grep("include-dayahead =",param_data,  fixed = TRUE)
   
-  assert_that(length(index_pmin) == 1)
-  assert_that(length(index_minud) == 1)
-  assert_that(length(index_dayah) == 1)
+  assertthat::assert_that(length(index_pmin) == 1)
+  assertthat::assert_that(length(index_minud) == 1)
+  assertthat::assert_that(length(index_dayah) == 1)
   
   # update line
   if (enable)
@@ -369,22 +374,23 @@ enable_uc_heuristic <- function(enable = TRUE, opts = simOptions())
 #' The function does not return anything. It is  used to modify the input of an 
 #' ANTARES study
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
 #' 
-set_week <- function(first_day, opts = simOptions())
+set_week <- function(first_day, opts = antaresRead::simOptions())
 {
   # check first day
   # standardise first day
   first_day <- tolower(first_day)
   first_day <- paste(toupper(substring(first_day, 1,1)), substring(first_day, 2),sep="" )
-  assert_that(first_day %in% c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
+  assertthat::assert_that(first_day %in% c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
   
   # load setting file and check if it exists
   general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
-  assert_that(file.exists(general_parameters_file_name))
-  assert_that(file.info(general_parameters_file_name)$size !=0)
+  assertthat::assert_that(file.exists(general_parameters_file_name))
+  assertthat::assert_that(file.info(general_parameters_file_name)$size !=0)
   
   # read file
   param_data <- scan(general_parameters_file_name, what=character(), sep="/", quiet = TRUE)
@@ -392,7 +398,7 @@ set_week <- function(first_day, opts = simOptions())
   # find line describing the filtering setting
   index = grep("first.weekday =",param_data,  fixed = TRUE)
 
-  assert_that(length(index) == 1)
+  assertthat::assert_that(length(index) == 1)
   
   # update line
   param_data[index] = paste0("first.weekday = ", first_day)
@@ -415,11 +421,12 @@ set_week <- function(first_day, opts = simOptions())
 #' @return 
 #' Returns a vector of the identifier of the simulated MC year
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
 #' 
-get_playlist <- function(opts = simOptions())
+get_playlist <- function(opts = antaresRead::simOptions())
 {
   # get all MC years
   mc_years <- 1:opts$parameters$general$nbyears
@@ -440,7 +447,7 @@ get_playlist <- function(opts = simOptions())
   }
   
   # modified playlist - take into account the modifications
-  assert_that(all(playlist_update_type %in% c("playlist_reset", "playlist_year +", "playlist_year -")))
+  assertthat::assert_that(all(playlist_update_type %in% c("playlist_reset", "playlist_year +", "playlist_year -")))
   activated <- rep(TRUE, length(mc_years))
   
   for(i in 1:length(playlist_update_type))
@@ -482,22 +489,23 @@ get_playlist <- function(opts = simOptions())
 #' The function does not return anything. It is  used to modify the input of an 
 #' ANTARES study
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
 #' 
-set_first_day <- function(first_day, opts = simOptions())
+set_first_day <- function(first_day, opts = antaresRead::simOptions())
 {
   # check first day
   # standardise first day
   first_day <- as.numeric(first_day)
-  assert_that(length(first_day) == 1)
-  assert_that(first_day %in% 1:365)
+  assertthat::assert_that(length(first_day) == 1)
+  assertthat::assert_that(first_day %in% 1:365)
 
   # load setting file and check if it exists
   general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
-  assert_that(file.exists(general_parameters_file_name))
-  assert_that(file.info(general_parameters_file_name)$size !=0)
+  assertthat::assert_that(file.exists(general_parameters_file_name))
+  assertthat::assert_that(file.info(general_parameters_file_name)$size !=0)
   
   # read file
   param_data <- scan(general_parameters_file_name, what=character(), sep="/", quiet = TRUE)
@@ -505,7 +513,7 @@ set_first_day <- function(first_day, opts = simOptions())
   # find line describing the filtering setting
   index = grep("simulation.start =",param_data,  fixed = TRUE)
   
-  assert_that(length(index) == 1)
+  assertthat::assert_that(length(index) == 1)
   
   # update line
   param_data[index] = paste0("simulation.start = ", first_day)
@@ -532,22 +540,23 @@ set_first_day <- function(first_day, opts = simOptions())
 #' The function does not return anything. It is  used to modify the input of an 
 #' ANTARES study
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
 #' 
-set_last_day <- function(last_day, opts = simOptions())
+set_last_day <- function(last_day, opts = antaresRead::simOptions())
 {
   # check first day
   # standardise first day
   last_day <- as.numeric(last_day)
-  assert_that(length(last_day) == 1)
-  assert_that(last_day %in% 1:365)
+  assertthat::assert_that(length(last_day) == 1)
+  assertthat::assert_that(last_day %in% 1:365)
   
   # load setting file and check if it exists
   general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
-  assert_that(file.exists(general_parameters_file_name))
-  assert_that(file.info(general_parameters_file_name)$size !=0)
+  assertthat::assert_that(file.exists(general_parameters_file_name))
+  assertthat::assert_that(file.info(general_parameters_file_name)$size !=0)
   
   # read file
   param_data <- scan(general_parameters_file_name, what=character(), sep="/", quiet = TRUE)
@@ -555,7 +564,7 @@ set_last_day <- function(last_day, opts = simOptions())
   # find line describing the filtering setting
   index = grep("simulation.end =",param_data,  fixed = TRUE)
   
-  assert_that(length(index) == 1)
+  assertthat::assert_that(length(index) == 1)
   
   # update line
   param_data[index] = paste0("simulation.end = ", last_day)
@@ -582,29 +591,30 @@ set_last_day <- function(last_day, opts = simOptions())
 #' The function does not return anything. It is  used to modify the input of an 
 #' ANTARES study
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
 #' 
-set_playlist <- function(playlist, opts = simOptions())
+set_playlist <- function(playlist, opts = antaresRead::simOptions())
 {
   # get all MC years
   mc_years <- 1:opts$parameters$general$nbyears
-  assert_that(all(playlist %in% mc_years))
+  assertthat::assert_that(all(playlist %in% mc_years))
   playlist <- sort(playlist)
   playlist <- unique(playlist)
   
   # load setting file and check if it exists
   general_parameters_file_name <- paste(opts$studyPath,"/settings/generaldata.ini",sep="")
-  assert_that(file.exists(general_parameters_file_name))
-  assert_that(file.info(general_parameters_file_name)$size !=0)
+  assertthat::assert_that(file.exists(general_parameters_file_name))
+  assertthat::assert_that(file.info(general_parameters_file_name)$size !=0)
   
   # read file
   param_data <- scan(general_parameters_file_name, what=character(), sep="/", quiet = TRUE)
   
   # find line describing if the playlist is used
   index_p <- grep("user-playlist =",param_data,  fixed = TRUE)
-  assert_that(length(index_p) == 1)
+  assertthat::assert_that(length(index_p) == 1)
   
   
   # if all mc_years must be simulated, desactive playlist
@@ -656,14 +666,16 @@ set_playlist <- function(playlist, opts = simOptions())
 #'
 #' @return 
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
+#' @importFrom dplyr first last
 #' @export
 #' 
-set_simulation_period <- function(weeks, opts = simOptions())
+set_simulation_period <- function(weeks, opts = antaresRead::simOptions())
 {
   # weeks should be successives 
-  assert_that(all(weeks == seq(first(weeks), last(weeks))))
-  assert_that(all(weeks <= 52))
+  assertthat::assert_that(all(weeks == seq(dplyr::first(weeks), dplyr::last(weeks))))
+  assertthat::assert_that(all(weeks <= 52))
   
   # change parameters of the study
   set_first_day(7*(weeks[1] - 1) + 1, opts)

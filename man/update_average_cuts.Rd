@@ -7,7 +7,7 @@ Create files in_avgrentability.txt and in_avgcuts.txt which
 will be later read by AMPL as input of the master problem}
 \usage{
 update_average_cuts(current_it, candidates, output_link_s, ov_cost, n_w,
-  tmp_folder)
+  tmp_folder, benders_options)
 }
 \arguments{
 \item{current_it}{list of current iteration characteristics}
@@ -23,6 +23,9 @@ and averaged on all MC years}
 \item{n_w}{number of weeks per year}
 
 \item{tmp_folder}{temporary folder in which to write the files}
+
+\item{benders_options}{list of benders decomposition options, as returned by
+\code{\link{read_options}}.}
 }
 \value{
 nothing

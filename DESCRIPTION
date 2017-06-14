@@ -1,7 +1,7 @@
 Package: antaresXpansion
 Type: Package
 Title: Antares Expansion Planning Tool
-Version: 0.3
+Version: 0.4
 Date: 2017-01-05
 Author: Baptiste Seguinot <baptiste.seguinot@rte-france.com>
 Maintainer: Baptiste Seguinot <baptiste.seguinot@rte-france.com>
@@ -9,14 +9,15 @@ Description: Compute optimal investment and decommissioning decisions in an
     ANTARES study.
 License: Proprietary RTE
 LazyData: TRUE
-Depends:
+Imports:
     antaresRead (>= 0.14.0),
     assertthat,
     lubridate,
     rmarkdown,
     dplyr,
-    data.table
+    data.table,
+    magrittr,
+    plotly
 RoxygenNote: 5.0.1
-Suggests: knitr,
-    rmarkdown
+Suggests: knitr
 VignetteBuilder: knitr

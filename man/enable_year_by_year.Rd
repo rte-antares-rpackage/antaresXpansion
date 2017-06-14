@@ -4,7 +4,7 @@
 \alias{enable_year_by_year}
 \title{Enable or disable the year by year output writing}
 \usage{
-enable_year_by_year(enable = TRUE, opts = simOptions())
+enable_year_by_year(enable = TRUE, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{enable}{Should the year by year outputs be written (\code{TRUE}) or not (\code{FALSE}) ?}

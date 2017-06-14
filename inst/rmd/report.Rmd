@@ -203,7 +203,13 @@ kable(costs_table, format = "markdown")
 
 ```
 
+Table - Loss of Load Expectation(in hours) :
 
+```{r table_lole, echo = FALSE}
+
+kable(t(x$digest$lole), format = "markdown")
+
+```
 
 <style type="text/css">
 .table {

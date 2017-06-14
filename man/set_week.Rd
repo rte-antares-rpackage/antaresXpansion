@@ -4,7 +4,7 @@
 \alias{set_week}
 \title{Set parameters week}
 \usage{
-set_week(first_day, opts = simOptions())
+set_week(first_day, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{first_day}{First day of the week}

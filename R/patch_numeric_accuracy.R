@@ -15,8 +15,6 @@
 #' @return 
 #' Return correct term to substract to the b of \code{ax+b}
 #' 
-#' @import assertthat antaresRead
-#' @export
 #' 
 #' 
 numeric_patch_cut <- function(x_current, x_max)

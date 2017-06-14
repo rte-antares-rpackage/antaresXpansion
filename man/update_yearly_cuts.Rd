@@ -7,7 +7,7 @@ Create files in_yearlyrentability.txt and in_yearlycuts.txt which
 will be later read by AMPL as input of the master problem}
 \usage{
 update_yearly_cuts(current_it, candidates, output_area_y, output_link_y,
-  inv_cost, n_w, tmp_folder)
+  inv_cost, n_w, tmp_folder, benders_options)
 }
 \arguments{
 \item{current_it}{list of current iteration characteristics}
@@ -24,6 +24,9 @@ update_yearly_cuts(current_it, candidates, output_area_y, output_link_y,
 \item{n_w}{number of weeks per year}
 
 \item{tmp_folder}{temporary folder in which to write the files}
+
+\item{benders_options}{list of benders decomposition options, as returned by
+\code{\link{read_options}}.}
 }
 \value{
 nothing

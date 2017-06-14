@@ -4,7 +4,7 @@
 \alias{set_playlist}
 \title{Set playlist of the study}
 \usage{
-set_playlist(playlist, opts = simOptions())
+set_playlist(playlist, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{playlist}{vector of MC years identifier to be simulated}

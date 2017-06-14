@@ -17,10 +17,10 @@
 #'
 #' @return This function does not return anything.
 #' 
-#' @import assertthat antaresRead
-#' @export
+#' @importFrom antaresRead simOptions
+#' @importFrom assertthat assert_that
 #' 
-initiate_master <- function(candidates = read_candidates(opts), exp_options = read_options(opts), opts = simOptions())
+initiate_master <- function(candidates = read_candidates(opts), exp_options = read_options(opts), opts = antaresRead::simOptions())
 {
   # ampl file names (stored in inst folder)
   run_file <- "ampl/master_run.ampl"
@@ -61,9 +61,9 @@ initiate_master <- function(candidates = read_candidates(opts), exp_options = re
   mod_file <- system.file(mod_file, package = "antaresXpansion")
   dat_file <- system.file(dat_file, package = "antaresXpansion")
   
-  assert_that(file.copy(from = run_file, to = tmp_folder, overwrite = TRUE))
-  assert_that(file.copy(from = mod_file, to = tmp_folder, overwrite = TRUE))
-  assert_that(file.copy(from = dat_file, to = tmp_folder, overwrite = TRUE))
+  assertthat::assert_that(file.copy(from = run_file, to = tmp_folder, overwrite = TRUE))
+  assertthat::assert_that(file.copy(from = mod_file, to = tmp_folder, overwrite = TRUE))
+  assertthat::assert_that(file.copy(from = dat_file, to = tmp_folder, overwrite = TRUE))
   
   # create empty in_out files
   lapply(in_out_files, FUN = function(x, folder){file.create(paste0(folder, "/", x))}, folder = tmp_folder)
@@ -120,10 +120,10 @@ initiate_master <- function(candidates = read_candidates(opts), exp_options = re
 #'   should be relaxed
 #' @return This function does not return anything.
 #' 
-#' @import assertthat antaresRead
-#' @export
+#' @importFrom antaresRead simOptions
+#' @importFrom assertthat assert_that
 #' 
-solve_master <- function(opts = simOptions(), relax_integrality = FALSE)
+solve_master <- function(opts = antaresRead::simOptions(), relax_integrality = FALSE)
 {
   tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
   
@@ -137,10 +137,12 @@ solve_master <- function(opts = simOptions(), relax_integrality = FALSE)
   }
 
   
-  assert_that(file.exists(paste0(tmp_folder, "/master_run.ampl")))
-  assert_that(file.exists(paste0(tmp_folder, "/master_mod.ampl")))
-  assert_that(file.exists(paste0(tmp_folder, "/master_dat.ampl")))
+  assertthat::assert_that(file.exists(paste0(tmp_folder, "/master_run.ampl")))
+  assertthat::assert_that(file.exists(paste0(tmp_folder, "/master_mod.ampl")))
+  assertthat::assert_that(file.exists(paste0(tmp_folder, "/master_dat.ampl")))
   
-  cmd <- paste0(substr(tmp_folder, 1, 2), " & cd ", tmp_folder, " & ampl ", tmp_folder, "/master_run.ampl")
-  shell(cmd, wait = TRUE, intern = TRUE)
+  cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & ampl "', tmp_folder, '/master_run.ampl" ')
+
+  a <- shell(cmd, wait = TRUE, intern = TRUE)
+  #cat(a)
 }

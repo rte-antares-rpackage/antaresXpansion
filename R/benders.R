@@ -10,27 +10,55 @@
 #' @param report
 #'   Logical. If \code{TRUE} an html report of the expansion results will
 #'   be generated.
+#' @param clean
+#'   Logical. If \code{TRUE} the output of the ANTARES simulations run by the
+#'   package will be deleted (except for the output of the simulation which brings
+#'   to the best solution).
+#' @param parallel
+#'   Logical. If \code{TRUE} the ANTARES simulations will be run in parallel mode (Work
+#'   only with ANTARES v6.0.0 or more). In that case, the number of cores used by the simulation
+#'   is the one set in advanced_settings/simulation_cores (see ANTARES interface).
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
 #'
 #' @return 
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions readAntares setSimulationPath getAreas
+#' @importFrom rmarkdown render
+#' @importFrom utils packageVersion
 #' @export
 #' 
-benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOptions())
+benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, parallel = TRUE, opts = antaresRead::simOptions())
 {
-  # ---- 0. initiale benders iteration ----
+  # ---- 0. initialize benders iteration ----
+
+  # save current settings of the ANTARES study into a temporary file
+  assertthat::assert_that(file.exists(paste0(opts$studyPath, "/settings/generaldata.ini")))
+  assertthat::assert_that(file.copy(from = paste0(opts$studyPath, "/settings/generaldata.ini"), 
+            to = paste0(opts$studyPath, "/settings/generaldata_tmpsvg.ini"),
+            overwrite = TRUE))
+  
   # read expansion planning options
   exp_options <- read_options(opts)
   
   # read investment candidates file
   candidates <- read_candidates(opts)
   n_candidates <- length(candidates)
+  assertthat::assert_that(n_candidates > 0)
+  
+  # if all investments are distributed (no integer variables), relax master problem
+  if(all(sapply(candidates, FUN = function(c){return(c$relaxed)})))
+  {
+    exp_options$master <- "relaxed"
+  }
   
   # set ANTARES study options
   set_antares_options(exp_options, opts)
+  
+  # check that the study is appropriately set for the expansion problem
+  assertthat::assert_that(benders_check(opts))
   
   # initiate text files to communicate with master problem
   # and copy AMPL file into the temporary file 
@@ -46,6 +74,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   best_solution <- NA  # best solution identifier
   tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")   # temporary folder
   relax_integrality <- exp_options$master %in% c("relaxed", "integer")
+  unique_key <- paste(sample(c(0:9, letters), size = 3, replace = TRUE),collapse = "")
+  all_areas <- antaresRead::getAreas(opts = opts)
   
   # create output structure 
   x <- list()
@@ -55,6 +85,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   x$operation_costs <- numeric()
   x$rentability <- data.frame()
   x$iterations <- list()
+  x$digest <- list()
+  x$digest$lole <- data.frame()
   
   # create iteration structure
   current_it <- list()
@@ -77,8 +109,18 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   # cuts$weekly_cost <- data.table(name = character(), mc_year = integer(), week = integer(), cost = double())
   # 
 
-  # set initial value to each investment candidate (here put to max_invest/2)
-  x$invested_capacities <- data.frame( it1 = sapply(candidates, FUN = function(c){c$max_invest/2}))
+  # set initial value to each investment candidate 
+  # (here put to closest multiple of unit-size below max_invest/2)
+  x$invested_capacities <- data.frame( it1 = sapply(candidates, FUN = function(c){
+    if(c$unit_size > 0)
+    {
+      out <- floor(c$max_invest/2/c$unit_size) * c$unit_size
+      out <- max(0, min(c$max_invest, out))
+    }
+    else
+    { out <- c$max_invest/2}
+    return(out)}))
+  
   row.names(x$invested_capacities) <- sapply(candidates, FUN = function(c){c$name})
   
   
@@ -134,19 +176,19 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     # run the ANTARES simulation, load the path related to this
     # simulation and read the outputs
     
-    simulation_name <- paste0("benders-", current_it$id)
+    simulation_name <- paste0("expansion-benders-", unique_key, "-", current_it$id)
     if(display){  cat("   ANTARES simulation running ... ", sep="")}
-    run_simulation(simulation_name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, opts)
+    run_simulation(simulation_name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts)
     if(display){  cat("[done] \n", sep="")}
     
-    output_antares <- setSimulationPath(paste0(opts$studyPath, "/output/", get_whole_simulation_name(simulation_name, opts)))
+    output_antares <- antaresRead::setSimulationPath(paste0(opts$studyPath, "/output/", get_whole_simulation_name(simulation_name, opts)))
     
     # read output of the simulation, for links and areas, 
     # with synthetic visions and detailed annual and weekly results
     # to avoid the sum of numeric approximations, it is advised to use the most aggregated output of ANTARES
     # (e.g. to use annual results of ANTARES instead of the sum of the weekly results)
     
-    if(packageVersion("antaresRead") > "0.14.9" )
+    if(utils::packageVersion("antaresRead") > "0.14.9" )
     {
       # hourly results
       output_link_h = readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
@@ -155,21 +197,21 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
                                   timeStep = "hourly", opts = output_antares, showProgress = FALSE)
       
       # weekly results
-      output_area_w = readAntares(areas = "all", links = NULL, mcYears = current_it$mc_years, 
+      output_area_w = antaresRead::readAntares(areas = "all", links = NULL, mcYears = current_it$mc_years, 
                                   timeStep = "weekly", opts = output_antares, showProgress = FALSE)
-      output_link_w = readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
+      output_link_w = antaresRead::readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
                                   timeStep = "weekly", opts = output_antares, showProgress = FALSE)
       
       # yearly results
-      output_area_y = readAntares(areas = "all", links = NULL, mcYears = current_it$mc_years, 
+      output_area_y = antaresRead::readAntares(areas = "all", links = NULL, mcYears = current_it$mc_years, 
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
-      output_link_y = readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
+      output_link_y = antaresRead::readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
       
       # synthetic results
-      output_area_s = readAntares(areas = "all", links = NULL, mcYears = NULL, 
+      output_area_s = antaresRead::readAntares(areas = "all", links = NULL, mcYears = NULL, 
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
-      output_link_s = readAntares(areas = NULL, links = "all", mcYears = NULL, 
+      output_link_s = antaresRead::readAntares(areas = NULL, links = "all", mcYears = NULL, 
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
     }
     else  # old package version with synthesis arguments
@@ -179,21 +221,21 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
                                   timeStep = "hourly", opts = output_antares, showProgress = FALSE)
       
       # weekly results
-      output_area_w = readAntares(areas = "all", links = NULL, synthesis = FALSE, 
+      output_area_w = antaresRead::readAntares(areas = "all", links = NULL, synthesis = FALSE, 
                                   timeStep = "weekly", opts = output_antares, showProgress = FALSE)
-      output_link_w = readAntares(areas = NULL, links = "all", synthesis = FALSE, 
+      output_link_w = antaresRead::readAntares(areas = NULL, links = "all", synthesis = FALSE, 
                                   timeStep = "weekly", opts = output_antares, showProgress = FALSE)
       
       # yearly results
-      output_area_y = readAntares(areas = "all", links = NULL, synthesis = TRUE,
+      output_area_y = antaresRead::readAntares(areas = "all", links = NULL, synthesis = TRUE,
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
-      output_link_y = readAntares(areas = NULL, links = "all", synthesis = TRUE,
+      output_link_y = antaresRead::readAntares(areas = NULL, links = "all", synthesis = TRUE,
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
       
       # synthetic results
-      output_area_s = readAntares(areas = "all", links = NULL, synthesis = TRUE,
+      output_area_s = antaresRead::readAntares(areas = "all", links = NULL, synthesis = TRUE,
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
-      output_link_s = readAntares(areas = NULL, links = "all", synthesis = TRUE,
+      output_link_s = antaresRead::readAntares(areas = NULL, links = "all", synthesis = TRUE,
                                   timeStep = "annual", opts = output_antares, showProgress = FALSE)
     }
     
@@ -242,14 +284,18 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
 
     # compute average rentability of each candidate (can only
     # be assessed if a complete simulation has been run)
+    # + compute LOLE for each area
     if(current_it$full)
     {
       average_rentability <- sapply(candidates, 
-                          FUN = function(c){sum(as.numeric(subset(output_link_h_s, link == c$link)$"MARG. COST")*c$link_profile) - c$cost * n_w / 52 }) 
+                                    FUN = function(c){sum(as.numeric(subset(output_link_h_s, link == c$link)$"MARG. COST")*c$link_profile) - c$cost * n_w / 52 })                          FUN = function(c){sum(as.numeric(subset(output_link_h_s, link == c$link)$"MARG. COST")*c$link_profile) - c$cost * n_w / 52 }) 
+                                    #FUN = function(c){sum(as.numeric(subset(output_link_s, link == c$link)$"MARG. COST")) - c$cost * n_w / 52 }) 
+      lole <- sapply(all_areas, FUN = function(a){as.numeric(subset(output_area_s, area == a)$"LOLD")}) 
     }
     else
     {
       average_rentability <- rep(NA, n_candidates)
+      lole <- rep(NA, length(all_areas))
     }
     
     # update output structure
@@ -257,8 +303,16 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     {
       x$rentability <- data.frame(it1 = average_rentability)
       row.names(x$rentability) <- sapply(candidates, FUN = function(c){c$name})
+      x$digest$lole <- data.frame(it1 = lole)
+      row.names(x$digest$lole) <- all_areas
     }
-    else {x$rentability[[current_it$id]] <- average_rentability}
+    else 
+    {
+      x$rentability[[current_it$id]] <- average_rentability
+      x$digest$lole[[current_it$id]] <- lole
+    }
+  
+    
     
     # print results of the ANTARES simulation
     if(display & current_it$full)
@@ -294,12 +348,14 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     if(current_it$cut_type == "average")
     {
       assert_that(current_it$full)
+      #update_average_cuts(current_it, candidates, output_link_s, ov_cost, n_w, tmp_folder, exp_options)
       update_average_cuts(current_it, candidates, output_link_h_s, ov_cost, n_w, tmp_folder, exp_options)
     }
     if(current_it$cut_type == "yearly")
     {
       assert_that(all(current_it$weeks == weeks))
       update_yearly_cuts(current_it,candidates, output_area_y, output_link_y, output_link_h, inv_cost, n_w, tmp_folder, exp_options)
+      #update_yearly_cuts(current_it,candidates, output_area_y, output_link_y, inv_cost, n_w, tmp_folder, exp_options)
     }
     if(current_it$cut_type == "weekly")
     {
@@ -357,22 +413,22 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
       {
         has_converged <- TRUE
       }
+      
+      # if master problem solution didn't evolve at this (full) iteration, then the decomposition has
+      # converged
+      
+      if(all(abs(benders_sol - x$invested_capacities[[current_it$id]]) <= 0.1) )
+      {
+        if(current_it$full)
+        { 
+          has_converged <- TRUE  
+        }
+        else
+        {
+          current_it$need_full <- TRUE
+        }
+      }
     }  
-    
-    # if master problem solution didn't evolve at this (full) iteration, then the decomposition has
-    # converged
-    
-    if(all(abs(benders_sol - x$invested_capacities[[current_it$id]]) <= 0.1) )
-    {
-     if(current_it$full)
-     { 
-       has_converged <- TRUE  
-     }
-     else
-     {
-       current_it$need_full <- TRUE
-     }
-    }
     
     # if option integer has been chosen and integer has not yet been used, convergence cannot be reached
     if(exp_options$master == "integer" && relax_integrality)
@@ -406,6 +462,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
     }
     
     
+    # ---- 9. Clean ANTARES output ----
+    if(clean) { clean_output_benders(best_solution, unique_key, opts)}
 
   }
   
@@ -416,11 +474,18 @@ benders <- function(path_solver, display = TRUE, report = TRUE, opts = simOption
   x$study_options <- opts
   x$candidates <- read_candidates(opts)
   
-  # reset some options of the ANTARES study to their initial values
-  # set simulation period
-  set_simulation_period(weeks, opts)
-  # set playlist
-  set_playlist(mc_years, opts)
+  # reset options of the ANTARES study to their initial values
+  assertthat::assert_that(file.remove(paste0(opts$studyPath, "/settings/generaldata.ini")))
+  assertthat::assert_that(file.rename(from = paste0(opts$studyPath, "/settings/generaldata_tmpsvg.ini"), 
+                                    to = paste0(opts$studyPath, "/settings/generaldata.ini")))
+
+
+  # set link capacities to their optimal value
+  for(c in candidates)
+  {
+    update_link(c$link, "direct_capacity", x$invested_capacities[c$name, paste0("it", best_solution)] , opts)
+    update_link(c$link, "indirect_capacity", x$invested_capacities[c$name, paste0("it", best_solution)], opts)
+  }
   
   
   # save output file

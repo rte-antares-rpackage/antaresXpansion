@@ -4,7 +4,8 @@
 \alias{enable_hurdle_costs}
 \title{Enable or disable the hurdle cost of a link or a list of links}
 \usage{
-enable_hurdle_costs(link_names, enable = TRUE, opts = simOptions())
+enable_hurdle_costs(link_names, enable = TRUE,
+  opts = antaresRead::simOptions())
 }
 \arguments{
 \item{link_names}{Name of one link, or vector with several link names}

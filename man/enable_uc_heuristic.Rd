@@ -5,7 +5,7 @@
 \title{Enable or disable the options which allow (or not) the excecution of the heuristic
 in fast mode}
 \usage{
-enable_uc_heuristic(enable = TRUE, opts = simOptions())
+enable_uc_heuristic(enable = TRUE, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{enable}{Should the heuristic be excecuted (\code{TRUE}) or not (\code{FALSE}) ?}

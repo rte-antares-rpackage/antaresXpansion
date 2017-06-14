@@ -4,7 +4,7 @@
 \alias{filter_output_areas}
 \title{Modify the filters on the output of the areas}
 \usage{
-filter_output_areas(areas, filter, type, opts = simOptions())
+filter_output_areas(areas, filter, type, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{areas}{Area, or vector of areas whose filter will be changed.}

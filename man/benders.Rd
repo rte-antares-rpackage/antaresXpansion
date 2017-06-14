@@ -4,7 +4,8 @@
 \alias{benders}
 \title{Launch benders decomposition}
 \usage{
-benders(path_solver, display = TRUE, report = TRUE, opts = simOptions())
+benders(path_solver, display = TRUE, report = TRUE, clean = TRUE,
+  opts = antaresRead::simOptions())
 }
 \arguments{
 \item{path_solver}{Character containing the Antares Solver path}
@@ -14,6 +15,10 @@ if displayed in the console}
 
 \item{report}{Logical. If \code{TRUE} an html report of the expansion results will
 be generated.}
+
+\item{clean}{Logical. If \code{TRUE} the output of the ANTARES simulations run by the
+package will be deleted (except for the output of the simulation which brings
+to the best solution).}
 
 \item{opts}{list of simulation parameters returned by the function
 \code{antaresRead::setSimulationPath}}

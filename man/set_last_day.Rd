@@ -4,7 +4,7 @@
 \alias{set_last_day}
 \title{Set parameter simulation start}
 \usage{
-set_last_day(last_day, opts = simOptions())
+set_last_day(last_day, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{last_day}{day of the beginning of the simulated period. 

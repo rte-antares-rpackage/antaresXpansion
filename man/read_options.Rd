@@ -4,7 +4,7 @@
 \alias{read_options}
 \title{Read expansion planning options}
 \usage{
-read_options(opts = simOptions())
+read_options(opts = antaresRead::simOptions())
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function

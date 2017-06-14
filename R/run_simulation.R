@@ -15,6 +15,10 @@
 #' @param wait
 #'   Logical, indicating whether the R interpreter should wait for the 
 #'   simulation to finish, or run it asynchronously. 
+#' @param parallel
+#'   Logical. If \code{TRUE} the ANTARES simulation will be run in parallel mode (Work
+#'   only with ANTARES v6.0.0 or more). In that case, the number of cores used by the simulation
+#'   is the one set in advanced_settings/simulation_cores (see ANTARES interface).
 #' @param opts
 #'   List of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
@@ -23,20 +27,42 @@
 #' The function does not return anything. It is  used to launch an 
 #' ANTARES simulation
 #' 
-#' @import assertthat antaresRead
+#' @importFrom assertthat assert_that
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
-run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, opts = simOptions())
+run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = TRUE, opts = antaresRead::simOptions())
 {
   # a few checks
   name = tolower(name)
-  assert_that(file.exists(path_solver))
-  assert_that(mode %in% c("economy", "adequacy", "draft"))
+  assertthat::assert_that(file.exists(path_solver))
+  assertthat::assert_that(mode %in% c("economy", "adequacy", "draft"))
+  
+  
+  ##Test version of antares solver
+  solver <- unlist(gsub("-solver.exe", "", path_solver))
+  solver <- strsplit(solver, "antares-")[[1]]
+  solver <- solver[[length(solver)]]
+  version_solver <- substr(solver, 1, 1)
+  version_study <- substr(opts$antaresVersion,1,1)
+  
+  if(version_solver != version_study){
+    stop(paste0("Imcompatibility between antares solver version (", version_solver, ") and study version (", version_study), ")")
+  }
+  
   
   #Launch simulation
-  cmd <- '"%s" "%s" -n "%s" --"%s"'
-  cmd <- sprintf(cmd, path_solver, opts$studyPath, name, mode)
-  
+  if(version_solver >= 6 & parallel)
+  {
+    cmd <- '"%s" "%s" -n "%s" --"%s" --parallel'
+    cmd <- sprintf(cmd, path_solver, opts$studyPath, name, mode)
+  }
+  else
+  {
+    cmd <- '"%s" "%s" -n "%s" --"%s"'
+    cmd <- sprintf(cmd, path_solver, opts$studyPath, name, mode)
+  }
+    
   system(cmd, ignore.stdout = TRUE, wait = wait,  show.output.on.console = show_output_on_console)
 }
 
@@ -57,10 +83,10 @@ run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, sho
 #' identifier which are automatically added by ANTARES in the output path :
 #' yyyymmdd-hhmmxxx-name.
 #' 
-#' @import assertthat antaresRead
+#' @importFrom antaresRead simOptions
 #' @export
 #' 
-get_whole_simulation_name <- function(name,opts = simOptions())
+get_whole_simulation_name <- function(name,opts = antaresRead::simOptions())
 {
   # read list of the output directory of the study
   list_simu = list.dirs(path=paste(opts$studyPath,"/output/",sep=""), recursive =FALSE)
