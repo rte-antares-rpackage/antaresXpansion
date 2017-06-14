@@ -29,6 +29,7 @@
 benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, opts = antaresRead::simOptions())
 {
   # ---- 0. initialize benders iteration ----
+
   # read expansion planning options
   exp_options <- read_options(opts)
   
@@ -455,6 +456,13 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, op
   set_simulation_period(weeks, opts)
   # set playlist
   set_playlist(mc_years, opts)
+  
+  # set link capacities to their optimal value
+  for(c in candidates)
+  {
+    update_link(c$link, "direct_capacity", x$invested_capacities[c$name, paste0("it", best_solution)] , opts)
+    update_link(c$link, "indirect_capacity", x$invested_capacities[c$name, paste0("it", best_solution)], opts)
+  }
   
   
   # save output file

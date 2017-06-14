@@ -139,7 +139,7 @@ library(antaresXpansion)
 Select an ANTARES study using [antaresRead package](https://github.com/rte-antares-rpackage/antares-rpackageRead). As no  outputs are needed, the simulation argument should be put to zero.
 
 ```r
-setsimulationPath("study_path", simulation = 0)
+setSimulationPath("study_path", simulation = 0)
 ```
 
 Create the `candidate.ini` and `settings.ini` files as explained above and store them in the directory `study_path/user/expansion`.

@@ -34,7 +34,7 @@ read_options <- function(opts = antaresRead::simOptions())
   options$master <- "integer"
   options$optimality_gap <- 0
   options$max_iteration <- Inf
-  options$cut_type <- "average"
+  options$cut_type <- "yearly"
   options$week_selection <- FALSE
   options$relaxed_optimality_gap <- "0.01%"
 
