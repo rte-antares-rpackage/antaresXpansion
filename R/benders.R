@@ -14,6 +14,10 @@
 #'   Logical. If \code{TRUE} the output of the ANTARES simulations run by the
 #'   package will be deleted (except for the output of the simulation which brings
 #'   to the best solution).
+#' @param parallel
+#'   Logical. If \code{TRUE} the ANTARES simulations will be run in parallel mode (Work
+#'   only with ANTARES v6.0.0 or more). In that case, the number of cores used by the simulation
+#'   is the one set in advanced_settings/simulation_cores (see ANTARES interface).
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
@@ -26,7 +30,7 @@
 #' @importFrom utils packageVersion
 #' @export
 #' 
-benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, opts = antaresRead::simOptions())
+benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, parallel = TRUE, opts = antaresRead::simOptions())
 {
   # ---- 0. initialize benders iteration ----
 
@@ -174,7 +178,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, op
     
     simulation_name <- paste0("expansion-benders-", unique_key, "-", current_it$id)
     if(display){  cat("   ANTARES simulation running ... ", sep="")}
-    run_simulation(simulation_name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, opts)
+    run_simulation(simulation_name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts)
     if(display){  cat("[done] \n", sep="")}
     
     output_antares <- antaresRead::setSimulationPath(paste0(opts$studyPath, "/output/", get_whole_simulation_name(simulation_name, opts)))
@@ -461,12 +465,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, op
   assertthat::assert_that(file.remove(paste0(opts$studyPath, "/settings/generaldata.ini")))
   assertthat::assert_that(file.rename(from = paste0(opts$studyPath, "/settings/generaldata_tmpsvg.ini"), 
                                     to = paste0(opts$studyPath, "/settings/generaldata.ini")))
-  
-  # set simulation period
-  #set_simulation_period(weeks, opts)
-  # set playlist
-  #set_playlist(mc_years, opts)
-  
+
+
   # set link capacities to their optimal value
   for(c in candidates)
   {

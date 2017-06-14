@@ -15,6 +15,10 @@
 #' @param wait
 #'   Logical, indicating whether the R interpreter should wait for the 
 #'   simulation to finish, or run it asynchronously. 
+#' @param parallel
+#'   Logical. If \code{TRUE} the ANTARES simulation will be run in parallel mode (Work
+#'   only with ANTARES v6.0.0 or more). In that case, the number of cores used by the simulation
+#'   is the one set in advanced_settings/simulation_cores (see ANTARES interface).
 #' @param opts
 #'   List of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
@@ -27,7 +31,7 @@
 #' @importFrom antaresRead simOptions
 #' @export
 #' 
-run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, opts = antaresRead::simOptions())
+run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = TRUE, opts = antaresRead::simOptions())
 {
   # a few checks
   name = tolower(name)
@@ -46,10 +50,19 @@ run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, sho
     stop(paste0("Imcompatibility between antares solver version (", version_solver, ") and study version (", version_study), ")")
   }
   
-  #Launch simulation
-  cmd <- '"%s" "%s" -n "%s" --"%s"'
-  cmd <- sprintf(cmd, path_solver, opts$studyPath, name, mode)
   
+  #Launch simulation
+  if(version_solver >= 6 & parallel)
+  {
+    cmd <- '"%s" "%s" -n "%s" --"%s" --parallel'
+    cmd <- sprintf(cmd, path_solver, opts$studyPath, name, mode)
+  }
+  else
+  {
+    cmd <- '"%s" "%s" -n "%s" --"%s"'
+    cmd <- sprintf(cmd, path_solver, opts$studyPath, name, mode)
+  }
+    
   system(cmd, ignore.stdout = TRUE, wait = wait,  show.output.on.console = show_output_on_console)
 }
 
