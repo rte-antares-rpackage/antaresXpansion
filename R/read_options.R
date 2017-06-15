@@ -30,7 +30,7 @@ read_options <- function(opts = antaresRead::simOptions())
   # initiate option list, with default values
   options <- list()
   options$method <- "benders_decomposition"
-  options$uc_type <- "fast"
+  options$uc_type <- "relaxed_fast"
   options$master <- "integer"
   options$optimality_gap <- 0
   options$max_iteration <- Inf
