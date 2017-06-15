@@ -366,7 +366,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     }
     if(current_it$cut_type == "weekly")
     {
-      update_weekly_cuts(current_it, candidates, output_area_w, output_link_w, output_link_h, inv_cost, tmp_folder, exp_options, opts)
+      update_weekly_cuts(current_it, candidates, output_area_w, output_link_w, output_link_h, inv_cost, tmp_folder, exp_options)
     }
     
     

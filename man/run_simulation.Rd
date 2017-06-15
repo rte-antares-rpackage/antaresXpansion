@@ -5,7 +5,8 @@
 \title{Run an Antares Simulation}
 \usage{
 run_simulation(name, mode = "economy", path_solver, wait = TRUE,
-  show_output_on_console = FALSE, opts = antaresRead::simOptions())
+  show_output_on_console = FALSE, parallel = TRUE,
+  opts = antaresRead::simOptions())
 }
 \arguments{
 \item{name}{Name of the simulation}
@@ -19,6 +20,10 @@ simulation to finish, or run it asynchronously.}
 
 \item{show_output_on_console}{Logical, indicating whether to capture the ANTARES log and show 
 it on the R console}
+
+\item{parallel}{Logical. If \code{TRUE} the ANTARES simulation will be run in parallel mode (Work
+only with ANTARES v6.0.0 or more). In that case, the number of cores used by the simulation
+is the one set in advanced_settings/simulation_cores (see ANTARES interface).}
 
 \item{opts}{List of simulation parameters returned by the function
 \code{antaresRead::setSimulationPath}}

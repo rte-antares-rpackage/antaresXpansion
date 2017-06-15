@@ -235,7 +235,7 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y,output_link_
 #' @return nothing
 #' 
 #' 
-update_weekly_cuts <- function(current_it, candidates, output_area_w, output_link_w, output_link_h, inv_cost, tmp_folder, benders_options, opts)
+update_weekly_cuts <- function(current_it, candidates, output_area_w, output_link_w, output_link_h, inv_cost, tmp_folder, benders_options)
 {
   
   # compute a few intermediate variables

@@ -5,7 +5,7 @@
 \title{Launch benders decomposition}
 \usage{
 benders(path_solver, display = TRUE, report = TRUE, clean = TRUE,
-  opts = antaresRead::simOptions())
+  parallel = TRUE, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{path_solver}{Character containing the Antares Solver path}
@@ -19,6 +19,10 @@ be generated.}
 \item{clean}{Logical. If \code{TRUE} the output of the ANTARES simulations run by the
 package will be deleted (except for the output of the simulation which brings
 to the best solution).}
+
+\item{parallel}{Logical. If \code{TRUE} the ANTARES simulations will be run in parallel mode (Work
+only with ANTARES v6.0.0 or more). In that case, the number of cores used by the simulation
+is the one set in advanced_settings/simulation_cores (see ANTARES interface).}
 
 \item{opts}{list of simulation parameters returned by the function
 \code{antaresRead::setSimulationPath}}

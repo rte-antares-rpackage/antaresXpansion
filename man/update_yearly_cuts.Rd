@@ -7,7 +7,7 @@ Create files in_yearlyrentability.txt and in_yearlycuts.txt which
 will be later read by AMPL as input of the master problem}
 \usage{
 update_yearly_cuts(current_it, candidates, output_area_y, output_link_y,
-  inv_cost, n_w, tmp_folder, benders_options)
+  output_link_h, inv_cost, n_w, tmp_folder, benders_options)
 }
 \arguments{
 \item{current_it}{list of current iteration characteristics}
@@ -18,6 +18,8 @@ update_yearly_cuts(current_it, candidates, output_area_y, output_link_y,
 \item{output_area_y}{antaresDataList of all the areas of the study with a yearly time step}
 
 \item{output_link_y}{antaresDataList of all the links of the study with a yearly time step}
+
+\item{output_link_h}{antaresDataList of all the links of the study with an hourly time step}
 
 \item{inv_cost}{investments costs of this iteration}
 
