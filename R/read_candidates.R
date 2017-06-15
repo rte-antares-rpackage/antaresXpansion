@@ -53,7 +53,8 @@ read_candidates <- function(opts = antaresRead::simOptions())
     candidate$max_unit <- 0
     candidate$max_invest <- 0
     candidate$relaxed <- FALSE
-    candidate$link_profile <- data.frame(rep(1,8760))
+    candidate$has_link_profile <- FALSE
+    candidate$link_profile <- 1#  data.frame(rep(1,8760))
       
     # read candidate characteristics
     for(line in (index[pr]+1):(index[pr+1]-1))
@@ -115,9 +116,8 @@ read_candidates <- function(opts = antaresRead::simOptions())
           # read file
           profile_data <-  read.table(profile_file, header=FALSE)
           candidate$link_profile <- profile_data
+          candidate$has_link_profile <- TRUE
         }
-        
-        
       }
       else if (option_name == "max-investment")
       {
@@ -170,4 +170,28 @@ read_candidates <- function(opts = antaresRead::simOptions())
     stop("investment candidate link must be unique")
   }
   return(inv)
+}
+
+
+
+#' Return vector of candidate names which have a link profile
+#' 
+#'   
+#' @param candidates
+#'   list of investment candidates, as returned by
+#'   \code{\link{read_candidates}}
+#'
+#' @return 
+#' Returns a vector of link name
+#' 
+#' @importFrom assertthat assert_that
+#' 
+with_profile <- function(candidates)
+{
+  f <- function(c)
+  {if(c$has_link_profile) return(c$link)
+    else return (NA)
+  }
+  link_with_profile <- sapply(candidates, FUN = f)
+  return(link_with_profile[!is.na(link_with_profile)])
 }

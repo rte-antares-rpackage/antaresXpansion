@@ -1,4 +1,3 @@
-
 #' Launch benders decomposition
 #' 
 #' 
@@ -55,7 +54,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   }
   
   # set ANTARES study options
-  set_antares_options(exp_options, opts)
+  set_antares_options(exp_options, candidates, opts)
   
   # check that the study is appropriately set for the expansion problem
   assertthat::assert_that(benders_check(opts))
@@ -170,7 +169,6 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     
     
-    
     # ---- 3. Simulate ---- 
     
     # run the ANTARES simulation, load the path related to this
@@ -187,15 +185,17 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # with synthetic visions and detailed annual and weekly results
     # to avoid the sum of numeric approximations, it is advised to use the most aggregated output of ANTARES
     # (e.g. to use annual results of ANTARES instead of the sum of the weekly results)
-    
+
     if(utils::packageVersion("antaresRead") > "0.14.9" )
     {
       # hourly results
-      output_link_h = readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
-                                  timeStep = "hourly", opts = output_antares, showProgress = FALSE)
-      output_link_h_s = readAntares(areas = NULL, links = "all", mcYears = NULL, 
-                                  timeStep = "hourly", opts = output_antares, showProgress = FALSE)
-      
+      if (length(with_profile(candidates)) > 0 )
+      {
+        output_link_h = readAntares(areas = NULL, links = with_profile(candidates), mcYears = current_it$mc_years, 
+                                    timeStep = "hourly", opts = output_antares, showProgress = FALSE)
+        output_link_h_s = readAntares(areas = NULL, links = with_profile(candidates), mcYears = NULL, 
+                                    timeStep = "hourly", opts = output_antares, showProgress = FALSE)
+      }
       # weekly results
       output_area_w = antaresRead::readAntares(areas = "all", links = NULL, mcYears = current_it$mc_years, 
                                   timeStep = "weekly", opts = output_antares, showProgress = FALSE)
@@ -287,9 +287,18 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # + compute LOLE for each area
     if(current_it$full)
     {
-      average_rentability <- sapply(candidates, 
-                                    FUN = function(c){sum(as.numeric(subset(output_link_h_s, link == c$link)$"MARG. COST")*c$link_profile) - c$cost * n_w / 52 })                          FUN = function(c){sum(as.numeric(subset(output_link_h_s, link == c$link)$"MARG. COST")*c$link_profile) - c$cost * n_w / 52 }) 
-                                    #FUN = function(c){sum(as.numeric(subset(output_link_s, link == c$link)$"MARG. COST")) - c$cost * n_w / 52 }) 
+      get_avg_rentability <- function(c)
+      {
+        if(c$has_link_profile)
+        {
+          return(sum(as.numeric(subset(output_link_h_s, link == c$link)$"MARG. COST")*c$link_profile) - c$cost * n_w / 52) 
+        }
+        else 
+        {
+          return(sum(as.numeric(subset(output_link_s, link == c$link)$"MARG. COST")) - c$cost * n_w / 52)
+        }
+      }
+      average_rentability <- sapply(candidates, FUN = get_avg_rentability)
       lole <- sapply(all_areas, FUN = function(a){as.numeric(subset(output_area_s, area == a)$"LOLD")}) 
     }
     else
@@ -348,14 +357,12 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     if(current_it$cut_type == "average")
     {
       assert_that(current_it$full)
-      #update_average_cuts(current_it, candidates, output_link_s, ov_cost, n_w, tmp_folder, exp_options)
-      update_average_cuts(current_it, candidates, output_link_h_s, ov_cost, n_w, tmp_folder, exp_options)
+      update_average_cuts(current_it, candidates, output_link_s, output_link_h_s, ov_cost, n_w, tmp_folder, exp_options)
     }
     if(current_it$cut_type == "yearly")
     {
       assert_that(all(current_it$weeks == weeks))
       update_yearly_cuts(current_it,candidates, output_area_y, output_link_y, output_link_h, inv_cost, n_w, tmp_folder, exp_options)
-      #update_yearly_cuts(current_it,candidates, output_area_y, output_link_y, inv_cost, n_w, tmp_folder, exp_options)
     }
     if(current_it$cut_type == "weekly")
     {

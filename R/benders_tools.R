@@ -4,6 +4,9 @@
 #' @param benders_options
 #'   list of benders decomposition options, as returned by
 #'   \code{\link{read_options}}.
+#' @param candidates
+#'   list of investment candidates, as returned by
+#'   \code{\link{read_candidates}}
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
@@ -13,14 +16,17 @@
 #' @importFrom assertthat assert_that
 #' @importFrom antaresRead simOptions getLinks getAreas
 #' 
-set_antares_options <- function(benders_options, opts = antaresRead::simOptions())
+set_antares_options <- function(benders_options, candidates, opts = antaresRead::simOptions())
 {
   # 1 - set output filtering options
   enable_custom_filtering(TRUE, opts)
   enable_year_by_year(TRUE, opts)
   filter_output_areas(areas = antaresRead::getAreas(opts = opts), filter = c("weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
-  filter_output_links(links = antaresRead::getLinks(opts = opts), filter = c("hourly", "weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
-
+  filter_output_links(links = antaresRead::getLinks(opts = opts), filter = c("weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
+  if (length(with_profile(candidates)) > 0 )
+  {
+    filter_output_links(links = with_profile(candidates), filter = c("hourly", "weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
+  }
   # 2 - set unit-commitment mode
   if(benders_options$uc_type == "accurate")
   {
@@ -72,6 +78,9 @@ set_antares_options <- function(benders_options, opts = antaresRead::simOptions(
 #' @param output_link_s
 #'   antaresDataList of all the links of the study with a yearly time step
 #'   and averaged on all MC years
+#' @param output_link_h_s
+#'   antaresDataList of all the links of the study with an hourly time step
+#'   and averaged on all MC years
 #' @param ov_cost
 #'   overall costs of this iteration
 #' @param n_w
@@ -85,7 +94,7 @@ set_antares_options <- function(benders_options, opts = antaresRead::simOptions(
 #' @return nothing
 #' 
 
-update_average_cuts <- function(current_it, candidates, output_link_s, output_link_h, ov_cost, n_w, tmp_folder, benders_options)
+update_average_cuts <- function(current_it, candidates, output_link_s, output_link_h_s, ov_cost, n_w, tmp_folder, benders_options)
 {
   n_candidates <- length(candidates)
   
@@ -97,8 +106,15 @@ update_average_cuts <- function(current_it, candidates, output_link_s, output_li
   script  <-  ""
   for (c in 1:n_candidates)
   {
-    len = length(subset(output_link_h, link == candidates[[c]]$link)$"MARG. COST")
-    tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link)$"MARG. COST")*candidates[[c]]$link_profile[1:len, 1]) - candidates[[c]]$cost * n_w / 52
+    if(candidates[[c]]$has_link_profile)
+    {
+      len = length(subset(output_link_h_s, link == candidates[[c]]$link)$"MARG. COST")
+      tmp_rentability <- sum(as.numeric(subset(output_link_h_s, link == candidates[[c]]$link)$"MARG. COST")*candidates[[c]]$link_profile[1:len, 1]) - candidates[[c]]$cost * n_w / 52
+    }
+    else
+    {
+      tmp_rentability <- sum(as.numeric(subset(output_link_s, link == candidates[[c]]$link)$"MARG. COST")) - candidates[[c]]$cost * n_w / 52
+    }
     script <- paste0(script, current_it$id, " ", candidates[[c]]$name, " ", tmp_rentability)
     if (c != n_candidates) { script <- paste0(script, "\n")}
   }
@@ -119,6 +135,8 @@ update_average_cuts <- function(current_it, candidates, output_link_s, output_li
 #'   antaresDataList of all the areas of the study with a yearly time step
 #' @param output_link_y
 #'   antaresDataList of all the links of the study with a yearly time step
+#' @param output_link_h
+#'   antaresDataList of all the links of the study with an hourly time step
 #' @param inv_cost
 #'   investments costs of this iteration
 #' @param n_w
@@ -168,8 +186,15 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y,output_link_
     
     for(c in 1:n_candidates)
     {
-      len = length(subset(output_link_h, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")
-      tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")*candidates[[c]]$link_profile[1:len, 1]) - candidates[[c]]$cost * n_w / 52
+      if(candidates[[c]]$has_link_profile)
+      {
+        len = length(subset(output_link_h, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")
+        tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")*candidates[[c]]$link_profile[1:len, 1]) - candidates[[c]]$cost * n_w / 52
+      }
+      else
+      {
+        tmp_rentability <- sum(as.numeric(subset(output_link_y, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")) - candidates[[c]]$cost * n_w / 52
+      }
       script_rentability <- paste0(script_rentability, current_it$id, " ", y, " ", candidates[[c]]$name, " ", tmp_rentability)
       if (c != n_candidates || y != last_y)
       {
@@ -196,6 +221,8 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y,output_link_
 #' @param output_area_w
 #'   antaresDataList of all the areas of the study with a weekly time step
 #' @param output_link_w
+#'   antaresDataList of all the links of the study with a weekly time step
+#' @param output_link_h
 #'   antaresDataList of all the links of the study with a weekly time step
 #' @param inv_cost
 #'   investments costs of this iteration
@@ -253,12 +280,17 @@ update_weekly_cuts <- function(current_it, candidates, output_area_w, output_lin
       
       for(c in 1:n_candidates)
       {
-       
-        first_h <- 7*24*(w-1)+1
-        last_h <- 7*24*w
+        if(candidates[[c]]$has_link_profile)
+        {
+          first_h <- 7*24*(w-1)+1
+          last_h <- 7*24*w
+          tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y & timeId >= first_h & timeId <= last_h)$"MARG. COST")* candidates[[c]]$link_profile[first_h:last_h,1]) - candidates[[c]]$cost /52
+        }
+        else
+        {
+          tmp_rentability <- sum(as.numeric(subset(output_link_w, link == candidates[[c]]$link & mcYear == y & timeId == w)$"MARG. COST")) - candidates[[c]]$cost /52
+        }
         
-        tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y & timeId >= first_h & timeId <= last_h)$"MARG. COST")* candidates[[c]]$link_profile[first_h:last_h,1]) - candidates[[c]]$cost /52
-
         script_rentability <- paste0(script_rentability, current_it$id, " ", y , " ", w , " ", candidates[[c]]$name, " ", tmp_rentability)
         
         if (c != n_candidates || y != last_y || w != last_w)
