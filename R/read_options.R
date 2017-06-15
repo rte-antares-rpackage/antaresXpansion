@@ -100,7 +100,9 @@ read_options <- function(opts = antaresRead::simOptions())
     else if (option_name == "week_selection")
     {
       assertthat::assert_that(option_value %in% c("true", "false"))
-      options$week_selection <- as.logical(option_value)
+      # for now, week selection is forced to false
+      # since link-profile has been added, consistency with update_weekly_cuts has to be checked
+      # options$week_selection <- as.logical(option_value) 
     }
     else if (option_name == "relaxed_optimality_gap")
     {
