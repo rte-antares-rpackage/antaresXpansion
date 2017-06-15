@@ -66,6 +66,21 @@ max-units = 4
 For the case of distributed generation and storage, the investment variables can be *continuous*, without steps of several MW. In that case, the properties `unit-size`and `max-units`can be replaced by the property `max-investment`, and the invested capacity will be able to take any real value between `0` and `max-investment` (in MW).
 
 
+### Capacity profile
+By default, the investment candidates offer a "perfect capacity". That is to say, when 1 MW is invested, this 1 MW will be fully available for all the hours of the year. However, by adding the property `link-profile`, one can define a time series (with an hourly time step) of the ratio between the invested capacity and the capacity which is actually available at a given hour. This feature can be used to model investments in (e.g.) intermittent generation or thermal generation with seasonalized maintenance shutdowns.
+
+The property `link-profile `can be used as below :
+
+```txt
+[1]
+name = solar_power
+link = area1 - pv1
+annual-cost-per-mw = 100000
+max-investment = 10000
+link-profile = pv1.txt
+```
+Where `pv1.txt` is a text file, located in the `user/expansion/capa/` folder of the study, and which contains the load factor time series of the candidate (one column of 8760 values between 0 and 1). When x MW of the candidate solar_power will be invested, the actual time series of available power will be equal to the product of x and the time series `pv1.txt`.
+
 ## Method and settings
 
 ### Benders decomposition
