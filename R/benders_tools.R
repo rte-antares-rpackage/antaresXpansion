@@ -140,7 +140,7 @@ update_average_cuts <- function(current_it, candidates, output_link_s, output_li
 #' @param inv_cost
 #'   investments costs of this iteration
 #' @param n_w
-#'   number of weeks per year
+#'   number of simulated weeks per mc year
 #' @param tmp_folder
 #'   temporary folder in which to write the files
 #' @param benders_options
@@ -159,8 +159,8 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y,output_link_
   # initiate scripts
   script_rentability  <-  ""
   script_cost <- ""
-  
-  # for every mc years and every week
+
+    # for every mc years and every week
   for(y in current_it$mc_years)
   {
     if(benders_options$uc_type == "relaxed_fast")
@@ -170,13 +170,13 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y,output_link_
       y_cost <- sum(as.numeric(subset(output_area_y, mcYear == y)$"OV. COST")) +
           sum(as.numeric(subset(output_link_y, mcYear == y)$"HURDLE COST")) -
           sum(as.numeric(subset(output_area_y, mcYear == y)$"NP COST")) +
-          inv_cost
+          inv_cost 
     }
     else
     {
       y_cost <- sum(as.numeric(subset(output_area_y, mcYear == y)$"OV. COST")) +
           sum(as.numeric(subset(output_link_y, mcYear == y)$"HURDLE COST")) +
-          inv_cost
+          inv_cost 
     }
     
     
@@ -226,6 +226,8 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y,output_link_
 #'   antaresDataList of all the links of the study with a weekly time step
 #' @param inv_cost
 #'   investments costs of this iteration
+#' @param n_w
+#'   number of simulated weeks per mc year
 #' @param tmp_folder
 #'   temporary folder in which to write the files
 #' @param benders_options
@@ -235,7 +237,7 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y,output_link_
 #' @return nothing
 #' 
 #' 
-update_weekly_cuts <- function(current_it, candidates, output_area_w, output_link_w, output_link_h, inv_cost, tmp_folder, benders_options)
+update_weekly_cuts <- function(current_it, candidates, output_area_w, output_link_w, output_link_h, inv_cost, n_w, tmp_folder, benders_options)
 {
   
   # compute a few intermediate variables
@@ -261,13 +263,13 @@ update_weekly_cuts <- function(current_it, candidates, output_area_w, output_lin
         w_cost <- sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"OV. COST")) +
             sum(as.numeric(subset(output_link_w, mcYear == y & timeId == w)$"HURDLE COST")) -
             sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"NP COST")) +
-            inv_cost/52
+            inv_cost/n_w
       }
       else
       {
         w_cost <- sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"OV. COST")) +
             sum(as.numeric(subset(output_link_w, mcYear == y & timeId == w)$"HURDLE COST")) +
-            inv_cost/52
+            inv_cost/n_w
       }
       
       script_cost <- paste0(script_cost, current_it$id, " ", y , " ", w, " ", w_cost)
