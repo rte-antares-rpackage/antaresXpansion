@@ -10,7 +10,7 @@ Description: Compute optimal investment and decommissioning decisions in an
 License: Proprietary RTE
 LazyData: TRUE
 Imports:
-    antaresRead (>= 0.14.0),
+    antaresRead (>= 1.0),
     assertthat,
     lubridate,
     rmarkdown,
@@ -19,5 +19,6 @@ Imports:
     magrittr,
     plotly
 RoxygenNote: 5.0.1
-Suggests: knitr
+Suggests: knitr,
+    testthat
 VignetteBuilder: knitr

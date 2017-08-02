@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Baptiste Seguinot" />
 
-<meta name="date" content="2017-03-27" />
+<meta name="date" content="2017-06-15" />
 
 <title>Read me</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Read me</h1>
 <h4 class="author"><em>Baptiste Seguinot</em></h4>
-<h4 class="date"><em>2017-03-27</em></h4>
+<h4 class="date"><em>2017-06-15</em></h4>
 
 
 
@@ -130,6 +130,18 @@ max-units = 4</code></pre>
 <h3>Distributed generation</h3>
 <p>For the case of distributed generation and storage, the investment variables can be <em>continuous</em>, without steps of several MW. In that case, the properties <code>unit-size</code>and <code>max-units</code>can be replaced by the property <code>max-investment</code>, and the invested capacity will be able to take any real value between <code>0</code> and <code>max-investment</code> (in MW).</p>
 </div>
+<div id="capacity-profile" class="section level3">
+<h3>Capacity profile</h3>
+<p>By default, the investment candidates offer a “perfect capacity”. That is to say, when 1 MW is invested, this 1 MW will be fully available for all the hours of the year. However, by adding the property <code>link-profile</code>, one can define a time series (with an hourly time step) of the ratio between the invested capacity and the capacity which is actually available at a given hour. This feature can be used to model investments in (e.g.) intermittent generation or thermal generation with seasonalized maintenance shutdowns.</p>
+<p>The property <code>link-profile</code>can be used as below :</p>
+<pre class="txt"><code>[1]
+name = solar_power
+link = area1 - pv1
+annual-cost-per-mw = 100000
+max-investment = 10000
+link-profile = pv1.txt</code></pre>
+<p>Where <code>pv1.txt</code> is a text file, located in the <code>user/expansion/capa/</code> folder of the study, and which contains the load factor time series of the candidate (one column of 8760 values between 0 and 1). When x MW of the candidate solar_power will be invested, the actual time series of available power will be equal to the product of x and the time series <code>pv1.txt</code>.</p>
+</div>
 </div>
 <div id="method-and-settings" class="section level2">
 <h2>Method and settings</h2>
@@ -145,7 +157,7 @@ max-units = 4</code></pre>
 </div>
 <div id="settings" class="section level3">
 <h3>Settings</h3>
-<p>The different settings can be modified by the user of the package. All the settings are saved in a file <code>settings.ini</code> located in the foler <code>user/expansion/</code>.</p>
+<p>The different settings can be modified by the user of the package. All the settings are saved in a file <code>settings.ini</code> located in the folder <code>user/expansion/</code>.</p>
 <ul>
 <li><p><code>optimality_gap</code>: The optimality gap can take any numeric value. The optimality gap is theoretically the maximum possible distance (in euros) between the solution returned by the method and the optimal solution.</p></li>
 <li><p><code>master</code>: Can take two values, <code>relaxed</code> or <code>integer</code>. Defines whether or not should integer variables be used for the master problem.</p></li>
@@ -155,7 +167,7 @@ max-units = 4</code></pre>
 <pre class="txt"><code>uc_type = relaxed_fast
 master = integer
 optimality_gap = 0</code></pre>
-<p>Note that the optimality gap can also be given relatively to be best found solution by entering a <code>%</code> after the numeric value of the setting.</p>
+<p>Note that the optimality gap can also be given relatively to be best found solution by entering a <code>%</code> after the numeric value of the setting. In that case, the optimality is between <code>0%</code>and <code>100%</code> and the decimal separator is a point (<code>.</code>).</p>
 </div>
 <div id="which-settings-should-i-use-for-my-expansion-problem" class="section level3">
 <h3>Which settings should I use for my expansion problem ?</h3>
@@ -184,7 +196,7 @@ optimality_gap = 0</code></pre>
 <p>Load the package</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(antaresXpansion)</code></pre></div>
 <p>Select an ANTARES study using <a href="https://github.com/rte-antares-rpackage/antares-rpackageRead">antaresRead package</a>. As no outputs are needed, the simulation argument should be put to zero.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setsimulationPath</span>(<span class="st">&quot;study_path&quot;</span>, <span class="dt">simulation =</span> <span class="dv">0</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setSimulationPath</span>(<span class="st">&quot;study_path&quot;</span>, <span class="dt">simulation =</span> <span class="dv">0</span>)</code></pre></div>
 <p>Create the <code>candidate.ini</code> and <code>settings.ini</code> files as explained above and store them in the directory <code>study_path/user/expansion</code>.</p>
 <p>Enter the path of the ANTARES solver (for example).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">path_solver &lt;-<span class="st"> &quot;C:/Program Files/RTE/Antares/6.0.0/bin/antares-6.0-solver.exe&quot;</span></code></pre></div>
@@ -208,7 +220,7 @@ optimality_gap = 0</code></pre>
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
