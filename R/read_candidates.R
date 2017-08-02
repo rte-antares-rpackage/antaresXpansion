@@ -74,6 +74,7 @@ read_candidates <- function(opts = antaresRead::simOptions())
       # see what option it is referring to
       if (option_name == "name")
       {
+        option_value <- sub(pattern = " ", replacement = "_", option_value)
         candidate$name <- option_value
       }
       else if (option_name == "candidate-type")
