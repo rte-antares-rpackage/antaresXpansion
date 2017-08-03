@@ -2,3 +2,6 @@
 ^\.Rproj\.user$
 README.html
 test_case
+^\.travis\.yml$
+^appveyor\.yml$
+^codecov\.yml$

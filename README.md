@@ -1,3 +1,7 @@
+[![Travis-CI Build Status](https://travis-ci.org/rte-antares-rpackage/antares-rpackageXpansion.svg?branch=master)](https://travis-ci.org/rte-antares-rpackage/antares-rpackageXpansion)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/rte-antares-rpackage/antares-rpackageXpansion?branch=master&svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/antares-rpackageXpansion)
+[![Coverage Status](https://img.shields.io/codecov/c/github/rte-antares-rpackage/antares-rpackageXpansion/master.svg)](https://codecov.io/github/rte-antares-rpackage/antares-rpackageXpansion?branch=master)
+
 # antares-rpackageXpansion
 
 

@@ -21,5 +21,6 @@ Imports:
     plotly
 RoxygenNote: 5.0.1
 Suggests: knitr,
-    testthat
+    testthat,
+    covr
 VignetteBuilder: knitr
