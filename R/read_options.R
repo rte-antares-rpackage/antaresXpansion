@@ -2,9 +2,11 @@
 #' Read expansion planning options
 #' 
 #' \code{read_options} is a function which read the options related to the
-#' expansion planning optimization. The options are stored in the file 
+#' expansion planning optimization. The options are usually stored in the file 
 #' antaresStudyPath/user/expansion/settings.ini.
 #' 
+#' @param file
+#'   path toward the text file which contains the settings 
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
@@ -18,14 +20,13 @@
 #' 
 #' 
 #' 
-read_options <- function(opts = antaresRead::simOptions())
+read_options <- function(file, opts = antaresRead::simOptions())
 {
-  option_file_name <- paste(opts$studyPath,"/user/expansion/settings.ini",sep="")
-  assertthat::assert_that(file.exists(option_file_name))
-  assertthat::assert_that(file.info(option_file_name)$size !=0)
+  assertthat::assert_that(file.exists(file))
+  #assertthat::assert_that(file.info(option_file_name)$size !=0)
   
   # read file
-  param_data <- scan(option_file_name, what=character(), sep="/", quiet = TRUE)
+  param_data <- scan(file, what=character(), sep="/", quiet = TRUE)
   
   # initiate option list, with default values
   options <- list()
@@ -37,12 +38,16 @@ read_options <- function(opts = antaresRead::simOptions())
   options$cut_type <- "yearly"
   options$week_selection <- FALSE
   options$relaxed_optimality_gap <- "0.01%"
-
+  
+  # if the file is empty, the default values are kept 
+  if(length(param_data) == 0){return(options)}
+  
   # go through every line of the file
   for(line in 1:length(param_data))
   {
     # read option and value
     option_name <- strsplit(param_data[line], "=")[[1]][1]
+    if(is.na(option_name)){next} # empty line
     if(option_name == ""){next} # empty line
     
     option_value <- strsplit(param_data[line], "=")[[1]][2]
