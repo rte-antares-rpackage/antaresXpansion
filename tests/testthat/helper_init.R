@@ -20,3 +20,6 @@ if (sourcedir != "") {
   assign("study_path", file.path(path, "test_case"), envir = globalenv())
 }
 
+
+# create function  which test if a file exists
+expect_file_exists <- function(path) { expect_true(file.exists(path)) }

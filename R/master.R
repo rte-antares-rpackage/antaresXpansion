@@ -20,7 +20,7 @@
 #' @importFrom antaresRead simOptions
 #' @importFrom assertthat assert_that
 #' 
-initiate_master <- function(candidates = read_candidates(opts), exp_options = read_options(opts), opts = antaresRead::simOptions())
+initiate_master <- function(candidates, exp_options , opts = antaresRead::simOptions())
 {
   # ampl file names (stored in inst folder)
   run_file <- "ampl/master_run.ampl"
