@@ -43,7 +43,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   exp_options <- read_options(opts)
   
   # read investment candidates file
-  candidates <- read_candidates(opts)
+  candidates <- read_candidates(file = paste(opts$studyPath,"/user/expansion/candidates.ini",sep=""), opts)
   n_candidates <- length(candidates)
   assertthat::assert_that(n_candidates > 0)
   
@@ -478,7 +478,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   # add information in the output file
   x$expansion_options <- read_options(opts)
   x$study_options <- opts
-  x$candidates <- read_candidates(opts)
+  x$candidates <- read_candidates(file = paste(opts$studyPath,"/user/expansion/candidates.ini",sep=""), opts)
   
   # reset options of the ANTARES study to their initial values
   assertthat::assert_that(file.remove(paste0(opts$studyPath, "/settings/generaldata.ini")))
@@ -489,8 +489,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   # set link capacities to their optimal value
   for(c in candidates)
   {
-    update_link(c$link, "direct_capacity", x$invested_capacities[c$name, paste0("it", best_solution)] , opts)
-    update_link(c$link, "indirect_capacity", x$invested_capacities[c$name, paste0("it", best_solution)], opts)
+    update_link(c$link, "direct_capacity", c$link_profile*x$invested_capacities[c$name, paste0("it", best_solution)] , opts)
+    update_link(c$link, "indirect_capacity", c$link_profile*x$invested_capacities[c$name, paste0("it", best_solution)], opts)
   }
   
   

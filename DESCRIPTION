@@ -9,8 +9,9 @@ Description: Compute optimal investment and decommissioning decisions in an
     ANTARES study.
 License: Proprietary RTE
 LazyData: TRUE
+Depends:
+    antaresRead (>= 1.0.0)
 Imports:
-    antaresRead (>= 1.0),
     assertthat,
     lubridate,
     rmarkdown,

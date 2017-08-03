@@ -3,8 +3,10 @@
 #' 
 #' \code{read_candidates} is a function which read the investments candidates
 #' of the expansion planning problem and their characteristics. The information on
-#' the candidates is stored in the file antaresStudyPath/user/expansion/candidates.ini.
-#'   
+#' the candidates is usually stored in the file antaresStudyPath/user/expansion/candidates.ini.
+#' 
+#' @param file
+#'   path toward the text file which contains the candidates description
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
@@ -18,14 +20,13 @@
 #' 
 #' 
 #' 
-read_candidates <- function(opts = antaresRead::simOptions())
+read_candidates <- function(file, opts = antaresRead::simOptions())
 {
-  candidates_file_name <- paste(opts$studyPath,"/user/expansion/candidates.ini",sep="")
-  assertthat::assert_that(file.exists(candidates_file_name))
-  assertthat::assert_that(file.info(candidates_file_name)$size !=0)
+  assertthat::assert_that(file.exists(file))
+  assertthat::assert_that(file.info(file)$size !=0)
   
   # read file
-  param_data <- scan(candidates_file_name, what=character(), sep="/", quiet = TRUE)
+  param_data <- scan(file, what=character(), sep="/", quiet = TRUE)
   
   # Get the candidates id
   candidates_id <- param_data[grep("^\\[",param_data)]
@@ -116,6 +117,8 @@ read_candidates <- function(opts = antaresRead::simOptions())
         {
           # read file
           profile_data <-  read.table(profile_file, header=FALSE)
+          profile_data <- as.vector(t(profile_data))
+          assert_that(is.numeric(profile_data))
           candidate$link_profile <- profile_data
           candidate$has_link_profile <- TRUE
         }
