@@ -67,7 +67,7 @@ run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, sho
 }
 
 #' Get the whole simulation name of an ANTARES simulation,
-#' as it appears in the output path,containing also the 
+#' as it appears in the output path, containing also the 
 #' date and hour identifier.
 #' 
 #' 

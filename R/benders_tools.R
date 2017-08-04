@@ -109,7 +109,7 @@ update_average_cuts <- function(current_it, candidates, output_link_s, output_li
     if(candidates[[c]]$has_link_profile)
     {
       len = length(subset(output_link_h_s, link == candidates[[c]]$link)$"MARG. COST")
-      tmp_rentability <- sum(as.numeric(subset(output_link_h_s, link == candidates[[c]]$link)$"MARG. COST")*candidates[[c]]$link_profile[1:len, 1]) - candidates[[c]]$cost * n_w / 52
+      tmp_rentability <- sum(as.numeric(subset(output_link_h_s, link == candidates[[c]]$link)$"MARG. COST")*candidates[[c]]$link_profile[1:len]) - candidates[[c]]$cost * n_w / 52
     }
     else
     {
@@ -189,7 +189,7 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y,output_link_
       if(candidates[[c]]$has_link_profile)
       {
         len = length(subset(output_link_h, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")
-        tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")*candidates[[c]]$link_profile[1:len, 1]) - candidates[[c]]$cost * n_w / 52
+        tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")*candidates[[c]]$link_profile[1:len]) - candidates[[c]]$cost * n_w / 52
       }
       else
       {
@@ -286,7 +286,7 @@ update_weekly_cuts <- function(current_it, candidates, output_area_w, output_lin
         {
           first_h <- 7*24*(w-1)+1
           last_h <- 7*24*w
-          tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y & timeId >= first_h & timeId <= last_h)$"MARG. COST")* candidates[[c]]$link_profile[first_h:last_h,1]) - candidates[[c]]$cost /52
+          tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y & timeId >= first_h & timeId <= last_h)$"MARG. COST")* candidates[[c]]$link_profile[first_h:last_h]) - candidates[[c]]$cost /52
         }
         else
         {
