@@ -4,9 +4,11 @@
 \alias{read_options}
 \title{Read expansion planning options}
 \usage{
-read_options(opts = antaresRead::simOptions())
+read_options(file, opts = antaresRead::simOptions())
 }
 \arguments{
+\item{file}{path toward the text file which contains the settings}
+
 \item{opts}{list of simulation parameters returned by the function
 \code{antaresRead::setSimulationPath}}
 }
@@ -15,7 +17,7 @@ Returns a list containing the different optimisation options
 }
 \description{
 \code{read_options} is a function which read the options related to the
-expansion planning optimization. The options are stored in the file 
+expansion planning optimization. The options are usually stored in the file 
 antaresStudyPath/user/expansion/settings.ini.
 }
 

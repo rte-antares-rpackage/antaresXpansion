@@ -23,7 +23,7 @@ update_yearly_cuts(current_it, candidates, output_area_y, output_link_y,
 
 \item{inv_cost}{investments costs of this iteration}
 
-\item{n_w}{number of weeks per year}
+\item{n_w}{number of simulated weeks per mc year}
 
 \item{tmp_folder}{temporary folder in which to write the files}
 

@@ -3,7 +3,7 @@
 \name{get_whole_simulation_name}
 \alias{get_whole_simulation_name}
 \title{Get the whole simulation name of an ANTARES simulation,
-as it appears in the output path,containing also the 
+as it appears in the output path, containing also the 
 date and hour identifier.}
 \usage{
 get_whole_simulation_name(name, opts = antaresRead::simOptions())
@@ -22,7 +22,7 @@ yyyymmdd-hhmmxxx-name.
 }
 \description{
 Get the whole simulation name of an ANTARES simulation,
-as it appears in the output path,containing also the 
+as it appears in the output path, containing also the 
 date and hour identifier.
 }
 

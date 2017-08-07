@@ -7,7 +7,7 @@ Create files in_weeklyrentability.txt and in_weeklycuts.txt which
 will be later read by AMPL as input of the master problem}
 \usage{
 update_weekly_cuts(current_it, candidates, output_area_w, output_link_w,
-  output_link_h, inv_cost, tmp_folder, benders_options)
+  output_link_h, inv_cost, n_w, tmp_folder, benders_options)
 }
 \arguments{
 \item{current_it}{list of current iteration characteristics}
@@ -22,6 +22,8 @@ update_weekly_cuts(current_it, candidates, output_area_w, output_link_w,
 \item{output_link_h}{antaresDataList of all the links of the study with a weekly time step}
 
 \item{inv_cost}{investments costs of this iteration}
+
+\item{n_w}{number of simulated weeks per mc year}
 
 \item{tmp_folder}{temporary folder in which to write the files}
 
