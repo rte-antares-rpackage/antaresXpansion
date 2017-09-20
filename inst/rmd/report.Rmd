@@ -49,7 +49,7 @@ packageVersion("antaresXpansion")
 ```{r get_best_cost, echo = FALSE, eval = TRUE}
 
 best_solutions <- which(x$overall_costs == min(x$overall_costs, na.rm = TRUE))
-sol_id <- paste0("it", best_solutions)
+sol_id <- names(best_solutions)
 
 n_best_solution <- length(best_solutions)
 n_iteration <- length(x$overall_costs)
@@ -58,8 +58,8 @@ n_iteration <- length(x$overall_costs)
 
 Total cost : 
 ```{r print_total_cost, echo=FALSE, eval = TRUE}
-cat(x$overall_costs[best_solutions[1]], "euros\n")
-cat(x$overall_costs[best_solutions[1]]/10^6, "million euros\n")
+cat(x$overall_costs[names(best_solutions[1])], "euros\n")
+cat(x$overall_costs[names(best_solutions[1])]/10^6, "million euros\n")
 
 if(n_best_solution > 1)
 {
@@ -72,8 +72,8 @@ Investment cost :
 ```{r print_inv_cost, echo=FALSE, eval = TRUE}
 if(n_best_solution == 1)
 {
-  cat(x$investment_costs[best_solutions], "euros\n")
-  cat(x$investment_costs[best_solutions]/10^6, "million euros\n")
+  cat(x$investment_costs[names(best_solutions)], "euros\n")
+  cat(x$investment_costs[names(best_solutions)]/10^6, "million euros\n")
 }
 if(n_best_solution > 1)
 {
@@ -91,8 +91,8 @@ Production cost :
 ```{r print_prod_cost, echo=FALSE, eval = TRUE}
 if(n_best_solution == 1)
 {
-  cat(x$operation_costs[best_solutions], "euros\n")
-  cat(x$operation_costs[best_solutions]/10^6, "million euros\n")
+  cat(x$operation_costs[names(best_solutions)], "euros\n")
+  cat(x$operation_costs[names(best_solutions)]/10^6, "million euros\n")
 }
 if(n_best_solution > 1)
 {
@@ -145,7 +145,7 @@ Convergence of costs
 # prepare data.frame structure for plotly
 costs <- data.frame(iteration = 1:n_iteration)
 costs$overall_costs <- x$overall_costs
-costs$investment_costs <- x$investment_costs
+costs$investment_costs <- c(rep(NA, n_iteration - length(x$investment_costs)), x$investment_costs)
 costs$operation_costs <- x$operation_costs
 costs$best_bound  <-  x$under_estimator
 
@@ -183,7 +183,8 @@ Table - invested capacity at each iteration (in MW) :
 
 # transpose 
 capa_table <- as.data.frame(t(x$invested_capacities))
-rownames(capa_table) <- paste0("it", 1:n_iteration)
+rna <- sapply(x$iterations, FUN = function(it){it$id})
+rownames(capa_table) <- unlist(rna)
 colnames(capa_table) <- rownames(x$invested_capacities)
 
 kable(capa_table, format = "markdown")

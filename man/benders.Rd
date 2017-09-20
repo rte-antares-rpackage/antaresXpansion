@@ -5,7 +5,8 @@
 \title{Launch benders decomposition}
 \usage{
 benders(path_solver, display = TRUE, report = TRUE, clean = TRUE,
-  parallel = TRUE, opts = antaresRead::simOptions())
+  parallel = TRUE, recovery_mode = FALSE,
+  opts = antaresRead::simOptions())
 }
 \arguments{
 \item{path_solver}{Character containing the Antares Solver path}

@@ -29,11 +29,11 @@
 #' @importFrom utils packageVersion
 #' @export
 #' 
-benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, parallel = TRUE, opts = antaresRead::simOptions())
+benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, parallel = TRUE, recovery_mode = FALSE, opts = antaresRead::simOptions())
 {
   # ---- 0. initialize benders iteration ----
 
-  # save current settings of the ANTARES study into a temporary file
+    # save current settings of the ANTARES study into a temporary file
   assertthat::assert_that(file.exists(paste0(opts$studyPath, "/settings/generaldata.ini")))
   assertthat::assert_that(file.copy(from = paste0(opts$studyPath, "/settings/generaldata.ini"), 
             to = paste0(opts$studyPath, "/settings/generaldata_tmpsvg.ini"),
@@ -61,7 +61,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   
   # initiate text files to communicate with master problem
   # and copy AMPL file into the temporary file 
-  initiate_master(candidates, exp_options, opts)
+  if(!recovery_mode){initiate_master(candidates, exp_options, opts)}
   
   # initiate a few parameters
   first_sim_week <- 1 + ceiling((opts$parameters$general$simulation.start - 1)/7)
@@ -75,28 +75,35 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   relax_integrality <- exp_options$master %in% c("relaxed", "integer")
   unique_key <- paste(sample(c(0:9, letters), size = 3, replace = TRUE),collapse = "")
   all_areas <- antaresRead::getAreas(opts = opts)
+  first_iteration <- TRUE
   
   # create output structure 
   x <- list()
-  x$invested_capacities <- data.frame()
+  x$invested_capacities <- data.frame(row.names = sapply(candidates, FUN = function(c){c$name}))
   x$overall_costs <- numeric()
   x$investment_costs <- numeric()
   x$operation_costs <- numeric()
-  x$rentability <- data.frame()
+  x$rentability <- data.frame(row.names = sapply(candidates, FUN = function(c){c$name}))
   x$iterations <- list()
   x$digest <- list()
-  x$digest$lole <- data.frame()
+  x$digest$lole <- data.frame(row.names = all_areas)
   
   # create iteration structure
   current_it <- list()
   current_it$n <- 1  # iteration number
-  current_it$id <- "it1"  # iteration identifier
+  current_it$id <- paste0("it",current_it$n)  # iteration identifier
   current_it$full <- TRUE  # is it an iteration in which we simulate all weeks and all MC years ?
   current_it$mc_years <- mc_years # identidier of mc years to simulate at this current iteration
   current_it$weeks <- weeks # identidier of weeks to simulate at this current iteration
   current_it$cut_type <- exp_options$cut_type # type of cut for this iteration (average, weekly, yearly)
   current_it$need_full <- FALSE # is a complete iteration needed for next step ?
   current_it$last_full <- 1 # last iteration with full simulation
+  
+  if(recovery_mode){  #recover mode : we keep what is saved in the temporary file and start after
+    recovered_it <- scan(paste0(tmp_folder, "/in_iterations.txt"), what=character(), sep="/", quiet = TRUE)
+    current_it$n <- as.numeric(substr(tail(recovered_it, n=1), start = 3, stop = 100)) + 1
+    current_it$id <- paste0("it",current_it$n)
+  }
   
   # prepare cuts tables
   # cuts <- list()
@@ -110,7 +117,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
 
   # set initial value to each investment candidate 
   # (here put to closest multiple of unit-size below max_invest/2)
-  x$invested_capacities <- data.frame( it1 = sapply(candidates, FUN = function(c){
+  x$invested_capacities[[current_it$id]] <-  sapply(candidates, FUN = function(c){
     if(c$unit_size > 0)
     {
       out <- floor(c$max_invest/2/c$unit_size) * c$unit_size
@@ -118,9 +125,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     }
     else
     { out <- c$max_invest/2}
-    return(out)}))
-  
-  row.names(x$invested_capacities) <- sapply(candidates, FUN = function(c){c$name})
+    return(out)})
   
   # ----
   # iterate until convergence or until the max number of iteration has been reached
@@ -245,14 +250,14 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     }
     
     # update output structure
-    x$investment_costs<- c(x$investment_costs, inv_cost)
-    x$operation_costs <- c(x$operation_costs, op_cost)
-    x$overall_costs <- c(x$overall_costs, ov_cost)
+    x$investment_costs[current_it$id] <- inv_cost
+    x$operation_costs[current_it$id] <-  op_cost
+    x$overall_costs[current_it$id] <- ov_cost
     
     if(current_it$full)
     {
       # check if the current iteration provides the best solution
-      if(ov_cost <= min(x$overall_costs, na.rm = TRUE)) {best_solution = current_it$n}
+      if(ov_cost <= min(x$overall_costs, na.rm = TRUE)) {best_solution = current_it$id}
     }
 
     # compute average rentability of each candidate (can only
@@ -281,14 +286,14 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     }
     
     # update output structure
-    if(current_it$n == 1)
-    {
-      x$rentability <- data.frame(it1 = average_rentability)
-      row.names(x$rentability) <- sapply(candidates, FUN = function(c){c$name})
-      x$digest$lole <- data.frame(it1 = lole)
-      row.names(x$digest$lole) <- all_areas
-    }
-    else 
+    # if(current_it$n == 1)
+    # {
+    #   x$rentability <- data.frame(it1 = average_rentability)
+    #   row.names(x$rentability) <- sapply(candidates, FUN = function(c){c$name})
+    #   x$digest$lole <- data.frame(it1 = lole)
+    #   row.names(x$digest$lole) <- all_areas
+    # }
+    # else 
     {
       x$rentability[[current_it$id]] <- average_rentability
       x$digest$lole[[current_it$id]] <- lole
@@ -350,7 +355,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # this problem
     
     # if option "integer" has been chosen, should the integrality be added ?
-    if(exp_options$master == "integer" && current_it$n > 1 && relax_integrality)
+    if(exp_options$master == "integer" && !first_iteration && relax_integrality)
     {
       if(convergence_relaxed(best_sol = min(x$overall_costs, na.rm = TRUE), best_under_estimator, exp_options))
       {
@@ -377,7 +382,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
    
     if(display)
     {
-      cat("--- lower bound on ov.cost = ", best_under_estimator/1000000 ," Me --- best solution (it ", best_solution, ") = ", x$overall_costs[best_solution]/1000000   ,"Me \n")
+      cat("--- lower bound on ov.cost = ", best_under_estimator/1000000 ," Me --- best solution (", best_solution, ") = ", x$overall_costs[best_solution]/1000000   ,"Me \n")
     }
  
     
@@ -420,7 +425,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # display end messages
     if(has_converged & display)
     { 
-        cat("--- CONVERGENCE within optimality gap: best solution = it ", best_solution, " --- ov.cost = ", min(x$overall_costs, na.rm = TRUE)/1000000 ," Me --- Best Lower Bound = ",best_under_estimator/1000000 , " Me \n")
+        cat("--- CONVERGENCE within optimality gap: best solution = ", best_solution, " --- ov.cost = ", min(x$overall_costs, na.rm = TRUE)/1000000 ," Me --- Best Lower Bound = ",best_under_estimator/1000000 , " Me \n")
     }
     if(display & current_it$n >= exp_options$max_iteration)
     { 
@@ -430,7 +435,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # go to next iteration
     x$iterations[[current_it$n]] <- current_it
     current_it$n = current_it$n +1
-    
+    first_iteration <- FALSE
     
     # ---- 8. Update investment decisions ---- 
     
@@ -463,8 +468,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   # set link capacities to their optimal value
   for(c in candidates)
   {
-    update_link(c$link, "direct_capacity", c$link_profile*x$invested_capacities[c$name, paste0("it", best_solution)] , opts)
-    update_link(c$link, "indirect_capacity", c$link_profile*x$invested_capacities[c$name, paste0("it", best_solution)], opts)
+    update_link(c$link, "direct_capacity", c$link_profile*x$invested_capacities[c$name, best_solution] , opts)
+    update_link(c$link, "indirect_capacity", c$link_profile*x$invested_capacities[c$name, best_solution], opts)
   }
   
   
