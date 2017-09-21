@@ -36,7 +36,7 @@ run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, sho
   # a few checks
   name = tolower(name)
   assertthat::assert_that(file.exists(path_solver))
-  assertthat::assert_that(mode %in% c("economy", "adequacy", "draft"))
+  assertthat::assert_that(mode %in% c("economy", "adequacy", "draft", "expansion"))
   
   
   ##Test version of antares solver
@@ -54,12 +54,12 @@ run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, sho
   #Launch simulation
   if(version_solver >= 6 & parallel)
   {
-    cmd <- '"%s" "%s" -n "%s" --"%s" --parallel'
+    cmd <- '"%s" "%s" -n "%s" --%s --parallel'
     cmd <- sprintf(cmd, path_solver, opts$studyPath, name, mode)
   }
   else
   {
-    cmd <- '"%s" "%s" -n "%s" --"%s"'
+    cmd <- '"%s" "%s" -n "%s" --%s'
     cmd <- sprintf(cmd, path_solver, opts$studyPath, name, mode)
   }
     

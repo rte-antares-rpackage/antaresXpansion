@@ -17,3 +17,4 @@ globalVariables(c("theta",
                   "area",
                   "cluster"))
 
+readIniFile <- antaresRead:::readIniFile

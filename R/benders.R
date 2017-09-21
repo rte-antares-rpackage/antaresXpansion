@@ -179,7 +179,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     simulation_name <- paste0("expansion-benders-", unique_key, "-", current_it$id)
     if(display){  cat("   ANTARES simulation running ... ", sep="")}
-    run_simulation(simulation_name, mode = "economy", path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts)
+    run_simulation(simulation_name, mode = ifelse(exp_options$uc_type == "relaxed_accurate", "expansion", "economy"),
+                   path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts)
     if(display){  cat("[done] \n", sep="")}
     
     output_antares <- antaresRead::setSimulationPath(paste0(opts$studyPath, "/output/", get_whole_simulation_name(simulation_name, opts)))
@@ -232,6 +233,13 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
         # part of the ANTARES optimization
         op_cost <-  sum(as.numeric(output_area_s$"OV. COST"))  + sum(as.numeric(output_link_s$"HURDLE COST")) -
                     sum(as.numeric(output_area_s$"NP COST"))
+      }
+      else if (exp_options$uc_type == "relaxed_accurate")
+      {
+        # in that case, the costs must be read in the criterion (.txt) files
+        # they correspond to the cost returned by the optimization problems while the ov.cost in output of ANTARES
+        # is post-treated with some small corrections for more consistency between the weeks
+        op_cost <- sum(antaresRead::readOptimCriteria()$"criterion1") / length(current_it$mc_years)
       }
       else
       {

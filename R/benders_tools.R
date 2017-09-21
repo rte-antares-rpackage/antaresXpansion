@@ -33,6 +33,11 @@ set_antares_options <- function(benders_options, candidates, opts = antaresRead:
     set_uc_mode(mode = "accurate", opts = opts)
     enable_uc_heuristic(enable = TRUE, opts = opts)
   }
+  if(benders_options$uc_type == "relaxed_accurate")
+  {
+    set_uc_mode(mode = "accurate", opts = opts)
+    enable_uc_heuristic(enable = TRUE, opts = opts)
+  }
   if(benders_options$uc_type == "fast")
   {
     set_uc_mode(mode = "fast", opts = opts)
@@ -149,6 +154,7 @@ update_average_cuts <- function(current_it, candidates, output_link_s, output_li
 #'   
 #' @return nothing
 #' 
+#' @importFrom antaresRead readOptimCriteria
 #' 
 update_yearly_cuts <- function(current_it,candidates, output_area_y,output_link_y, output_link_h, inv_cost, n_w, tmp_folder, benders_options)
 {
@@ -160,7 +166,13 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y,output_link_
   script_rentability  <-  ""
   script_cost <- ""
 
-    # for every mc years and every week
+  # load cost in expansion mode
+  if(benders_options$uc_type == "relaxed_accurate")
+  {
+    criterion <- antaresRead::readOptimCriteria()
+  }
+  
+  # for every mc years and every week
   for(y in current_it$mc_years)
   {
     if(benders_options$uc_type == "relaxed_fast")
@@ -171,6 +183,11 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y,output_link_
           sum(as.numeric(subset(output_link_y, mcYear == y)$"HURDLE COST")) -
           sum(as.numeric(subset(output_area_y, mcYear == y)$"NP COST")) +
           inv_cost 
+    }
+    else if(benders_options$uc_type == "relaxed_accurate")
+    {
+      # in that case, the considered cost is the criterion of the optimization problem (not yet post-treated)
+      y_cost <- sum(as.numeric(subset(criterion, mcYear == y)$"criterion1")) + inv_cost
     }
     else
     {
@@ -236,6 +253,8 @@ update_yearly_cuts <- function(current_it,candidates, output_area_y,output_link_
 #'   
 #' @return nothing
 #' 
+#' @importFrom antaresRead readOptimCriteria
+#' 
 #' 
 update_weekly_cuts <- function(current_it, candidates, output_area_w, output_link_w, output_link_h, inv_cost, n_w, tmp_folder, benders_options)
 {
@@ -249,6 +268,12 @@ update_weekly_cuts <- function(current_it, candidates, output_area_w, output_lin
   script_rentability  <-  ""
   script_cost <- ""
 
+  # load cost in expansion mode
+  if(benders_options$uc_type == "relaxed_accurate")
+  {
+    criterion <- antaresRead::readOptimCriteria()
+  }
+  
   # for every mc years and every week
   for(y in current_it$mc_years)
   {
@@ -264,6 +289,11 @@ update_weekly_cuts <- function(current_it, candidates, output_area_w, output_lin
             sum(as.numeric(subset(output_link_w, mcYear == y & timeId == w)$"HURDLE COST")) -
             sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"NP COST")) +
             inv_cost/n_w
+      }
+      else if(benders_options$uc_type == "relaxed_accurate")
+      {
+        # in that case, the considered cost is the criterion of the optimization problem (not yet post-treated)
+        w_cost <- sum(as.numeric(subset(criterion, mcYear == y & timeId == w)$"criterion1")) + inv_cost/n_w
       }
       else
       {

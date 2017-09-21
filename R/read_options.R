@@ -66,7 +66,7 @@ read_options <- function(file, opts = antaresRead::simOptions())
     }
     else if (option_name == "uc_type")
     {
-      assertthat::assert_that(option_value %in% c("accurate", "fast", "relaxed_fast"))
+      assertthat::assert_that(option_value %in% c("accurate", "fast", "relaxed_fast", "relaxed_accurate"))
       options$uc_type <- option_value
     }
     else if (option_name == "master")
