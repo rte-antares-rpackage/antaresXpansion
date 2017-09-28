@@ -115,7 +115,6 @@ read_options <- function(file, opts = antaresRead::simOptions())
       if (!is.na(suppressWarnings(as.numeric(option_value)))) 
       {
         options$relaxed_optimality_gap <- as.numeric(option_value)
-        
       }
       # else, the optimality gap is in % of the best found solution
       else
@@ -126,13 +125,11 @@ read_options <- function(file, opts = antaresRead::simOptions())
         assertthat::assert_that(!is.na(as.numeric(option_value_bis)))
         options$relaxed_optimality_gap <- option_value
       }
-      
     }
     else
     {
       warning(paste0("Unknown option : ", option_name))
     }
   }
-  
   return(options)
 }

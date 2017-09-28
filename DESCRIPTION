@@ -18,7 +18,8 @@ Imports:
     dplyr,
     data.table,
     magrittr,
-    plotly
+    plotly,
+    shiny
 RoxygenNote: 5.0.1
 Suggests: knitr,
     testthat,

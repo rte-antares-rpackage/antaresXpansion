@@ -57,7 +57,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   set_antares_options(exp_options, candidates, opts)
   
   # check that the study is appropriately set for the expansion problem
-  assertthat::assert_that(benders_check(opts))
+  assertthat::assert_that(benders_check(candidates, opts))
   
   # initiate text files to communicate with master problem
   # and copy AMPL file into the temporary file 
@@ -76,7 +76,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   unique_key <- paste(sample(c(0:9, letters), size = 3, replace = TRUE),collapse = "")
   all_areas <- antaresRead::getAreas(opts = opts)
   first_iteration <- TRUE
-  
+
   # create output structure 
   x <- list()
   x$invested_capacities <- data.frame(row.names = sapply(candidates, FUN = function(c){c$name}))
@@ -163,10 +163,16 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     # update study with current invested capacities on links
     
+    
+    
     for(c in candidates)
     {
-      update_link(c$link, "direct_capacity", c$link_profile*x$invested_capacities[c$name, current_it$id ] , opts)
-      update_link(c$link, "indirect_capacity", c$link_profile*x$invested_capacities[c$name, current_it$id ], opts)
+      new_capacity <- get_capacity_profile(x$invested_capacities[c$name, current_it$id], c$link_profile)
+      
+      # update study
+      update_link(c$link, "direct_capacity", new_capacity , opts)
+      update_link(c$link, "indirect_capacity", new_capacity, opts)
+
     }
     
     
@@ -277,7 +283,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
       {
         if(c$has_link_profile)
         {
-          return(sum(as.numeric(subset(output_link_h_s, link == c$link)$"MARG. COST")*c$link_profile) - c$cost * n_w / 52) 
+          return(sum(as.numeric(subset(output_link_h_s, link == c$link)$"MARG. COST")*c$link_profile[1:8736]) - c$cost * n_w / 52) 
         }
         else 
         {
@@ -451,7 +457,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     if(!has_converged && current_it$n <= exp_options$max_iteration)
     {
-        x$invested_capacities[[paste0("it", current_it$n)]] <- benders_sol
+      x$invested_capacities[[paste0("it", current_it$n)]] <- benders_sol
     }
     
     

@@ -424,3 +424,4 @@ convergence <-  function(best_sol, best_under, benders_options)
   # is convergence of the relaxed problem reached ?
   return((best_sol - best_under) <= opt_gap)
 }
+
