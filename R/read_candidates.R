@@ -46,6 +46,7 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
     candidate <- list()
     candidate$id <- candidate_id[pr]
     candidate$name <- NA
+    candidate$enable <- TRUE
     candidate$candidate_type <- "investment"
     candidate$investment_type <- "generation"
     candidate$link <- NA
@@ -77,6 +78,11 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
       {
         option_value <- sub(pattern = " ", replacement = "_", option_value)
         candidate$name <- option_value
+      }
+      else if (option_name == "enable")
+      {
+        assertthat::assert_that(option_value %in% c("true", "false"))
+        candidate$enable <- as.logical(option_value) 
       }
       else if (option_name == "candidate-type")
       {
@@ -158,9 +164,12 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
     assertthat::assert_that(!is.na(candidate$link))
     assertthat::assert_that(candidate$link %in% opts$linkList)
     
-    # update candidate list
-    inv[[i]] <- candidate
-    i <- i + 1
+    # update candidate list if the candidate is enabled
+    if(candidate$enable)
+    {
+      inv[[i]] <- candidate
+      i <- i + 1
+    }
   }
   
   # check that candidates names are unique
