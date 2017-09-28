@@ -25,6 +25,9 @@ to the best solution).}
 only with ANTARES v6.0.0 or more). In that case, the number of cores used by the simulation
 is the one set in advanced_settings/simulation_cores (see ANTARES interface).}
 
+\item{recovery_mode}{Logical. If \code{TRUE} will launch the benders decomposition keeping the cut files already saved
+in the temporary folder of the ANTARES study. Can be used if a previous simulation has crashed.}
+
 \item{opts}{list of simulation parameters returned by the function
 \code{antaresRead::setSimulationPath}}
 }

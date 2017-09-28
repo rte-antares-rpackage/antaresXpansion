@@ -17,6 +17,9 @@
 #'   Logical. If \code{TRUE} the ANTARES simulations will be run in parallel mode (Work
 #'   only with ANTARES v6.0.0 or more). In that case, the number of cores used by the simulation
 #'   is the one set in advanced_settings/simulation_cores (see ANTARES interface).
+#'@param recovery_mode
+#'   Logical. If \code{TRUE} will launch the benders decomposition keeping the cut files already saved
+#'   in the temporary folder of the ANTARES study. Can be used if a previous simulation has crashed.
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}

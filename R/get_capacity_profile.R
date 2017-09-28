@@ -1,6 +1,5 @@
-
-
-#' Given the installed capacity and the load factor profile,
+#' @title Build capacity time series
+#' @description Given the installed capacity and the load factor profile,
 #' return the new capacity profile.
 #' The capacity profile might not be equal to a simple multiplication between the
 #' installed capacity and the load factor as it needs to be rounded to match with 
@@ -10,9 +9,10 @@
 #' @param installed_capacity
 #' new installed capacity
 #' @param load_factor_profile
-#' Time series of scalar of actual % of available capacity
+#' Time series of scalar of actual percentage of available capacity
 #'   
-#' @return capacity time series
+#' @return 
+#' capacity time series
 #' 
 #' @importFrom assertthat assert_that
 #' 
