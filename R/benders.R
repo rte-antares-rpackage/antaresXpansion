@@ -130,9 +130,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     }
     else
     { out <- c$max_invest/2}
-    return(450)})
-  
-    #return(out)})
+    return(out)})
   
   # ----
   # iterate until convergence or until the max number of iteration has been reached
@@ -464,8 +462,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     if(!has_converged && current_it$n <= exp_options$max_iteration)
     {
-      #x$invested_capacities[[paste0("it", current_it$n)]] <- benders_sol
-      x$invested_capacities[[paste0("it", current_it$n)]] <- 450 + 2 *(current_it$n - 1)
+      x$invested_capacities[[paste0("it", current_it$n)]] <- benders_sol
+      #x$invested_capacities[[paste0("it", current_it$n)]] <- 450 + 2 *(current_it$n - 1)
     }
     
     

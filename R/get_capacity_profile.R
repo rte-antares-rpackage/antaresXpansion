@@ -10,23 +10,39 @@
 #' new installed capacity
 #' @param load_factor_profile
 #' Time series of scalar of actual percentage of available capacity
-#'   
+#' @param uc_mode
+#' unit-commitment mode of the simulation (defines which rounding approximation is most appropriate)
+#'      
 #' @return 
 #' capacity time series
 #' 
 #' @importFrom assertthat assert_that
 #' 
-get_capacity_profile <- function(installed_capacity, load_factor_profile)
+get_capacity_profile <- function(installed_capacity, load_factor_profile, uc_mode)
 {
   assertthat::assert_that(length(load_factor_profile) %in% c(1,8760))
   assertthat::assert_that(all(load_factor_profile >= 0))
   assertthat::assert_that(installed_capacity >= 0)
   
+  
+  # if the uc_mode is accurate, 
+  if(grepl("accurate", uc_mode))
+  {
+    # due to a bug with decimal value in ANTARES's NTC in accurate mode, rounding
+    # to nearest integer is necessary in accurate mode
+    rounding_approximation <- 0
+  }
+  else
+  {
+    # max number of digits in ANTARES
+    rounding_approximation <- 6
+  }
+  
   if(length(load_factor_profile) == 1)
   { 
     # in that case there is no capacity profile
     # we return the capacity without rounding it to the nearest integer
-    # Careful : this might case an ANTARES error (infeasible problem)
+    # Careful : in accurate uc-mode, this might cause an ANTARES error (infeasible problem)
     #           but as this problem has not been met yet with constant capacity value
     #           the rounding is not made
     return(installed_capacity * load_factor_profile)
@@ -34,7 +50,7 @@ get_capacity_profile <- function(installed_capacity, load_factor_profile)
   if(length(load_factor_profile) == 8760)
   {
     producible_energy <- sum(load_factor_profile * installed_capacity)
-    capacity_profile <- round(load_factor_profile * installed_capacity)
+    capacity_profile <- .round_with_threshold(load_factor_profile * installed_capacity, 0.5, digits = rounding_approximation)
     
     # now, we want to find a rounding option which bring to a yearly producible energy close to this one
     diff <- (sum(capacity_profile) - producible_energy) / producible_energy
@@ -58,7 +74,7 @@ get_capacity_profile <- function(installed_capacity, load_factor_profile)
         max_threshold <- round_threshold
         round_threshold <- min_threshold + (max_threshold - min_threshold)/2
       }
-      capacity_profile <- .round_with_threshold(load_factor_profile * installed_capacity, round_threshold, digits = 0)
+      capacity_profile <- .round_with_threshold(load_factor_profile * installed_capacity, round_threshold, digits = rounding_approximation)
       diff <- (sum(capacity_profile) - producible_energy) / producible_energy
       it <- it+1
       #cat("it : ", it, " /// min = ",  min_threshold, "   max = ", max_threshold, " th = ", round_threshold, "   diff = ", diff,   "  \n")
