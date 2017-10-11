@@ -118,12 +118,15 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
 #' @param relax_integrality
 #'   logical, indicating whether (TRUE) or not (FALSE) the integer variables
 #'   should be relaxed
+#' @param ampl_path
+#'   Character containing the path to the ampl.exe file
+#'   
 #' @return This function does not return anything.
 #' 
 #' @importFrom antaresRead simOptions
 #' @importFrom assertthat assert_that
 #' 
-solve_master <- function(opts = antaresRead::simOptions(), relax_integrality = FALSE)
+solve_master <- function(opts = antaresRead::simOptions(), relax_integrality = FALSE, ampl_path = NULL)
 {
   tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
   
@@ -141,8 +144,14 @@ solve_master <- function(opts = antaresRead::simOptions(), relax_integrality = F
   assertthat::assert_that(file.exists(paste0(tmp_folder, "/master_mod.ampl")))
   assertthat::assert_that(file.exists(paste0(tmp_folder, "/master_dat.ampl")))
   
-  cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & ampl "', tmp_folder, '/master_run.ampl" ')
-
+  if(is.null(ampl_path))
+  {
+    cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & ampl "', tmp_folder, '/master_run.ampl" ')
+  }
+  else
+  {
+    assertthat::assert_that(file.exists(ampl_path))
+    cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & "', ampl_path ,'" "', tmp_folder, '/master_run.ampl" ')
+  }
   a <- shell(cmd, wait = TRUE, intern = TRUE)
-  #cat(a)
 }

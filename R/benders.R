@@ -17,9 +17,11 @@
 #'   Logical. If \code{TRUE} the ANTARES simulations will be run in parallel mode (Work
 #'   only with ANTARES v6.0.0 or more). In that case, the number of cores used by the simulation
 #'   is the one set in advanced_settings/simulation_cores (see ANTARES interface).
-#'@param recovery_mode
+#' @param recovery_mode
 #'   Logical. If \code{TRUE} will launch the benders decomposition keeping the cut files already saved
 #'   in the temporary folder of the ANTARES study. Can be used if a previous simulation has crashed.
+#' @param ampl_path
+#'   Character containing the path to the ampl.exe file
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
@@ -32,7 +34,7 @@
 #' @importFrom utils packageVersion
 #' @export
 #' 
-benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, parallel = TRUE, recovery_mode = FALSE, opts = antaresRead::simOptions())
+benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, parallel = TRUE, recovery_mode = FALSE, ampl_path = NULL, opts = antaresRead::simOptions())
 {
   # ---- 0. initialize benders iteration ----
 
@@ -128,7 +130,9 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     }
     else
     { out <- c$max_invest/2}
-    return(out)})
+    return(450)})
+  
+    #return(out)})
   
   # ----
   # iterate until convergence or until the max number of iteration has been reached
@@ -170,7 +174,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     for(c in candidates)
     {
-      new_capacity <- get_capacity_profile(x$invested_capacities[c$name, current_it$id], c$link_profile)
+      new_capacity <- get_capacity_profile(x$invested_capacities[c$name, current_it$id], c$link_profile, exp_options$uc_type)
       
       # update study
       update_link(c$link, "direct_capacity", new_capacity , opts)
@@ -387,7 +391,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     }
     
     # run AMPL with system command
-    log <- solve_master(opts, relax_integrality)
+    log <- solve_master(opts, relax_integrality, ampl_path)
     
     # load AMPL output
     #     - underestimator
@@ -460,7 +464,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     if(!has_converged && current_it$n <= exp_options$max_iteration)
     {
-      x$invested_capacities[[paste0("it", current_it$n)]] <- benders_sol
+      #x$invested_capacities[[paste0("it", current_it$n)]] <- benders_sol
+      x$invested_capacities[[paste0("it", current_it$n)]] <- 450 + 2 *(current_it$n - 1)
     }
     
     
