@@ -36,6 +36,7 @@ get_capacity_profile <- function(installed_capacity, load_factor_profile, uc_mod
   {
     # max number of digits in ANTARES
     rounding_approximation <- 6
+    #return(installed_capacity * load_factor_profile) # ? 
   }
   
   if(length(load_factor_profile) == 1)
@@ -50,6 +51,10 @@ get_capacity_profile <- function(installed_capacity, load_factor_profile, uc_mod
   if(length(load_factor_profile) == 8760)
   {
     producible_energy <- sum(load_factor_profile * installed_capacity)
+    if(producible_energy == 0)
+    {
+      return(rep(0,8760))
+    }
     capacity_profile <- .round_with_threshold(load_factor_profile * installed_capacity, 0.5, digits = rounding_approximation)
     
     # now, we want to find a rounding option which bring to a yearly producible energy close to this one
