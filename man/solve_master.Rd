@@ -4,7 +4,8 @@
 \alias{solve_master}
 \title{Solver master problem}
 \usage{
-solve_master(opts = antaresRead::simOptions(), relax_integrality = FALSE)
+solve_master(opts = antaresRead::simOptions(), relax_integrality = FALSE,
+  ampl_path = NULL)
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function
@@ -12,6 +13,8 @@ solve_master(opts = antaresRead::simOptions(), relax_integrality = FALSE)
 
 \item{relax_integrality}{logical, indicating whether (TRUE) or not (FALSE) the integer variables
 should be relaxed}
+
+\item{ampl_path}{Character containing the path to the ampl.exe file}
 }
 \value{
 This function does not return anything.

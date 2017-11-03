@@ -5,7 +5,7 @@
 \title{Launch benders decomposition}
 \usage{
 benders(path_solver, display = TRUE, report = TRUE, clean = TRUE,
-  parallel = TRUE, recovery_mode = FALSE,
+  parallel = TRUE, recovery_mode = FALSE, ampl_path = NULL,
   opts = antaresRead::simOptions())
 }
 \arguments{
@@ -27,6 +27,8 @@ is the one set in advanced_settings/simulation_cores (see ANTARES interface).}
 
 \item{recovery_mode}{Logical. If \code{TRUE} will launch the benders decomposition keeping the cut files already saved
 in the temporary folder of the ANTARES study. Can be used if a previous simulation has crashed.}
+
+\item{ampl_path}{Character containing the path to the ampl.exe file}
 
 \item{opts}{list of simulation parameters returned by the function
 \code{antaresRead::setSimulationPath}}

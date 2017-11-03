@@ -4,12 +4,14 @@
 \alias{get_capacity_profile}
 \title{Build capacity time series}
 \usage{
-get_capacity_profile(installed_capacity, load_factor_profile)
+get_capacity_profile(installed_capacity, load_factor_profile, uc_mode)
 }
 \arguments{
 \item{installed_capacity}{new installed capacity}
 
 \item{load_factor_profile}{Time series of scalar of actual percentage of available capacity}
+
+\item{uc_mode}{unit-commitment mode of the simulation (defines which rounding approximation is most appropriate)}
 }
 \value{
 capacity time series
