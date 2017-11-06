@@ -197,7 +197,6 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
 #' @return 
 #' Returns a vector of link name
 #' 
-#' @importFrom assertthat assert_that
 #' 
 with_profile <- function(candidates)
 {
@@ -207,4 +206,26 @@ with_profile <- function(candidates)
   }
   link_with_profile <- sapply(candidates, FUN = f)
   return(link_with_profile[!is.na(link_with_profile)])
+}
+
+
+#' Return vector of candidate names which do not have a link profile
+#' 
+#'   
+#' @param candidates
+#'   list of investment candidates, as returned by
+#'   \code{\link{read_candidates}}
+#'
+#' @return 
+#' Returns a vector of link name
+#' 
+#' 
+without_profile <- function(candidates)
+{
+  f <- function(c)
+  {if(!c$has_link_profile) return(c$link)
+    else return (NA)
+  }
+  link_without_profile <- sapply(candidates, FUN = f)
+  return(link_without_profile[!is.na(link_without_profile)])
 }
