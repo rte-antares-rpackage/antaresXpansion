@@ -200,7 +200,6 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # with synthetic visions and detailed annual and weekly results
     # to avoid the sum of numeric approximations, it is advised to use the most aggregated output of ANTARES
     # (e.g. to use annual results of ANTARES instead of the sum of the weekly results)
-
     
     # hourly results
     if (length(with_profile(candidates)) > 0 )
@@ -234,40 +233,12 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # analyse some outputs of the just finished ANTARES simulation
     
     
-    # compute system costs (can only be assessed if a complete
-    # simulation - with all weeks and all mc - has been run)
-    if(current_it$full)
-    {
-      if (exp_options$uc_type == "relaxed_fast")
-      {
-        # in that case, non-linear cost has to be removed because they are computed in a post-processing and are not
-        # part of the ANTARES optimization
-        op_cost <-  sum(as.numeric(output_area_s$"OV. COST"))  + sum(as.numeric(output_link_s$"HURDLE COST")) -
-                    sum(as.numeric(output_area_s$"NP COST"))
-      }
-      else if (exp_options$uc_type == "relaxed_accurate")
-      {
-        # in that case, the costs must be read in the criterion (.txt) files
-        # they correspond to the cost returned by the optimization problems while the ov.cost in output of ANTARES
-        # is post-treated with some small corrections for more consistency between the weeks
-        op_cost <- sum(antaresRead::readOptimCriteria()$"criterion1") / length(current_it$mc_years)
-      }
-      else
-      {
-        op_cost <-  sum(as.numeric(output_area_s$"OV. COST"))  + sum(as.numeric(output_link_s$"HURDLE COST")) 
-      }
-      inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * x$invested_capacities[c$name, current_it$id]}))
-      inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation
-      ov_cost <-  op_cost + inv_cost
-    }
-   
-    else
-    {
-      op_cost <- NA
-      inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * x$invested_capacities[c$name, current_it$id]}))
-      ov_cost <- NA
-    }
-    
+    # compute system operationnal and investment costs 
+    op_cost <- get_op_costs(output_antares, current_it, exp_options)
+    inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * x$invested_capacities[c$name, current_it$id]}))
+    inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation
+    ov_cost <-  op_cost + inv_cost
+  
     # update output structure
     x$investment_costs[current_it$id] <- inv_cost
     x$operation_costs[current_it$id] <-  op_cost
@@ -278,10 +249,11 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
       # check if the current iteration provides the best solution
       if(ov_cost <= min(x$overall_costs, na.rm = TRUE)) {best_solution = current_it$id}
     }
-
+    
     # compute average rentability of each candidate (can only
     # be assessed if a complete simulation has been run)
     # + compute LOLE for each area
+    
     if(current_it$full)
     {
       get_avg_rentability <- function(c)
