@@ -250,29 +250,16 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
       if(ov_cost <= min(x$overall_costs, na.rm = TRUE)) {best_solution = current_it$id}
     }
     
-    # compute average rentability of each candidate (can only
-    # be assessed if a complete simulation has been run)
-    # + compute LOLE for each area
+    # compute average rentability of each candidate 
+    average_rentability <- get_expected_rentability(output_antares, current_it, candidates)
     
+    # compute lole for each area
     if(current_it$full)
     {
-      get_avg_rentability <- function(c)
-      {
-        if(c$has_link_profile)
-        {
-          return(sum(as.numeric(subset(output_link_h_s, link == c$link)$"MARG. COST")*c$link_profile[1:8736]) - c$cost * n_w / 52) 
-        }
-        else 
-        {
-          return(sum(as.numeric(subset(output_link_s, link == c$link)$"MARG. COST")) - c$cost * n_w / 52)
-        }
-      }
-      average_rentability <- sapply(candidates, FUN = get_avg_rentability)
       lole <- sapply(all_areas, FUN = function(a){as.numeric(subset(output_area_s, area == a)$"LOLD")}) 
     }
     else
     {
-      average_rentability <- rep(NA, n_candidates)
       lole <- rep(NA, length(all_areas))
     }
     
