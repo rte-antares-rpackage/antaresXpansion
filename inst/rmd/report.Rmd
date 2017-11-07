@@ -208,7 +208,9 @@ Table - Loss of Load Expectation(in hours) :
 
 ```{r table_lole, echo = FALSE}
 
-kable(t(x$digest$lole), format = "markdown")
+lold_matrix <- sapply(x$digest, FUN = function(it){return(it$LOLD)})
+rownames(lold_matrix) <- x$digest$it1$area
+kable(lold_matrix, format = "markdown")
 
 ```
 

@@ -91,8 +91,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   x$rentability <- data.frame(row.names = sapply(candidates, FUN = function(c){c$name}))
   x$iterations <- list()
   x$digest <- list()
-  x$digest$lole <- data.frame(row.names = all_areas)
-  
+
   # create iteration structure
   current_it <- list()
   current_it$n <- 1  # iteration number
@@ -251,34 +250,12 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     }
     
     # compute average rentability of each candidate 
-    average_rentability <- get_expected_rentability(output_antares, current_it, candidates)
+    x$rentability[[current_it$id]] <- get_expected_rentability(output_antares, current_it, candidates, n_w)
     
     # compute lole for each area
-    if(current_it$full)
-    {
-      lole <- sapply(all_areas, FUN = function(a){as.numeric(subset(output_area_s, area == a)$"LOLD")}) 
-    }
-    else
-    {
-      lole <- rep(NA, length(all_areas))
-    }
+    x$digest[[current_it$id]] <- get_digest(output_antares, current_it)
     
-    # update output structure
-    # if(current_it$n == 1)
-    # {
-    #   x$rentability <- data.frame(it1 = average_rentability)
-    #   row.names(x$rentability) <- sapply(candidates, FUN = function(c){c$name})
-    #   x$digest$lole <- data.frame(it1 = lole)
-    #   row.names(x$digest$lole) <- all_areas
-    # }
-    # else 
-    {
-      x$rentability[[current_it$id]] <- average_rentability
-      x$digest$lole[[current_it$id]] <- lole
-    }
   
-    
-    
     # print results of the ANTARES simulation
     if(display & current_it$full)
     {
