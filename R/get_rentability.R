@@ -7,11 +7,13 @@
 #' @param candidates
 #'   list of investment candidates, as returned by
 #'   \code{\link{read_candidates}}
+#' @param n_w
+#'   number of weeks in the study
 #' @return 
 #' vector of rentability
 #' 
 #' @importFrom antaresRead readAntares 
-get_expected_rentability <- function(output_antares, current_it, candidates)
+get_expected_rentability <- function(output_antares, current_it, candidates, n_w)
 {
   if(!current_it$full)
   {
@@ -30,7 +32,7 @@ get_expected_rentability <- function(output_antares, current_it, candidates)
                                     select = "MARG. COST")
     }
     # synthetic results for other candidates 
-    if (length(witout_profile(candidates)) > 0 )
+    if (length(without_profile(candidates)) > 0 )
     {
       output_link_s = antaresRead::readAntares(areas = NULL, links = without_profile(candidates), mcYears = NULL, 
                                              timeStep = "annual", opts = output_antares, showProgress = FALSE,
