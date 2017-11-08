@@ -1,4 +1,4 @@
-context("Function read_options()")
+context("Function get_op_costs()")
 
 
 test_that("get_op_costs() works", {
