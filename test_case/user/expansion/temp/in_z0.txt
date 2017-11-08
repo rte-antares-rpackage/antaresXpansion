@@ -1,0 +1,10 @@
+it1 semibase 1000
+it1 peak 1000
+it1 pv 500
+it1 battery 500
+it1 transmission_line 1600
+it2 semibase 2000
+it2 peak 2000
+it2 pv 1000
+it2 battery 1000
+it2 transmission_line 3200

@@ -22,7 +22,7 @@ test_that("get_capacity_profile() works ", {
   load_factor_profile <- seq(from = 0, to = 1, length.out = 8760)
 
   # in fast mode
-  uc_mode <- "fast"
+  uc_mode <- "expansion_fast"
   out_fast <- get_capacity_profile(installed_capacity = 1.5, load_factor_profile = load_factor_profile, uc_mode = uc_mode)
   
   expect_length(out_fast, 8760)
@@ -30,16 +30,16 @@ test_that("get_capacity_profile() works ", {
   expect_true(all.equal(out_fast, round(out_fast, digits = 6)))
   
   # in accurate mode
-  uc_mode <- "accurate"
+  uc_mode <- "expansion_accurate"
   out_accurate <- get_capacity_profile(installed_capacity = 1.5, load_factor_profile = load_factor_profile, uc_mode = uc_mode)
   
   expect_length(out_accurate, 8760)
   expect_true(abs(sum(out_accurate)- 1.5*sum(load_factor_profile)) <= 1)
   expect_true(all.equal(out_accurate, as.integer(out_accurate)))
   
-  # when installes capacity is null
-  uc_mode <- "fast"
-  out_fast <- antaresXpansion:::get_capacity_profile(installed_capacity = 0.00001, load_factor_profile = load_factor_profile, uc_mode = uc_mode)
+  # when installed capacity is null
+  uc_mode <- "expansion_fast"
+  out_fast <- get_capacity_profile(installed_capacity = 0, load_factor_profile = load_factor_profile, uc_mode = uc_mode)
   expect_length(out_fast, 8760)
   expect_true(all(out_fast == 0))
   

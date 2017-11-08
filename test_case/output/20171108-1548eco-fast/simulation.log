@@ -1,0 +1,1212 @@
+[Wed Nov  8 15:48:37 2017][solver][check] Antares Solver v6.0.6 (RTE France)
+[Wed Nov  8 15:48:37 2017][solver][infos]   :: built for 64-bit architectures, Microsoft Windows, 4 cpu(s)
+[Wed Nov  8 15:48:37 2017][solver][infos]   :: hostname = GROVSW84
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos]   :: from C:\PROGRA~1\RTE\ANTARES\6017DF~1.6\bin
+[Wed Nov  8 15:48:37 2017][solver][infos]   :: log filename: D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\logs\solver-20171108-154837.log
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][notic] Preparing ExpansionTest1...
+[Wed Nov  8 15:48:37 2017][solver][infos]   detected version: 600
+[Wed Nov  8 15:48:37 2017][solver][infos]   from `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case`
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos]   forcing the simulation mode Economy
+[Wed Nov  8 15:48:37 2017][solver][infos]   simplex optimization range: week
+[Wed Nov  8 15:48:37 2017][solver][infos]   :: enabling expansion
+[Wed Nov  8 15:48:37 2017][solver][infos]   :: enabling the 'year-by-year' mode
+[Wed Nov  8 15:48:37 2017][solver][infos]   :: enabling filtering
+[Wed Nov  8 15:48:37 2017][solver][infos]   :: ignoring day ahead reserves
+[Wed Nov  8 15:48:37 2017][solver][infos]   :: ignoring min stable power for thermal clusters
+[Wed Nov  8 15:48:37 2017][solver][infos]   :: ignoring min up/down time for thermal clusters
+[Wed Nov  8 15:48:37 2017][solver][infos]   :: ignoring export mps
+[Wed Nov  8 15:48:37 2017][solver][infos]   Output folder : D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the list of areas...
+[Wed Nov  8 15:48:37 2017][solver][infos]   Loading the area list from `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\input\areas\list.txt`
+[Wed Nov  8 15:48:37 2017][solver][infos]   8 areas found
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading global hydro data...
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading thermal clusters...
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading thermal configuration for the area area1
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading thermal configuration for the area area2
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading thermal configuration for the area flex
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading thermal configuration for the area peak
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading thermal configuration for the area pv
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading thermal configuration for the area semibase
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading thermal configuration for the area Store_in
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading thermal configuration for the area store_out
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 1/8: area1
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 1/8: area1  11%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 1/8: area1  22%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 1/8: area1  33%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 1/8: area1  44%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 1/8: area1  55%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 1/8: area1  66%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 1/8: area1  77%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 1/8: area1  88%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 2/8: area2
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 2/8: area2  11%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 2/8: area2  22%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 2/8: area2  33%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 2/8: area2  44%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 2/8: area2  55%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 2/8: area2  66%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 2/8: area2  77%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 2/8: area2  88%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 3/8: flex
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 3/8: flex  16%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 3/8: flex  33%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 3/8: flex  50%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 3/8: flex  66%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 3/8: flex  83%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 4/8: peak
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 4/8: peak  14%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 4/8: peak  28%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 4/8: peak  42%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 4/8: peak  57%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 4/8: peak  71%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 4/8: peak  85%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 5/8: pv
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 5/8: pv  16%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 5/8: pv  33%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 5/8: pv  50%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 5/8: pv  66%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 5/8: pv  83%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 6/8: semibase
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 6/8: semibase  14%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 6/8: semibase  28%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 6/8: semibase  42%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 6/8: semibase  57%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 6/8: semibase  71%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 6/8: semibase  85%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 7/8: Store_in
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 7/8: Store_in  16%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 7/8: Store_in  33%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 7/8: Store_in  50%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 7/8: Store_in  66%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 7/8: Store_in  83%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 8/8: store_out
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 8/8: store_out  16%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 8/8: store_out  33%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 8/8: store_out  50%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 8/8: store_out  66%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading the area 8/8: store_out  83%
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading correlation matrices...
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading constraints...
+[Wed Nov  8 15:48:37 2017][solver][infos]  added `Storing_balance` (daily, equality)
+[Wed Nov  8 15:48:37 2017][solver][infos] 1 binding constraint found
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Loading sets of areas...
+[Wed Nov  8 15:48:37 2017][solver][infos]    found `all areas` (8 items, no output)
+[Wed Nov  8 15:48:37 2017][solver][infos]  Elapsed time: Study loading: 212ms
+[Wed Nov  8 15:48:37 2017][solver][infos] [statistics] disk: read: 2792 ko, written: 0 ko
+[Wed Nov  8 15:48:37 2017][solver][infos] [statistics] network: read: 0 ko, written: 0 ko
+[Wed Nov  8 15:48:37 2017][solver][infos] The study is loaded.
+[Wed Nov  8 15:48:37 2017][solver][infos] [UI] Display messages: Off
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Generating calendar informations
+[Wed Nov  8 15:48:37 2017][solver][infos] Calendar: hours:1..8736, days:1..364, weeks:1..52, months:1..12, years:1..3
+[Wed Nov  8 15:48:37 2017][solver][infos] Simulation days per month : 31, 31, 30, 31, 30, 31, 31, 28, 31, 30, 31, 29
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Removing disabled thermal clusters in from solver computations...
+[Wed Nov  8 15:48:37 2017][solver][infos] No disabled thermal cluster removed before solver computations
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Optimizing the thermal clusters in 'must-run' mode...
+[Wed Nov  8 15:48:37 2017][solver][infos] No thermal cluster in 'must-run' mode
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Optimizing 1 binding constraint
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Summary
+[Wed Nov  8 15:48:37 2017][solver][infos]      areas: 8
+[Wed Nov  8 15:48:37 2017][solver][infos]      links: 7
+[Wed Nov  8 15:48:37 2017][solver][infos]      thermal clusters: 8
+[Wed Nov  8 15:48:37 2017][solver][infos]      thermal clusters (must-run): 0
+[Wed Nov  8 15:48:37 2017][solver][infos]      binding constraints: 1
+[Wed Nov  8 15:48:37 2017][solver][infos]      filtering:true
+[Wed Nov  8 15:48:37 2017][solver][infos]      memory : 20Mo
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Initializing random number generators...
+[Wed Nov  8 15:48:37 2017][solver][infos]   The progression is disabled
+[Wed Nov  8 15:48:37 2017][solver][infos]   system memory report: 10711 Mib / 16263 Mib,  65.861157% free
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] [UI] Display messages: On
+[Wed Nov  8 15:48:37 2017][solver][check] Running the simulation (economy)
+[Wed Nov  8 15:48:37 2017][solver][infos] Allocating resources...
+[Wed Nov  8 15:48:37 2017][solver][infos] Allocating resources 62%
+[Wed Nov  8 15:48:37 2017][solver][infos] Allocating resources...
+[Wed Nov  8 15:48:37 2017][solver][infos]  Variables:  (94Mo)
+[Wed Nov  8 15:48:37 2017][solver][infos]  + Areas                             
+[Wed Nov  8 15:48:37 2017][solver][infos]        OV. COST              Euro    Overall Cost throughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        OP. COST              Euro    Operating Cost throughout all MC years, of all the thermal dispatchable clusters
+[Wed Nov  8 15:48:37 2017][solver][infos]        MRG. PRICE            Euro    Marginal Price, throughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        CO2 EMIS.             Tons    Overall CO2 emissions expected from all the thermal dispatchable clusters
+[Wed Nov  8 15:48:37 2017][solver][infos]        ENERG. PLANT          MWh     Energy generated by all the clusters
+[Wed Nov  8 15:48:37 2017][solver][infos]        BALANCE               MWh     Nodal energy balance, throughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        ROW BAL.              MWh     Row Balance
+[Wed Nov  8 15:48:37 2017][solver][infos]        PSP                   MWh     PSP
+[Wed Nov  8 15:48:37 2017][solver][infos]        MISC. NDG             MWh     Non-dispatchable generation (not including wind and run-of-the-river)
+[Wed Nov  8 15:48:37 2017][solver][infos]        LOAD                  MWh     Load generation, thoughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        H. ROR                MWh     Hydro generation, thoughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        WIND                  MWh     Wind generation, thoughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        SOLAR                 MWh     Solar generation, thoughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        Dispatch. Gen.        MWh     Value of all the dispatchable generation throughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        H. STOR               MWh     Hydro Storage Generation
+[Wed Nov  8 15:48:37 2017][solver][infos]        UNSP. ENRG            MWh     Unsuplied Energy (demand that cannot be satisfied)
+[Wed Nov  8 15:48:37 2017][solver][infos]        SPIL. ENRG            MWh     Spilled Energy (generation that cannot be satisfied)
+[Wed Nov  8 15:48:37 2017][solver][infos]        LOLD                  Hours   LOLD
+[Wed Nov  8 15:48:37 2017][solver][infos]        LOLP                  %       LOLP
+[Wed Nov  8 15:48:37 2017][solver][infos]        AVL DTG               MWh     Available dispatchable generation
+[Wed Nov  8 15:48:37 2017][solver][infos]        DTG MRG               MWh     Dispatchable Generation Margin
+[Wed Nov  8 15:48:37 2017][solver][infos]        MAX MRG               MWh     Maximum margin throughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        NP COST               Euro    Non Proportional Cost throughout all MC years, of all the thermal dispatchable clusters
+[Wed Nov  8 15:48:37 2017][solver][infos]                              NP Cost Non proportional costs by all the clusters
+[Wed Nov  8 15:48:37 2017][solver][infos]        NODU                          Number Of Dispatched Units throughout all MC years, of all the thermal dispatchable clusters
+[Wed Nov  8 15:48:37 2017][solver][infos]                              NODU    Number of Dispatchable Units by plant
+[Wed Nov  8 15:48:37 2017][solver][infos]      + Links                         
+[Wed Nov  8 15:48:37 2017][solver][infos]            FLOW LIN.         MWh     Flow assessed, over all MC years, through linear optimization
+[Wed Nov  8 15:48:37 2017][solver][infos]            UCAP LIN.         MWh     Used capacity assessed, over all MC years, through linear optimization
+[Wed Nov  8 15:48:37 2017][solver][infos]            FLOW QUAD.        MWh     Flow (quad.)
+[Wed Nov  8 15:48:37 2017][solver][infos]            CONG. FEE (ALG.)  Euro    Congestion fee collected throughout all MC years (Alg.)
+[Wed Nov  8 15:48:37 2017][solver][infos]            CONG. FEE (ABS.)  Euro    Congestion fee collected throughout all MC years (Absolute value)
+[Wed Nov  8 15:48:37 2017][solver][infos]            MARG. COST        Euro/MW Decrease of the overall operating cost expected by a 1MW capacity reinforcement
+[Wed Nov  8 15:48:37 2017][solver][infos]            CONG. PROB. (+/-) %       Probability for the line to be congested in the upstream-downstream way
+[Wed Nov  8 15:48:37 2017][solver][infos]            HURDLE COST       Euro    Hurdle costs, over all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]  + Sets of Areas                     
+[Wed Nov  8 15:48:37 2017][solver][infos]        OV. COST              Euro    Overall Cost throughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        OP. COST              Euro    Operating Cost throughout all MC years, of all the thermal dispatchable clusters
+[Wed Nov  8 15:48:37 2017][solver][infos]        MRG. PRICE            Euro    Marginal Price, throughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        CO2 EMIS.             Tons    Overall CO2 emissions expected from all the thermal dispatchable clusters
+[Wed Nov  8 15:48:37 2017][solver][infos]        BALANCE               MWh     Nodal energy balance, throughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        ROW BAL.              MWh     Row Balance
+[Wed Nov  8 15:48:37 2017][solver][infos]        PSP                   MWh     PSP
+[Wed Nov  8 15:48:37 2017][solver][infos]        MISC. NDG             MWh     Non-dispatchable generation (not including wind and run-of-the-river)
+[Wed Nov  8 15:48:37 2017][solver][infos]        LOAD                  MWh     Load generation, thoughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        H. ROR                MWh     Hydro generation, thoughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        WIND                  MWh     Wind generation, thoughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        SOLAR                 MWh     Solar generation, thoughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        Dispatch. Gen.        MWh     Value of all the dispatchable generation throughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        H. STOR               MWh     Hydro Storage Generation
+[Wed Nov  8 15:48:37 2017][solver][infos]        UNSP. ENRG            MWh     Unsuplied Energy (demand that cannot be satisfied)
+[Wed Nov  8 15:48:37 2017][solver][infos]        SPIL. ENRG            MWh     Spilled Energy (generation that cannot be satisfied)
+[Wed Nov  8 15:48:37 2017][solver][infos]        LOLD                  Hours   LOLD
+[Wed Nov  8 15:48:37 2017][solver][infos]        LOLP                  %       LOLP
+[Wed Nov  8 15:48:37 2017][solver][infos]        AVL DTG               MWh     Available dispatchable generation
+[Wed Nov  8 15:48:37 2017][solver][infos]        DTG MRG               MWh     Dispatchable Generation Margin
+[Wed Nov  8 15:48:37 2017][solver][infos]        MAX MRG               MWh     Maximum margin throughout all MC years
+[Wed Nov  8 15:48:37 2017][solver][infos]        NP COST               Euro    Non Proportional Cost throughout all MC years, of all the thermal dispatchable clusters
+[Wed Nov  8 15:48:37 2017][solver][infos]        NODU                          Number Of Dispatched Units throughout all MC years, of all the thermal dispatchable clusters
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Preparing time-series numbers...
+[Wed Nov  8 15:48:37 2017][solver][infos] MC-Years : [1 .. 3], total: 3
+[Wed Nov  8 15:48:37 2017][solver][infos]  Starting the simulation
+[Wed Nov  8 15:48:37 2017][solver][infos] nb years in set : 3
+[Wed Nov  8 15:48:37 2017][solver][infos] Years from 1 to 3
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-1-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-1-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-1-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-1-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-1-20171108-154837-2.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-1-20171108-154837-3.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-2-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-2-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-2-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-2-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-2-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-2-20171108-154837-2.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-3-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-3-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-3-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-3-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-3-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-3-20171108-154837-2.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-4-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-4-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-5-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-4-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-4-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-5-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-4-20171108-154837-2.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-4-20171108-154837-3.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-5-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-6-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-5-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-6-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-5-20171108-154837-2.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-5-20171108-154837-3.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-7-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-6-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-7-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-6-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-6-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-6-20171108-154837-2.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-8-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-8-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-7-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-7-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-7-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-7-20171108-154837-2.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-9-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-9-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-8-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-8-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-8-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-10-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-8-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-10-20171108-154837-2.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-9-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-9-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-9-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-9-20171108-154837-2.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-11-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-11-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-12-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-10-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-12-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-10-20171108-154837-2.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-10-20171108-154837.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:37 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-10-20171108-154837-1.txt'
+[Wed Nov  8 15:48:37 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-13-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-11-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-13-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-11-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-11-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-11-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-14-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-14-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-12-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-12-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-12-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-12-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-15-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-13-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-15-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-13-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-13-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-13-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-16-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-16-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-14-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-14-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-14-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-17-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-14-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-17-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-15-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-15-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-18-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-15-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-18-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-15-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-19-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-16-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-19-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-16-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-16-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-20-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-20-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-16-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-21-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-21-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-17-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-22-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-17-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-17-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-22-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-17-20171108-154838-3.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-23-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-23-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-24-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-18-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-24-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-18-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-25-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-18-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-18-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-25-20171108-154838-3.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-26-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-26-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-27-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-19-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-27-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-19-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-19-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-19-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-28-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-28-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-20-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-20-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-20-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-20-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-29-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-29-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-21-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-21-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-21-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-21-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-30-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-22-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-22-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-30-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-22-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-22-20171108-154838-3.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-31-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-23-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-31-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-23-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-32-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-23-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-24-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-23-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-24-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-32-20171108-154838-3.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-33-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-25-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-33-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-25-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-24-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-26-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-26-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-34-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-24-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-34-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-25-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-35-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-27-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-35-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-25-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-27-20171108-154838-3.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-36-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-36-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-26-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-37-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-26-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-37-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-38-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-38-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-28-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-27-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-28-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-27-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-39-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-39-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-29-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-29-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-40-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-40-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-28-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-28-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-41-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-29-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-30-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-41-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-29-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-30-20171108-154838-3.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-42-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-42-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-43-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-43-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-30-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-31-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-30-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-31-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-44-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-44-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-31-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-31-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-32-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-32-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-45-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-33-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-33-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-45-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-32-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-34-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-32-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-34-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-46-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-33-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-35-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-46-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-33-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-35-20171108-154838-3.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-34-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-36-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-34-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-36-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-47-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-47-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-37-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-35-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-35-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-37-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-48-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-48-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-36-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-38-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-36-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-38-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-49-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-37-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-49-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-39-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-37-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-39-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-50-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-38-20171108-154838.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-50-20171108-154838-1.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:38 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-38-20171108-154838-2.txt'
+[Wed Nov  8 15:48:38 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-39-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-40-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-40-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-39-20171108-154839-2.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-51-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-40-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-51-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-40-20171108-154839-2.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-52-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-3-52-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-41-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-41-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-41-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting the annual results
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-41-20171108-154839-2.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area2
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : flex
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : peak
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-42-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-42-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : pv
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-42-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : semibase
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-42-20171108-154839-2.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : Store_in
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : store_out
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1 - area2
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1 - peak
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1 - semibase
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area2 - flex
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area2 - pv
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-43-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-43-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-43-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-43-20171108-154839-2.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-44-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-44-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-44-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-44-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : flex - Store_in
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : flex - store_out
+[Wed Nov  8 15:48:39 2017][solver][infos]  Elapsed time: Survey report: 151ms
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-45-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-45-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-45-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-45-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-46-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-46-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-46-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-46-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-47-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-47-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-47-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-47-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-48-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-48-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-48-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-48-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-49-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-49-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-49-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-49-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-50-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-50-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-50-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-50-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-51-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-51-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-51-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-51-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-52-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-1-52-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-52-20171108-154839.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Solver output File: `D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\criterion-2-52-20171108-154839-1.txt'
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting the annual results
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area2
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : flex
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting the annual results
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : peak
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : pv
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : semibase
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area2
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : Store_in
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : flex
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : store_out
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : peak
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1 - area2
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1 - peak
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : pv
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1 - semibase
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : semibase
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area2 - flex
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area2 - pv
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : Store_in
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : store_out
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1 - area2
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1 - peak
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1 - semibase
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area2 - flex
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area2 - pv
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : flex - Store_in
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : flex - store_out
+[Wed Nov  8 15:48:39 2017][solver][infos]  Elapsed time: Survey report: 69ms
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : flex - Store_in
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : flex - store_out
+[Wed Nov  8 15:48:39 2017][solver][infos]  Elapsed time: Survey report: 70ms
+[Wed Nov  8 15:48:39 2017][solver][infos]   The quadratic optimisation has been skipped
+[Wed Nov  8 15:48:39 2017][solver][infos]  Elapsed time: MC Years: 2180ms
+[Wed Nov  8 15:48:39 2017][solver][infos] 
+[Wed Nov  8 15:48:39 2017][solver][check] Exporting the survey results...
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area2
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : flex
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : peak
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : pv
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : semibase
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : Store_in
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : store_out
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1 - area2
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1 - peak
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area1 - semibase
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area2 - flex
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : area2 - pv
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : flex - Store_in
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting results : flex - store_out
+[Wed Nov  8 15:48:39 2017][solver][infos] Exporting digest...
+[Wed Nov  8 15:48:39 2017][solver][infos]  Elapsed time: Survey report: 294ms
+[Wed Nov  8 15:48:39 2017][solver][infos] [UI] Quitting the solver gracefully
+[Wed Nov  8 15:48:39 2017][solver][infos]  Writing log file: D:\ExpansionPlanningAntares\antares-rpackageXpansion\test_case\output\20171108-1548eco-expansion-benders-619-it16\simulation.log

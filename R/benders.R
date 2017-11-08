@@ -172,11 +172,9 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     for(c in candidates)
     {
       new_capacity <- get_capacity_profile(x$invested_capacities[c$name, current_it$id], c$link_profile, exp_options$uc_type)
-      
       # update study
       update_link(c$link, "direct_capacity", new_capacity , opts)
       update_link(c$link, "indirect_capacity", new_capacity, opts)
-
     }
     
     
@@ -300,7 +298,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
       # if master problem solution didn't evolve at this (full) iteration, then the decomposition has
       # converged
       
-      if(all(abs(benders_sol - x$invested_capacities[[current_it$id]]) <= 0.1) )
+      if(all(abs(benders_sol - x$invested_capacities[[current_it$id]]) <= 0.05) )
       {
         if(current_it$full)
         { 

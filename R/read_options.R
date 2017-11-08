@@ -71,7 +71,7 @@ read_options <- function(file, opts = antaresRead::simOptions())
       if(option_value == "accurate")
       { stop("Since v0.7 of antaresXpansion package, 'accurate' mode does no longer exist, use 'expansion_accurate' instead")}
       
-      assertthat::assert_that(option_value %in% c("expansion_acurate", "expansion_fast", "relaxed_fast", "relaxed_accurate"))
+      assertthat::assert_that(option_value %in% c("expansion_accurate", "expansion_fast", "relaxed_fast", "relaxed_accurate"))
       
       options$uc_type <- option_value
       

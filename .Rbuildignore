@@ -5,4 +5,3 @@ test_case
 ^\.travis\.yml$
 ^appveyor\.yml$
 ^codecov\.yml$
-inst\testdata
