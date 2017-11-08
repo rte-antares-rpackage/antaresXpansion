@@ -114,7 +114,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
                                              select = c("OV. COST", "NP COST"))
     
     # load cost in expansion_accurate mode
-    if(exp_options$uc_type %in% c("relaxed_accurate", "expansion_accurate"))
+    if(exp_options$uc_type == "expansion_accurate")
     {
       criterion <- antaresRead::readOptimCriteria(opts = exp_options)
     }
@@ -122,7 +122,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
     # for every mc year
     for(y in current_it$mc_years)
     {
-      if(exp_options$uc_type %in% c("relaxed_fast", "expansion_fast"))
+      if(exp_options$uc_type == "expansion_fast")
       {
         # in that case, non-linear cost has to be removed because they are computed in a post-processing and are not
         # part of the ANTARES optimization  
@@ -131,7 +131,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
           sum(as.numeric(subset(output_area_y, mcYear == y)$"NP COST")) +
           x$investment_costs[current_it$id] 
       }
-      else if(exp_options$uc_type %in% c("relaxed_accurate", "expansion_accurate"))
+      else if(exp_options$uc_type == "expansion_accurate")
       {
         # in that case, the considered cost is the criterion of the optimization problem (not yet post-treated)
         y_cost <- sum(as.numeric(subset(criterion, mcYear == y)$"criterion1")) + x$investment_costs[current_it$id]
@@ -207,7 +207,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
     
     
     # load cost in expansion mode
-    if(exp_options$uc_type == "relaxed_accurate")
+    if(exp_options$uc_type == "expansion_accurate")
     {
       criterion <- antaresRead::readOptimCriteria(opts = output_antares)
     }
@@ -219,7 +219,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
         
       {
         
-        if(exp_options$uc_type %in% c("relaxed_fast", "expansion_fast"))
+        if(exp_options$uc_type == "expansion_fast")
         {
           # in that case, non-linear cost has to be removed because they are computed in a post-processing and are not
           # part of the ANTARES optimization  
@@ -228,7 +228,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
             sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"NP COST")) +
             x$investment_costs[current_it$id] /n_w
         }
-        else if(exp_options$uc_type %in% c("relaxed_accurate", "expansion_accurate"))
+        else if(exp_options$uc_type == "expansion_accurate")
         {
           # in that case, the considered cost is the criterion of the optimization problem (not yet post-treated)
           w_cost <- sum(as.numeric(subset(criterion, mcYear == y & timeId == w)$"criterion1")) + 

@@ -21,7 +21,7 @@ numeric_patch_cut <- function(x_current, x_max)
 {
   # a few checks
   assert_that(length(x_current) == length(x_max))
-
+  
   # compute max distance between current point (x_current) and boundary of the investment space
   each_max <- function(i,vec1, vec2){max(vec2[i] - vec1[i], vec1[i])}
   d_max <- norm(sapply(1:length(x_current), FUN = each_max, vec1 = x_current, vec2 = x_max), type = "2")

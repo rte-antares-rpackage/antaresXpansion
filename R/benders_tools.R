@@ -33,7 +33,7 @@ set_antares_options <- function(benders_options, candidates, opts = antaresRead:
     set_uc_mode(mode = "accurate", opts = opts)
     enable_uc_heuristic(enable = TRUE, opts = opts)
   }
-  if(benders_options$uc_type == "relaxed_accurate")
+  if(benders_options$uc_type == "expansion_accurate")
   {
     set_uc_mode(mode = "accurate", opts = opts)
     enable_uc_heuristic(enable = TRUE, opts = opts)
@@ -43,7 +43,7 @@ set_antares_options <- function(benders_options, candidates, opts = antaresRead:
     set_uc_mode(mode = "fast", opts = opts)
     enable_uc_heuristic(enable = TRUE, opts = opts)
   }
-  if(benders_options$uc_type == "relaxed_fast")
+  if(benders_options$uc_type == "expansion_fast")
   {
     set_uc_mode(mode = "fast", opts = opts)
     enable_uc_heuristic(enable = FALSE, opts = opts)

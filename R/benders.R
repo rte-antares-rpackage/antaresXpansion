@@ -189,7 +189,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     simulation_name <- paste0("expansion-benders-", unique_key, "-", current_it$id)
     if(display){  cat("   ANTARES simulation running ... ", sep="")}
-    run_simulation(simulation_name, mode = ifelse(exp_options$uc_type == "relaxed_accurate", "expansion", "economy"),
+    run_simulation(simulation_name, mode = ifelse(exp_options$uc_type == "expansion_accurate", "expansion", "economy"),
                    path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts)
     if(display){  cat("[done] \n", sep="")}
     
@@ -342,7 +342,6 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     if(!has_converged && current_it$n <= exp_options$max_iteration)
     {
       x$invested_capacities[[paste0("it", current_it$n)]] <- benders_sol
-      #x$invested_capacities[[paste0("it", current_it$n)]] <- 450 + 2 *(current_it$n - 1)
     }
     
     

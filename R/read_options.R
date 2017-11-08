@@ -31,7 +31,7 @@ read_options <- function(file, opts = antaresRead::simOptions())
   # initiate option list, with default values
   options <- list()
   options$method <- "benders_decomposition"
-  options$uc_type <- "relaxed_fast"
+  options$uc_type <- "expansion_fast"
   options$master <- "integer"
   options$optimality_gap <- 0
   options$max_iteration <- Inf
@@ -66,8 +66,23 @@ read_options <- function(file, opts = antaresRead::simOptions())
     }
     else if (option_name == "uc_type")
     {
-      assertthat::assert_that(option_value %in% c("accurate", "fast", "relaxed_fast", "relaxed_accurate"))
+    
+      assertthat::assert_that(option_value %in% c("expansion_acurate", "expansion_fast", "accurate", "fast", "relaxed_fast", "relaxed_accurate"))
+      
       options$uc_type <- option_value
+      
+      if(option_value == "relaxed_fast")
+      { 
+        warning("Since v0.7 of antaresXpansion package, 'relaxed_fast' mode has been renamed 'expansion_fast'")
+        options$uc_type <- "expansion_fast"
+      }
+      if(option_value == "relaxed_accurate")
+      { 
+        warning("Since v0.7 of antaresXpansion package, 'relaxed_accurate' mode has been renamed 'expansion_accurate'")
+        options$uc_type <- "expansion_accurate"
+      }
+      
+      
     }
     else if (option_name == "master")
     {

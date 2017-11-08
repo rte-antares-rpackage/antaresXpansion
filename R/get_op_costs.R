@@ -24,7 +24,7 @@ get_op_costs <- function(output_antares, current_it, exp_options)
   {
     # in case of a full iteration, operation costs can be computed
     
-    if (exp_options$uc_type %in% c("relaxed_fast", "expansion_fast"))
+    if (exp_options$uc_type == "expansion_fast")
     {
       # in that case, non-linear cost has to be removed because they are computed in a post-processing and are not
       # part of the ANTARES optimization
@@ -40,7 +40,7 @@ get_op_costs <- function(output_antares, current_it, exp_options)
       op_cost <-  sum(as.numeric(output_area_s$"OV. COST"))  + sum(as.numeric(output_link_s$"HURDLE COST")) -
         sum(as.numeric(output_area_s$"NP COST"))
     }
-    else if (exp_options$uc_type %in% c("relaxed_accurate", "expansion_accurate"))
+    else if (exp_options$uc_type == "expansion_accurate")
     {
       # in that case, the costs must be read in the criterion (.txt) files
       # they correspond to the cost returned by the optimization problems while the ov.cost in output of ANTARES
