@@ -1,0 +1,8 @@
+area2	link	va	annual
+pv	VARIABLES	BEGIN	END
+	9	1	1
+
+area2	annual	FLOW LIN.	UCAP LIN.	FLOW QUAD.	CONG. FEE (ALG.)	CONG. FEE (ABS.)	MARG. COST	CONG. PROB +	CONG. PROB -	HURDLE COST
+		MWh	MWh	MWh	Euro	Euro	Euro/MW	%	%	Euro
+										
+	Annual	-140610	140610	0	5864411	5864411	326835	100.00	100.00	0

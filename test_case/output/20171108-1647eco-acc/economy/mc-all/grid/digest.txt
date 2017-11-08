@@ -1,0 +1,56 @@
+	digest
+	VARIABLES	AREAS	LINKS
+	29	8	0
+
+		OV. COST	OP. COST	MRG. PRICE	CO2 EMIS.	BALANCE	ROW BAL.	PSP	MISC. NDG	LOAD	H. ROR	WIND	SOLAR	NUCLEAR	LIGNITE	COAL	GAS	OIL	MIX. FUEL	MISC. DTG	H. STOR	UNSP. ENRG	SPIL. ENRG	LOLD	LOLP	AVL DTG	DTG MRG	MAX MRG	NP COST	NODU
+		Euro	Euro	Euro	Tons	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	Hours	%	MWh	MWh	MWh	Euro	 
+		EXP	EXP	EXP	EXP	EXP	values	EXP	EXP	EXP	EXP	EXP	EXP	EXP	EXP	EXP	EXP	EXP	EXP	EXP	EXP	EXP	EXP	EXP	values	EXP	EXP	EXP	EXP	EXP
+	area1	521141779	521141779	46.68	0	-115038	0	0	0	25775268	0	3990338	0	19061942	0	2202981	0	407688	0	0	0	0	2719	0	0	36529200	14856589	14859308	0	0
+	area2	496720529	482926549	46.87	0	-1590032	0	0	0	26836288	0	4296173	0	18647506	0	2186300	0	115929	0	0	0	690	342	2.67	66.67	29914800	8965065	8964717	0	0
+	flex	0	0	39.84	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+	peak	41317239	41317239	46.67	0	229540	0	0	0	0	0	0	0	0	0	0	0	229540	0	0	0	0	0	0	0	17472000	17242460	17242460	0	0
+	pv	0	0	0.00	0	140789	0	0	0	0	0	0	8736000	0	0	0	0	0	0	0	0	0	8595211	0	0	0	0	8595211	0	0
+	semibase	71625289	71625289	32.51	0	1432506	0	0	0	0	0	0	0	0	0	0	1432506	0	0	0	0	0	0	0	0	17472000	16039494	16039494	0	0
+	store_in	0	0	3.46	0	-488827	-8736000	0	0	0	0	0	0	0	0	0	0	0	0	0	0	8247173	0	8736.00	100.00	0	0	-8247173	0	0
+	store_out	0	0	-5.63	0	391062	8736000	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	8344938	0	33.33	0	0	8344938	0	0
+
+
+	digest
+	VARIABLES	AREAS	LINKS
+	0	0	0
+
+	
+	
+	
+
+
+
+
+
+
+	Links (FLOW LIN.)
+		From...
+	...To	area1	area2	flex	peak	pv	semibase	store_in	store_out
+	area1	X	-1547008	--	229540	--	1432506	--	--
+	area2	1547008	X	-97765	--	140789	--	--	--
+	flex	--	97765	X	--	--	--	-488827	391062
+	peak	-229540	--	--	X	--	--	--	--
+	pv	--	-140789	--	--	X	--	--	--
+	semibase	-1432506	--	--	--	--	X	--	--
+	store_in	--	--	488827	--	--	--	X	--
+	store_out	--	--	-391062	--	--	--	--	X
+
+
+
+
+	Links (FLOW QUAD.)
+		From...
+	...To	area1	area2	flex	peak	pv	semibase	store_in	store_out
+	area1	X	0	--	0	--	0	--	--
+	area2	0	X	0	--	0	--	--	--
+	flex	--	0	X	--	--	--	0	0
+	peak	0	--	--	X	--	--	--	--
+	pv	--	0	--	--	X	--	--	--
+	semibase	0	--	--	--	--	X	--	--
+	store_in	--	--	0	--	--	--	X	--
+	store_out	--	--	0	--	--	--	--	X

@@ -1,1 +1,1 @@
-option relax_integrality 1;
+option relax_integrality 0;

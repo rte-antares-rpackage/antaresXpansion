@@ -1,0 +1,1 @@
+* Optimal criterion value :   1.7050498582e+07

@@ -1,0 +1,8 @@
+area1	link	va	annual
+semibase	VARIABLES	BEGIN	END
+	9	1	1
+
+area1	annual	FLOW LIN.	UCAP LIN.	FLOW QUAD.	CONG. FEE (ALG.)	CONG. FEE (ABS.)	MARG. COST	CONG. PROB +	CONG. PROB -	HURDLE COST
+		MWh	MWh	MWh	Euro	Euro	Euro/MW	%	%	Euro
+										
+	Annual	-1171344	1171344	0	37435786	37435786	37436	0	100.00	0
