@@ -10,8 +10,9 @@ Description: Compute optimal investment and decommissioning decisions in an
 License: GPL (>= 2) | file LICENSE 
 LazyData: TRUE
 Depends:
-    antaresRead (>= 1.0.0)
+    antaresRead (>= 2.0.0)
 Imports:
+    antaresRead (>= 2.0.0),
     assertthat,
     lubridate,
     rmarkdown,
