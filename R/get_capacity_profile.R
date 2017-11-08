@@ -17,6 +17,7 @@
 #' capacity time series
 #' 
 #' @importFrom assertthat assert_that
+#' @noRd
 #' 
 get_capacity_profile <- function(installed_capacity, load_factor_profile, uc_mode)
 {

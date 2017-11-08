@@ -13,6 +13,8 @@
 #' vector of rentability
 #' 
 #' @importFrom antaresRead readAntares 
+#' @noRd
+
 get_expected_rentability <- function(output_antares, current_it, candidates, n_w)
 {
   if(!current_it$full)

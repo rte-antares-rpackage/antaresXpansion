@@ -12,7 +12,7 @@
 #' Returns the operationnal cost of the given study 
 #' 
 #' @importFrom antaresRead readAntares 
-
+#' @noRd
 get_op_costs <- function(output_antares, current_it, exp_options)
 {
   if(!current_it$full)

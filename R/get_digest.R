@@ -8,6 +8,7 @@
 #' digest of the current iteration
 #' 
 #' @importFrom antaresRead readAntares 
+#' @noRd
 get_digest <- function(output_antares, current_it)
 {
   # read antares output
