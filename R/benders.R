@@ -29,7 +29,7 @@
 #' @return 
 #' 
 #' @importFrom assertthat assert_that
-#' @importFrom antaresRead simOptions readAntares setSimulationPath getAreas
+#' @importFrom antaresRead simOptions setSimulationPath getAreas
 #' @importFrom rmarkdown render
 #' @importFrom utils packageVersion
 #' @export
@@ -194,37 +194,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     if(display){  cat("[done] \n", sep="")}
     
     output_antares <- antaresRead::setSimulationPath(paste0(opts$studyPath, "/output/", get_whole_simulation_name(simulation_name, opts)))
-    
-    # read output of the simulation, for links and areas, 
-    # with synthetic visions and detailed annual and weekly results
-    # to avoid the sum of numeric approximations, it is advised to use the most aggregated output of ANTARES
+    # note : to avoid the sum of numeric approximations, it is advised to use the most aggregated output of ANTARES
     # (e.g. to use annual results of ANTARES instead of the sum of the weekly results)
-    
-    # hourly results
-    if (length(with_profile(candidates)) > 0 )
-    {
-      output_link_h = readAntares(areas = NULL, links = with_profile(candidates), mcYears = current_it$mc_years, 
-                                  timeStep = "hourly", opts = output_antares, showProgress = FALSE)
-      output_link_h_s = readAntares(areas = NULL, links = with_profile(candidates), mcYears = NULL, 
-                                  timeStep = "hourly", opts = output_antares, showProgress = FALSE)
-    }
-    # weekly results
-    output_area_w = antaresRead::readAntares(areas = "all", links = NULL, mcYears = current_it$mc_years, 
-                                timeStep = "weekly", opts = output_antares, showProgress = FALSE)
-    output_link_w = antaresRead::readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
-                                timeStep = "weekly", opts = output_antares, showProgress = FALSE)
-    
-    # yearly results
-    output_area_y = antaresRead::readAntares(areas = "all", links = NULL, mcYears = current_it$mc_years, 
-                                timeStep = "annual", opts = output_antares, showProgress = FALSE)
-    output_link_y = antaresRead::readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
-                                timeStep = "annual", opts = output_antares, showProgress = FALSE)
-      
-    # synthetic results
-    output_area_s = antaresRead::readAntares(areas = "all", links = NULL, mcYears = NULL, 
-                                timeStep = "annual", opts = output_antares, showProgress = FALSE)
-    output_link_s = antaresRead::readAntares(areas = NULL, links = "all", mcYears = NULL, 
-                                timeStep = "annual", opts = output_antares, showProgress = FALSE)
     
 
     # ---- 4. Assess system costs and marginal rentability of each investment candidate ---- 
