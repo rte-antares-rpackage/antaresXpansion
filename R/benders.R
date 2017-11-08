@@ -272,36 +272,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # rentability of each investment candidates and on the obtained system
     # costs
     # cuts can be averaged on all MC years, yearly or weekly
-    
-    
-    # update iteration file
-    write(current_it$id, file = paste0(tmp_folder, "/in_iterations.txt"), append = TRUE )  
-    
-    # write current invested capacity in in_z0.txt
-    script <-  ""
-    for (c in 1:n_candidates)
-    {
-      script <- paste0(script, current_it$id, " ", candidates[[c]]$name, " ", x$invested_capacities[candidates[[c]]$name, current_it$id])
-      if (c != n_candidates) {script <- paste0(script, "\n")}
-    }
-    write(script, file = paste0(tmp_folder, "/in_z0.txt"), append = TRUE )  
-    
-    # write costs and cuts files 
-    if(current_it$cut_type == "average")
-    {
-      assert_that(current_it$full)
-      update_average_cuts(current_it, candidates, output_link_s, output_link_h_s, ov_cost, n_w, tmp_folder, exp_options)
-    }
-    if(current_it$cut_type == "yearly")
-    {
-      assert_that(all(current_it$weeks == weeks))
-      update_yearly_cuts(current_it,candidates, output_area_y, output_link_y, output_link_h, inv_cost, n_w, tmp_folder, exp_options)
-    }
-    if(current_it$cut_type == "weekly")
-    {
-      update_weekly_cuts(current_it, candidates, output_area_w, output_link_w, output_link_h, inv_cost, n_w, tmp_folder, exp_options)
-    }
-    
+    write_master_files(tmp_folder, output_antares, current_it, candidates, exp_options, x, n_w)
+  
     
     
     # ---- 6. Solve master problem ---- 
