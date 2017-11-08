@@ -1,6 +1,6 @@
 context("Function read_options()")
 
-opts <- setSimulationPath(study_path)
+opts <- setSimulationPath(study_path,0)
 
 
 

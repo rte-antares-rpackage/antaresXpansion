@@ -1,6 +1,6 @@
 context("Functions related to master problem")
 
-opts <- setSimulationPath(study_path)
+opts <- setSimulationPath(study_path,0)
 
 
 test_that("Function initiate_master() works and all files are created", {

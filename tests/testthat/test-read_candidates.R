@@ -1,7 +1,7 @@
 context("Function read_candidates()")
 
 
-opts <- setSimulationPath(study_path)
+opts <- setSimulationPath(study_path,0)
 
 
 
