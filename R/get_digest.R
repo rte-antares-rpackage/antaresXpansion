@@ -8,6 +8,7 @@
 #' digest of the current iteration
 #' 
 #' @importFrom antaresRead readAntares 
+#' @import data.table
 #' @noRd
 get_digest <- function(output_antares, current_it)
 {
@@ -24,7 +25,7 @@ get_digest <- function(output_antares, current_it)
   {
     # digest is not defined
     n_areas  <-  nrow(output_area_s)
-    digest <- data.table(area = output_area_s$area, LOLD = rep(NA, n_areas))
+    digest <- data.table::data.table(area = output_area_s$area, LOLD = rep(NA, n_areas))
   }
   return(digest)
 }
