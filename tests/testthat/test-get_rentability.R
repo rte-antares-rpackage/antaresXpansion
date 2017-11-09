@@ -17,4 +17,3 @@ test_that("get_rentability() works", {
   expect_true(all(abs(rentability - c(82231.00,  -5726.00,  13059.37 ,-16497.00  ,-9910.00)) < 0.01))
   
 })
-  
