@@ -8,7 +8,7 @@ test_that("get_digest() works", {
   
   # when current it is full
   current_it$full <- TRUE
-  digest <- antaresXpansion:::get_digest(opts_fast, current_it)
+  digest <- get_digest(opts_fast, current_it)
   expect_type(digest, "list")
   expect_true(nrow(digest) == 8)
   expect_true("area" %in% names(digest))
@@ -17,7 +17,7 @@ test_that("get_digest() works", {
   
   # when current it not full
   current_it$full <- FALSE
-  digest <- antaresXpansion:::get_digest(opts_fast, current_it)
+  digest <- get_digest(opts_fast, current_it)
   expect_type(digest, "list")
   expect_true(nrow(digest) == 8)
   expect_true("area" %in% names(digest))
