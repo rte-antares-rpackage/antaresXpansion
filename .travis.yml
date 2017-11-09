@@ -5,9 +5,15 @@ sudo: false
 cache: packages
 
 
+r: bioc-devel
+
 r_packages:
   - covr
-
+  
+r_github_packages:
+ - hadley/devtools#1263
+ - Bioconductor-mirror/zlibbioc
+ - Bioconductor-mirror/rhdf5 
 
 after_success:
 - Rscript -e 'library(covr); codecov()'
