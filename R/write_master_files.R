@@ -26,6 +26,9 @@
 
 write_master_files <- function(folder, output_antares, current_it, candidates, exp_options, x, n_w)
 {
+  # 0. check : 
+  assert_that(dir.exists(folder))
+  
   # 1. update iteration file
   write(current_it$id, file = paste0(folder, "/in_iterations.txt"), append = TRUE)  
   
@@ -116,7 +119,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
     # load cost in expansion_accurate mode
     if(exp_options$uc_type == "expansion_accurate")
     {
-      criterion <- antaresRead::readOptimCriteria(opts = exp_options)
+      criterion <- antaresRead::readOptimCriteria(opts = output_antares)
     }
     
     # for every mc year
