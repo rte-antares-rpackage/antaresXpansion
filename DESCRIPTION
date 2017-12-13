@@ -1,7 +1,7 @@
 Package: antaresXpansion
 Type: Package
 Title: Antares Expansion Planning Tool
-Version: 0.5.2
+Version: 0.7.0
 Date: 2017-01-05
 Author: Baptiste Seguinot <baptiste.seguinot@rte-france.com>
 Maintainer: Baptiste Seguinot <baptiste.seguinot@rte-france.com>
