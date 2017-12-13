@@ -17,6 +17,7 @@
 
 get_expected_rentability <- function(output_antares, current_it, candidates, n_w)
 {
+  n_candidates <- length(candidates)
   if(!current_it$full)
   {
     # in case of a partial iteration, expected rentability over all weeks 

@@ -668,13 +668,13 @@ set_playlist <- function(playlist, opts = antaresRead::simOptions())
 #' 
 #' @importFrom assertthat assert_that
 #' @importFrom antaresRead simOptions
-#' @importFrom dplyr first last
+#' @importFrom data.table first last
 #' @export
 #' 
 set_simulation_period <- function(weeks, opts = antaresRead::simOptions())
 {
   # weeks should be successives 
-  assertthat::assert_that(all(weeks == seq(dplyr::first(weeks), dplyr::last(weeks))))
+  assertthat::assert_that(all(weeks == seq(first(weeks), last(weeks))))
   assertthat::assert_that(all(weeks <= 52))
   
   # change parameters of the study

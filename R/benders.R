@@ -31,7 +31,7 @@
 #' @importFrom assertthat assert_that
 #' @importFrom antaresRead simOptions setSimulationPath getAreas
 #' @importFrom rmarkdown render
-#' @importFrom utils packageVersion
+#' @importFrom utils packageVersion tail
 #' @export
 #' 
 benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, parallel = TRUE, recovery_mode = FALSE, ampl_path = NULL, opts = antaresRead::simOptions())
