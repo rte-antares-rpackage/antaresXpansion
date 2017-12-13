@@ -20,4 +20,3 @@ Returns a list containing the different investment candidates.
 of the expansion planning problem and their characteristics. The information on
 the candidates is usually stored in the file antaresStudyPath/user/expansion/candidates.ini.
 }
-

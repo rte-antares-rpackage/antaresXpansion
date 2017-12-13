@@ -24,4 +24,3 @@ This function does not return anything.
 located in the temporary folder of the current expansion 
 planning optimisation
 }
-

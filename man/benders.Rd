@@ -39,4 +39,3 @@ in the temporary folder of the ANTARES study. Can be used if a previous simulati
 \description{
 Launch benders decomposition
 }
-

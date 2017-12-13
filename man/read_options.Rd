@@ -20,4 +20,3 @@ Returns a list containing the different optimisation options
 expansion planning optimization. The options are usually stored in the file 
 antaresStudyPath/user/expansion/settings.ini.
 }
-
