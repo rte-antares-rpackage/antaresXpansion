@@ -104,17 +104,17 @@ Concretely, the package will run ANTARES iteratively. Depending on the number of
 
 The different settings can be modified by the user of the package. All the settings are saved in a file `settings.ini` located in the folder `user/expansion/`. 
 
-  * `optimality_gap`: The optimality gap can take any numeric value. The optimality gap is theoretically the maximum possible distance (in euros) between the solution returned by the method and the optimal solution. 
+  * `optimality_gap`: The optimality gap can take any numeric value. The optimality gap is the maximum possible distance (in euros) between the solution returned by the method and the optimal solution. 
   
   * `master`: Can take two values, `relaxed` or `integer`. Defines whether or not should integer variables be used for the master problem.
   
-  * `uc-type`: The UC (Unit Commitment) type can take two different values, `relaxed_fast` or `accurate`. It defines which mode will be used in ANTARES. `relaxed_fast` correponds to the fast mode of ANTARES in which the minimum up/down and minimum stable power constraints are relaxed.
+  * `uc-type`: The UC (Unit Commitment) type can take two different values, `expansion_fast` or `expansion_accurate`. It defines which mode will be used in ANTARES. `expansion_fast` correponds to the fast mode of ANTARES in which the minimum up/down and minimum stable power constraints are relaxed whereas `expansion_accurate` takes into account the technical constraints of the thermal power plants as well as their start-up costs.
   
 
 An example of a `settings.ini` file with the appropriate syntax is given below.
 
 ```txt
-uc_type = relaxed_fast
+uc_type = expansion_fast
 master = integer
 optimality_gap = 0
 ```
@@ -132,9 +132,8 @@ In that case, if the optimal solutions are not returned by the package, the comp
 It is therefore advised to be as closed as possile from the __optimum__ of the expansion problem. To do so, the two following conditions should __necessarily__ be fulfilled:
 
   * set the `optimality_gap` to zero.
-  * set the `uc_type` to a `relaxed` mode (for now, only the `relaxed_fast`mode exists)
-  
-[Remark : even with the two conditions mentionned above, the reslult might be slighty different from the optimum due to numeric approximations, this can be partly solved by putting to optimality gap to `-Inf`]
+
+[Remark : even with the conditions mentionned above, the reslult might be slighty different from the optimum due to numeric approximations, this can be partly solved by putting to optimality gap to `-Inf`]
 
 
 
@@ -143,7 +142,6 @@ It is therefore advised to be as closed as possile from the __optimum__ of the e
 As the optimal solution is not more realistic than an approximate solution of the modelled expansion problem. The settings can be less constraining with :
 
   * an `optimality_gap` of a few million euros
-  * a `uc_type` which is not necessarily `relaxed`
 
 
 ## How to use the package ?
