@@ -77,11 +77,13 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   has_converged <- FALSE # has the benders decomposition converged ? not yet
   best_solution <- NA  # best solution identifier
   tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")   # temporary folder
-  relax_integrality <- exp_options$master %in% c("relaxed", "integer")
-  unique_key <- paste(sample(c(0:9, letters), size = 3, replace = TRUE),collapse = "")
-  all_areas <- antaresRead::getAreas(opts = opts)
-  first_iteration <- TRUE
-
+  relax_integrality <- exp_options$master %in% c("relaxed", "integer") # should integer problem be relaxed ?
+  unique_key <- paste(sample(c(0:9, letters), size = 3, replace = TRUE),collapse = "") # unique key used in output names
+  all_areas <- antaresRead::getAreas(opts = opts) # all area of the first
+  horizon <- opts$parameters$general$horizon # representated year in the Antares Study
+  first_iteration <- TRUE # is it the first iteration ?
+  
+  
   # create output structure 
   x <- list()
   x$invested_capacities <- data.frame(row.names = sapply(candidates, FUN = function(c){c$name}))
