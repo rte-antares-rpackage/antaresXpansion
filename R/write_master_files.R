@@ -50,7 +50,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
     assert_that(current_it$full)
 
     # write in_avgcuts.txt file 
-    script  <-  paste0(current_it$id, " ", x$overall_costs[current_it$id])
+    script  <-  paste0(current_it$id, " ", subset(x$costs, it == current_it$n)$overall_costs)
     write(script, file = paste0(folder, "/in_avgcuts.txt"), append = TRUE )      
     
     # read Antares data
@@ -132,19 +132,19 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
         y_cost <- sum(as.numeric(subset(output_area_y, mcYear == y)$"OV. COST")) +
           sum(as.numeric(subset(output_link_y, mcYear == y)$"HURDLE COST")) -
           sum(as.numeric(subset(output_area_y, mcYear == y)$"NP COST")) +
-          x$investment_costs[current_it$id] 
+          subset(x$costs, it == current_it$n)$investment_costs
       }
       else if(exp_options$uc_type == "expansion_accurate")
       {
         # in that case, the considered cost is the criterion of the optimization problem (not yet post-treated)
-        y_cost <- sum(as.numeric(subset(criterion, mcYear == y)$"criterion1")) + x$investment_costs[current_it$id]
+        y_cost <- sum(as.numeric(subset(criterion, mcYear == y)$"criterion1")) + subset(x$costs, it == current_it$n)$investment_costs
       }
       else
       {
         # old "fast" and "accurate" mode which shouldn't be used anymore
         y_cost <- sum(as.numeric(subset(output_area_y, mcYear == y)$"OV. COST")) +
           sum(as.numeric(subset(output_link_y, mcYear == y)$"HURDLE COST")) +
-          x$investment_costs[current_it$id]  
+          subset(x$costs, it == current_it$n)$investment_costs
       }
       
       
@@ -229,20 +229,20 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
           w_cost <- sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"OV. COST")) +
             sum(as.numeric(subset(output_link_w, mcYear == y & timeId == w)$"HURDLE COST")) -
             sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"NP COST")) +
-            x$investment_costs[current_it$id] /n_w
+            subset(x$costs, it == current_it$n)$investment_costs /n_w
         }
         else if(exp_options$uc_type == "expansion_accurate")
         {
           # in that case, the considered cost is the criterion of the optimization problem (not yet post-treated)
           w_cost <- sum(as.numeric(subset(criterion, mcYear == y & timeId == w)$"criterion1")) + 
-            x$investment_costs[current_it$id] /n_w
+            subset(x$costs, it == current_it$n)$investment_costs /n_w
         }
         else
         {
           # old "fast" and "accurate" mode which shouldn't be used anymore
           w_cost <- sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"OV. COST")) +
             sum(as.numeric(subset(output_link_w, mcYear == y & timeId == w)$"HURDLE COST")) +
-            x$investment_costs[current_it$id] /n_w
+            subset(x$costs, it == current_it$n)$investment_costs /n_w
         }
         
         script_cost <- paste0(script_cost, current_it$id, " ", y , " ", w, " ", w_cost)

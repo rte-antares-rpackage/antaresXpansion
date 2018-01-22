@@ -87,9 +87,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   # create output structure 
   x <- list()
   x$invested_capacities <- initiate_candidate_capacities(candidates, horizon)
-  x$overall_costs <- numeric()
-  x$investment_costs <- numeric()
-  x$operation_costs <- numeric()
+  x$costs <- data.frame(row.names = c("it", "year", "investment_costs", "operation_costs", "overall_costs"))
   x$rentability <- data.frame(row.names = sapply(candidates, FUN = function(c){c$name}))
   x$iterations <- list()
   x$digest <- list()
@@ -201,14 +199,19 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     ov_cost <-  op_cost + inv_cost
   
     # update output structure
-    x$investment_costs[current_it$id] <- inv_cost
-    x$operation_costs[current_it$id] <-  op_cost
-    x$overall_costs[current_it$id] <- ov_cost
+    x$costs <- rbind(x$costs, data.frame(
+      it = current_it$n,
+      year = horizon,
+      investment_costs = inv_cost,
+      operation_costs = op_cost,
+      overall_costs = ov_cost
+    ))
+    
     
     if(current_it$full)
     {
       # check if the current iteration provides the best solution
-      if(ov_cost <= min(x$overall_costs, na.rm = TRUE)) {best_solution <-  current_it$n}
+      if(ov_cost <= min(x$costs$overall_costs, na.rm = TRUE)) {best_solution <- current_it$n}
     }
     
     # compute average rentability of each candidate 
@@ -246,12 +249,12 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # if option "integer" has been chosen, should the integrality be added ?
     if(exp_options$master == "integer" && !first_iteration && relax_integrality)
     {
-      if(convergence_relaxed(best_sol = min(x$overall_costs, na.rm = TRUE), best_under_estimator, exp_options))
+      if(convergence_relaxed(best_sol = min(x$costs$overall_costs, na.rm = TRUE), best_under_estimator, exp_options))
       {
         relax_integrality <- FALSE
         # reintialize ov.cost and op.costs (which are not admissible because computed with relaxed investments decisions)
-        x$operation_costs <- rep(NA, current_it$n)
-        x$overall_costs <- rep(NA, current_it$n)
+        x$costs$operation_costs <- rep(NA, nrow(x$costs))
+        x$costs$overall_costs <- rep(NA, nrow(x$costs))
         current_it$need_full <- TRUE
         
         if (display){cat("--- ADDITION of INTEGER variables into investment decisions --- \n")}
@@ -270,7 +273,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     benders_sol <-  read.table(paste0(tmp_folder,"/out_solutionmaster.txt"), sep =";", col.names = c("candidate", "value"))
     if(display)
     {
-      cat("--- lower bound on ov.cost = ", best_under_estimator/1000000 ," Me --- best solution (it", best_solution, ") = ", x$overall_costs[best_solution]/1000000   ,"Me \n")
+      cat("--- lower bound on ov.cost = ", best_under_estimator/1000000 ," Me --- best solution (it", best_solution, ") = ", subset(x$costs, it == best_solution)$overall_costs/1000000   ,"Me \n")
     }
  
     
@@ -280,9 +283,9 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     # if difference between the under estimator and the best solution
     # is lower than the optimality gap, then the convergence has been reached
-    if(!all(is.na(x$overall_costs)))
+    if(!all(is.na(x$costs$overall_costs)))
     {
-      if(convergence(best_sol = min(x$overall_costs, na.rm = TRUE), best_under_estimator, exp_options)) 
+      if(convergence(best_sol = min(x$costs$overall_costs, na.rm = TRUE), best_under_estimator, exp_options)) 
       {
         has_converged <- TRUE
       }
@@ -316,7 +319,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # display end messages
     if(has_converged & display)
     { 
-        cat("--- CONVERGENCE within optimality gap: best solution = it", best_solution, " --- ov.cost = ", min(x$overall_costs, na.rm = TRUE)/1000000 ," Me --- Best Lower Bound = ",best_under_estimator/1000000 , " Me \n")
+        cat("--- CONVERGENCE within optimality gap: best solution = it", best_solution, " --- ov.cost = ", min(x$costs$overall_costs, na.rm = TRUE)/1000000 ," Me --- Best Lower Bound = ",best_under_estimator/1000000 , " Me \n")
     }
     if(display & current_it$n >= exp_options$max_iteration)
     { 
