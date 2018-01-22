@@ -48,18 +48,18 @@ packageVersion("antaresXpansion")
 
 ```{r get_best_cost, echo = FALSE, eval = TRUE}
 
-best_solutions <- which(x$overall_costs == min(x$overall_costs, na.rm = TRUE))
-sol_id <- names(best_solutions)
+best_solutions <- x$costs[which(x$costs$overall_costs == min(x$costs$overall_costs, na.rm = TRUE)),"it"]
+sol_id <- paste0("it", best_solutions)
 
 n_best_solution <- length(best_solutions)
-n_iteration <- length(x$overall_costs)
+n_iteration <- max(x$costs$it)
 ```
 
 
 Total cost : 
 ```{r print_total_cost, echo=FALSE, eval = TRUE}
-cat(x$overall_costs[names(best_solutions[1])], "euros\n")
-cat(x$overall_costs[names(best_solutions[1])]/10^6, "million euros\n")
+cat(subset(x$costs, it == best_solutions[1])$overall_costs, "euros\n")
+cat(subset(x$costs, it == best_solutions[1])$overall_costs/10^6, "million euros\n")
 
 if(n_best_solution > 1)
 {
@@ -72,16 +72,16 @@ Investment cost :
 ```{r print_inv_cost, echo=FALSE, eval = TRUE}
 if(n_best_solution == 1)
 {
-  cat(x$investment_costs[names(best_solutions)], "euros\n")
-  cat(x$investment_costs[names(best_solutions)]/10^6, "million euros\n")
+  cat(subset(x$costs, it == best_solutions[1])$investment_costs, "euros\n")
+  cat(subset(x$costs, it == best_solutions[1])$investment_costs/10^6, "million euros\n")
 }
 if(n_best_solution > 1)
 {
   for(i in 1:n_best_solution)
   {
     cat("solution", i, ":\n")
-    cat("   -",x$investment_costs[i], "euros\n")
-    cat("   -",x$investment_costs[i]/10^6, "million euros\n") 
+    cat("   -",subset(x$costs, it == best_solutions[i])$investment_costs, "euros\n")
+    cat("   -",subset(x$costs, it == best_solutions[i])$investment_costs/10^6, "million euros\n") 
   }
 }
 
@@ -91,16 +91,16 @@ Production cost :
 ```{r print_prod_cost, echo=FALSE, eval = TRUE}
 if(n_best_solution == 1)
 {
-  cat(x$operation_costs[names(best_solutions)], "euros\n")
-  cat(x$operation_costs[names(best_solutions)]/10^6, "million euros\n")
+  cat(subset(x$costs, it == best_solutions[1])$operation_costs, "euros\n")
+  cat(subset(x$costs, it == best_solutions[1])$operation_costs/10^6, "million euros\n")
 }
 if(n_best_solution > 1)
 {
   for(i in 1:n_best_solution)
   {
     cat("solution", i, ":\n")
-    cat("   -",x$operation_costs[i], "euros\n")
-    cat("   -",x$operation_costs[i]/10^6, "million euros\n") 
+    cat("   -",subset(x$costs, it == best_solutions[i])$operation_costs, "euros\n")
+    cat("   -",subset(x$costs, it == best_solutions[i])$operation_costs/10^6, "million euros\n") 
   }
 }
 ```
@@ -108,7 +108,7 @@ if(n_best_solution > 1)
 
 Invested capacities (in MW):
 ```{r print_invested_cap, echo=FALSE, eval = TRUE, results="asis"}
-kable(x$invested_capacities[sol_id], format = "markdown")
+kable(subset(x$invested_capacities, it %in% best_solutions), format = "markdown")
 ```
 
 
@@ -136,17 +136,14 @@ cat(min(best_solutions))
 Optimality gap - Distance between greatest lower bound and best solution -  equal to zero when optimal solution has been reached:
 (When UC mode is fast or accurate, this gap can be negative due to the approximations of ANTARES' heuristics. When relaxed UC mode are used, this gap can be slightly negative due to numeric approximations in cuts)
 ```{r print_optimality_gap, echo=FALSE, eval = TRUE}
-cat(x$overall_costs[best_solutions[1]] - max(x$under_estimator), "euros")
+cat(subset(x$costs, it == best_solutions[1])$overall_costs - max(x$under_estimator), "euros")
 ```
 
 Convergence of costs
 ```{r plot_cost_convergence, echo = FALSE, eval = TRUE, warning = FALSE, message=FALSE}
 
 # prepare data.frame structure for plotly
-costs <- data.frame(iteration = 1:n_iteration)
-costs$overall_costs <- x$overall_costs
-costs$investment_costs <- c(rep(NA, n_iteration - length(x$investment_costs)), x$investment_costs)
-costs$operation_costs <- x$operation_costs
+costs <- x$costs
 costs$best_bound  <-  x$under_estimator
 
 min_1_n <- function(n, vect)
@@ -158,14 +155,14 @@ min_1_n <- function(n, vect)
   else{return(NA)}
 }
 
-costs$best_solution_until_now <- sapply(1:n_iteration, min_1_n, vect = x$overall_costs)
+costs$best_solution_until_now <- sapply(1:n_iteration, min_1_n, vect = x$costs$overall_costs)
 
 # plot (ov_cost, best_bound, best_sol) = f(it)
 
-p <- plot_ly(costs, x = ~iteration, width = "100%") %>%
+p <- plot_ly(costs, x = ~it, width = "100%") %>%
   add_trace(y = ~best_solution_until_now, name = 'Best solution until this iteration', mode = 'lines+markers', type = "scatter") %>%
   add_trace(y = ~best_bound, name = 'Lower bound', mode = 'lines+markers', type = "scatter") %>%
-  add_trace(x = ~iteration[!is.na(overall_costs)], y = ~na.omit(overall_costs), name = 'Total cost',mode = 'lines+markers', type = "scatter") %>%
+  add_trace(x = ~it[!is.na(overall_costs)], y = ~na.omit(overall_costs), name = 'Total cost',mode = 'lines+markers', type = "scatter") %>%
   layout(yaxis = list(title = "(euros)"), legend = list(orientation = 'h'))
 
 p
@@ -182,12 +179,8 @@ Table - invested capacity at each iteration (in MW) :
 
 
 # transpose 
-capa_table <- as.data.frame(t(x$invested_capacities))
-rna <- sapply(x$iterations, FUN = function(it){it$id})
-rownames(capa_table) <- unlist(rna)
-colnames(capa_table) <- rownames(x$invested_capacities)
 
-kable(capa_table, format = "markdown")
+kable(spread(x$invested_capacities[, -2], key = "candidate", value = "value"), format = "markdown")
 
 
 ```
@@ -196,11 +189,7 @@ Table - costs a each iteration (in euros) :
 
 ```{r table_costs, echo = FALSE}
 
-costs_table <- costs[c("overall_costs", "investment_costs", "operation_costs")]
-rownames(costs_table) <- paste0("it", 1:n_iteration)
-costs_table <- costs_table
-
-kable(costs_table, format = "markdown")
+kable(costs, format = "markdown")
 
 ```
 
@@ -210,7 +199,7 @@ Table - Loss of Load Expectation(in hours) :
 
 lold_matrix <- sapply(x$digest, FUN = function(it){return(it$LOLD)})
 rownames(lold_matrix) <- x$digest$it1$area
-kable(lold_matrix, format = "markdown")
+kable(t(lold_matrix), format = "markdown")
 
 ```
 
