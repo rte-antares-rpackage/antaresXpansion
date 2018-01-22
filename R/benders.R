@@ -86,7 +86,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   
   # create output structure 
   x <- list()
-  x$invested_capacities <- data.frame(row.names = sapply(candidates, FUN = function(c){c$name}))
+  x$invested_capacities <- initiate_candidate_capacities(candidates, horizon)
   x$overall_costs <- numeric()
   x$investment_costs <- numeric()
   x$operation_costs <- numeric()
@@ -121,18 +121,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   # cuts$weekly_cost <- data.table(name = character(), mc_year = integer(), week = integer(), cost = double())
   # 
 
-  # set initial value to each investment candidate 
-  # (here put to closest multiple of unit-size below max_invest/2)
-  x$invested_capacities[[current_it$id]] <-  sapply(candidates, FUN = function(c){
-    if(c$unit_size > 0)
-    {
-      out <- floor(c$max_invest/2/c$unit_size) * c$unit_size
-      out <- max(0, min(c$max_invest, out))
-    }
-    else
-    { out <- c$max_invest/2}
-    return(out)})
   
+    
   # ----
   # iterate until convergence or until the max number of iteration has been reached
   while(!has_converged && current_it$n <= exp_options$max_iteration)
@@ -173,7 +163,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     for(c in candidates)
     {
-      new_capacity <- get_capacity_profile(x$invested_capacities[c$name, current_it$id], c$link_profile, exp_options$uc_type)
+      new_capacity <- get_capacity_profile(get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n),
+                                           c$link_profile, exp_options$uc_type)
       # update study
       update_link(c$link, "direct_capacity", new_capacity , opts)
       update_link(c$link, "indirect_capacity", new_capacity, opts)
@@ -205,7 +196,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     # compute system operationnal and investment costs 
     op_cost <- get_op_costs(output_antares, current_it, exp_options)
-    inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * x$invested_capacities[c$name, current_it$id]}))
+    inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n)}))
     inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation
     ov_cost <-  op_cost + inv_cost
   
@@ -217,7 +208,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     if(current_it$full)
     {
       # check if the current iteration provides the best solution
-      if(ov_cost <= min(x$overall_costs, na.rm = TRUE)) {best_solution = current_it$id}
+      if(ov_cost <= min(x$overall_costs, na.rm = TRUE)) {best_solution <-  current_it$n}
     }
     
     # compute average rentability of each candidate 
@@ -230,7 +221,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # print results of the ANTARES simulation
     if(display & current_it$full)
     {
-      for (c in candidates){cat( "     . ", c$name, " -- ", x$invested_capacities[c$name, current_it$id], " invested MW -- rentability = ", round(x$rentability[c$name, current_it$id]/1000), "ke/MW \n" , sep="")}
+      for (c in candidates){cat( "     . ", c$name, " -- ", get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n), " invested MW -- rentability = ", round(x$rentability[c$name, current_it$id]/1000), "ke/MW \n" , sep="")}
       cat("--- op.cost = ", op_cost/1000000, " Me --- inv.cost = ", inv_cost/1000000, " Me --- ov.cost = ", ov_cost/1000000, " Me ---\n")
     }
     
@@ -276,11 +267,10 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     best_under_estimator <-  max(x$under_estimator)
     
     #    - investment solution
-    benders_sol <-  read.table(paste0(tmp_folder,"/out_solutionmaster.txt"), sep =";")[,2]
-   
+    benders_sol <-  read.table(paste0(tmp_folder,"/out_solutionmaster.txt"), sep =";", col.names = c("candidate", "value"))
     if(display)
     {
-      cat("--- lower bound on ov.cost = ", best_under_estimator/1000000 ," Me --- best solution (", best_solution, ") = ", x$overall_costs[best_solution]/1000000   ,"Me \n")
+      cat("--- lower bound on ov.cost = ", best_under_estimator/1000000 ," Me --- best solution (it", best_solution, ") = ", x$overall_costs[best_solution]/1000000   ,"Me \n")
     }
  
     
@@ -300,11 +290,14 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
       # if master problem solution didn't evolve at this (full) iteration, then the decomposition has
       # converged
       
-      if(all(abs(benders_sol - x$invested_capacities[[current_it$id]]) <= 0.05) )
+      if(have_capacities_changed(benders_sol, x$invested_capacities, tol = 0.05))
       {
         if(current_it$full)
         { 
-          has_converged <- TRUE  
+          has_converged <- TRUE
+          if(display){
+            cat("--- installed capacities did not evolve between the two last iterations \n", sep ="")
+          }
         }
         else
         {
@@ -323,7 +316,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # display end messages
     if(has_converged & display)
     { 
-        cat("--- CONVERGENCE within optimality gap: best solution = ", best_solution, " --- ov.cost = ", min(x$overall_costs, na.rm = TRUE)/1000000 ," Me --- Best Lower Bound = ",best_under_estimator/1000000 , " Me \n")
+        cat("--- CONVERGENCE within optimality gap: best solution = it", best_solution, " --- ov.cost = ", min(x$overall_costs, na.rm = TRUE)/1000000 ," Me --- Best Lower Bound = ",best_under_estimator/1000000 , " Me \n")
     }
     if(display & current_it$n >= exp_options$max_iteration)
     { 
@@ -341,7 +334,13 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     if(!has_converged && current_it$n <= exp_options$max_iteration)
     {
-      x$invested_capacities[[paste0("it", current_it$n)]] <- benders_sol
+      new_capacity <- data.frame(
+        it = rep(current_it$n, n_candidates),
+        year = rep(horizon,n_candidates),
+        candidate = benders_sol$candidate,
+        value = benders_sol$value
+      )
+      x$invested_capacities <- rbind(x$invested_capacities, new_capacity)
     }
     
     
@@ -366,8 +365,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   # set link capacities to their optimal value
   for(c in candidates)
   {
-    update_link(c$link, "direct_capacity", c$link_profile*x$invested_capacities[c$name, best_solution] , opts)
-    update_link(c$link, "indirect_capacity", c$link_profile*x$invested_capacities[c$name, best_solution], opts)
+    update_link(c$link, "direct_capacity", c$link_profile*get_capacity(x$invested_capacities, candidate = c$name, it =best_solution) , opts)
+    update_link(c$link, "indirect_capacity", c$link_profile*get_capacity(x$invested_capacities, candidate = c$name, it =best_solution) , opts)
   }
   
   

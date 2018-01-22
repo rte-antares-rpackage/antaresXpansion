@@ -229,3 +229,6 @@ without_profile <- function(candidates)
   link_without_profile <- sapply(candidates, FUN = f)
   return(link_without_profile[!is.na(link_without_profile)])
 }
+
+
+

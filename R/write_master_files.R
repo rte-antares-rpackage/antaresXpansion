@@ -37,7 +37,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
   script <-  ""
   for (c in 1:n_candidates)
   {
-    script <- paste0(script, current_it$id, " ", candidates[[c]]$name, " ", x$invested_capacities[candidates[[c]]$name, current_it$id])
+    script <- paste0(script, current_it$id, " ", candidates[[c]]$name, " ", get_capacity(x$invested_capacities, candidate = candidates[[c]]$name, it = current_it$n))
     if (c != n_candidates) {script <- paste0(script, "\n")}
   }
   write(script, file = paste0(folder, "/in_z0.txt"), append = TRUE )  
