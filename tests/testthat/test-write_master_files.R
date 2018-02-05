@@ -24,12 +24,15 @@ test_that("write_master_files() works", {
   n_w <- length(current_it$weeks)
   
   x <- list()
-  x$overall_costs[current_it$id] <- 10000
-  x$investment_costs[current_it$id] <- 6000
-  x$operation_costs[current_it$id] <- 4000
-  x$invested_capacities <- data.frame(row.names = sapply(candidates, FUN = function(c){c$name}))
-  x$invested_capacities[current_it$id] <- round(seq(0, 1000, length.out = length(candidates)))
- 
+  x$invested_capacities <- initiate_candidate_capacities(candidates, 2020)
+  x$costs <- data.frame(
+    it = 1,
+    year = 2020,
+    investment_costs = 6000,
+    operation_costs = 4000,
+    overall_costs = 10000
+  )
+  
   # 1. test expansion_fast AND average cuts
   exp_options$uc_type <- "expansion_fast"
   current_it$cut_type <- "average"

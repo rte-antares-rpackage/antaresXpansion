@@ -117,7 +117,6 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   # cuts$avg_cost <- data.table(name = character(), cost = double())
   # cuts$yearly_cost <- data.table(name = character(), mc_year = integer(), cost = double())
   # cuts$weekly_cost <- data.table(name = character(), mc_year = integer(), week = integer(), cost = double())
-  # 
 
   
     

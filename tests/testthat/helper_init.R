@@ -3,6 +3,9 @@
 path <- tempdir()
 sourcedir <- system.file("testdata", package = "antaresXpansion")
 
+# for tests in Rstudio : 
+if(sourcedir == "")sourcedir <- system.file("inst/testdata",package = "antaresXpansion")
+
 
 # Hack: For some unknown reason, this script is executed at some point of
 # the R CMD CHECK before package is correctly installed and tests actually run. 

@@ -12,7 +12,7 @@
 #' @noRd
 initiate_candidate_capacities <- function(candidates, horizon)
 {
-  n_candidate <- length(candidates)
+  n_candidates <- length(candidates)
   
   # set initial value to each investment candidate 
   # (here put to closest multiple of unit-size below max_invest/2)

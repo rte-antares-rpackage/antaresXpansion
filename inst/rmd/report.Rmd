@@ -12,6 +12,7 @@ It gives an overview of the results of the investment optimisation problem solve
 library(plotly)
 library(magrittr)
 library(dplyr)
+library(tidyr)
 library(data.table)
 library(knitr)
 library(shiny)
