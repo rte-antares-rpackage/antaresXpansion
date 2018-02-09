@@ -20,6 +20,7 @@
 #' @importFrom antaresRead simOptions
 #' @importFrom assertthat assert_that
 #' @importFrom antaresEditObject getPlaylist
+#' @noRd
 #' 
 initiate_master <- function(candidates, exp_options , opts = antaresRead::simOptions())
 {
@@ -126,6 +127,7 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
 #' 
 #' @importFrom antaresRead simOptions
 #' @importFrom assertthat assert_that
+#' @noRd
 #' 
 solve_master <- function(opts = antaresRead::simOptions(), relax_integrality = FALSE, ampl_path = NULL)
 {

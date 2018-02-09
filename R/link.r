@@ -6,7 +6,7 @@
 #'   Name of one link
 #' @return 
 #' name of the first area that the link connects
-#' 
+#' @noRd
 #' 
 from <- function(link_name)
 {
@@ -21,7 +21,7 @@ from <- function(link_name)
 #'   Name of one link
 #' @return 
 #' name of the second area that the link connects
-#' 
+#' @noRd
 #' 
 to <- function(link_name)
 {
@@ -48,7 +48,7 @@ to <- function(link_name)
 #' 
 #' @importFrom assertthat assert_that
 #' @importFrom antaresRead simOptions
-#' @export
+#' @noRd
 #' 
 #' 
 
@@ -137,7 +137,7 @@ enable_hurdle_costs <- function(link_names, enable = TRUE, opts = antaresRead::s
 #' @importFrom assertthat assert_that
 #' @importFrom antaresRead simOptions
 #' @importFrom utils write.table
-#' @export
+#' @noRd
 #' 
 #' 
 update_link <- function(link_name, property_name, new_value, opts = antaresRead::simOptions())

@@ -44,7 +44,7 @@ delete_antares_output <- function(simulation_name, opts = antaresRead::simOption
 #' 
 #' @importFrom antaresRead simOptions 
 #' @importFrom assertthat assert_that
-#' @export
+#' @noRd
 #' 
 clean_output_benders <- function(best_solution, unique_key, opts = antaresRead::simOptions())
 {

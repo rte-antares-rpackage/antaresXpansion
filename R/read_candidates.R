@@ -196,7 +196,7 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
 #'
 #' @return 
 #' Returns a vector of link name
-#' 
+#' @noRd
 #' 
 with_profile <- function(candidates)
 {
@@ -218,7 +218,7 @@ with_profile <- function(candidates)
 #'
 #' @return 
 #' Returns a vector of link name
-#' 
+#' @noRd
 #' 
 without_profile <- function(candidates)
 {

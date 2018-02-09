@@ -22,7 +22,7 @@
 #' 
 #' @importFrom assertthat assert_that
 #' @importFrom antaresRead simOptions
-#' @export
+#' @noRd
 #' 
 #' 
 filter_output_areas <- function(areas, filter, type, opts = antaresRead::simOptions())
@@ -91,7 +91,7 @@ filter_output_areas <- function(areas, filter, type, opts = antaresRead::simOpti
 #' 
 #' @importFrom assertthat assert_that
 #' @importFrom antaresRead simOptions
-#' @export
+#' @noRd
 #' 
 #' 
 filter_output_links <- function(links, filter, type, opts = antaresRead::simOptions())
@@ -158,7 +158,7 @@ filter_output_links <- function(links, filter, type, opts = antaresRead::simOpti
 #' @importFrom antaresRead simOptions
 #' @importFrom data.table first last
 #' @importFrom antaresEditObject updateGeneralSettings
-#' @export
+#' @noRd
 #' 
 set_simulation_period <- function(weeks, opts = antaresRead::simOptions())
 {

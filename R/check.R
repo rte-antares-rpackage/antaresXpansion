@@ -13,7 +13,7 @@
 #' 
 #' @importFrom  antaresRead simOptions readClusterDesc
 #' @importFrom dplyr filter
-#' 
+#' @noRd
 #' 
 benders_check <- function(candidates, opts = antaresRead::simOptions())
 {

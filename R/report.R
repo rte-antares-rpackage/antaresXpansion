@@ -53,6 +53,7 @@ report <- function(benders_out = "last", file = default_report_file(opts), opts 
 #' 
 #' @importFrom antaresRead simOptions
 #' @importFrom lubridate now
+#' @noRd
 #'                                       
 default_report_file <- function(opts = antaresRead::simOptions())
 {

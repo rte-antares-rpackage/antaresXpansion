@@ -16,6 +16,7 @@
 #' @importFrom assertthat assert_that
 #' @importFrom antaresRead simOptions getLinks getAreas
 #' @importFrom antaresEditObject updateGeneralSettings updateOptimizationSettings
+#' @noRd
 #' 
 set_antares_options <- function(benders_options, candidates, opts = antaresRead::simOptions())
 {
