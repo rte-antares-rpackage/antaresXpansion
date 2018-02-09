@@ -13,6 +13,7 @@
 #' 
 #' @importFrom  antaresRead simOptions readClusterDesc
 #' @importFrom dplyr filter
+#' @importFrom antaresEditObject readIniFile
 #' @noRd
 #' 
 benders_check <- function(candidates, opts = antaresRead::simOptions())
@@ -37,6 +38,21 @@ benders_check <- function(candidates, opts = antaresRead::simOptions())
   #2. for all link which are candidates, transmission capacities should not be put to infinite
   for(c in candidates)
   {
+    #load file containing link properties            
+    link_file_name <- paste(opts$inputPath,"/links/" ,from(c$link),"/", "properties.ini",sep="")
+    
+    # check that this file exists
+    assertthat::assert_that(file.exists(link_file_name))
+    
+    # read it
+    link_properties <- antaresEditObject::readIniFile(link_file_name)
+    assertthat::assert_that(to(c$link) %in% names(link_properties))
+    assertthat::assert_that("transmission-capacities" %in% names(link_properties[[to(c$link)]]))
+    
+    if(link_properties[[to(c$link)]]$`transmission-capacities` != "enabled")
+    {
+      stop("transmission capacities of expansion candidates must be 'enabled' (see : ", c$link, ")") 
+    }
     
   }
   
