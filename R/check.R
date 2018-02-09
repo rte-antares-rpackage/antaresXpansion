@@ -51,12 +51,19 @@ benders_check <- function(candidates, opts = antaresRead::simOptions())
     
     if(link_properties[[to(c$link)]]$`transmission-capacities` != "enabled")
     {
+      checked <- FALSE
       stop("transmission capacities of expansion candidates must be 'enabled' (see : ", c$link, ")") 
     }
     
   }
   
   #3. Check that simplex range is week
+  if(opts$parameters$optimization$`simplex-range` != "week")
+  {
+    checked <- FALSE
+    stop("Antares optimization option 'simplex-range' must be set to 'week' (see configure/optimization options)")
+  }
+  
   return(checked)
   
 }
