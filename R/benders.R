@@ -32,6 +32,7 @@
 #' @importFrom antaresRead simOptions setSimulationPath getAreas
 #' @importFrom rmarkdown render
 #' @importFrom utils packageVersion tail
+#' @importFrom antaresEditObject setPlaylist getPlaylist
 #' @export
 #' 
 benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, parallel = TRUE, recovery_mode = FALSE, ampl_path = NULL, opts = antaresRead::simOptions())
@@ -72,7 +73,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   first_sim_week <- 1 + ceiling((opts$parameters$general$simulation.start - 1)/7)
   n_w <- floor((opts$parameters$general$simulation.end - opts$parameters$general$simulation.start + 1)/7) # number of weeks 
   weeks <- first_sim_week:(first_sim_week + n_w - 1) # identifier of weeks to simulate for all expansion planning optimisation
-  mc_years <- get_playlist(opts) # identifier of mc years to simulate for all expansion planning optimisation
+  mc_years <- getPlaylist(opts) # identifier of mc years to simulate for all expansion planning optimisation
   n_mc <- length(mc_years) # number of mc_years
   has_converged <- FALSE # has the benders decomposition converged ? not yet
   best_solution <- NA  # best solution identifier
@@ -141,7 +142,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # set simulation period
     set_simulation_period(current_it$weeks, opts)
     # set playlist
-    set_playlist(current_it$mc_years, opts)
+    antaresEditObject::setPlaylist(current_it$mc_years, opts)
     
     
     if(current_it$full & display){

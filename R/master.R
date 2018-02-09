@@ -19,6 +19,7 @@
 #' 
 #' @importFrom antaresRead simOptions
 #' @importFrom assertthat assert_that
+#' @importFrom antaresEditObject getPlaylist
 #' 
 initiate_master <- function(candidates, exp_options , opts = antaresRead::simOptions())
 {
@@ -70,7 +71,7 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   
   # fill files which will be similar for every iteration of the benders decomposition
   # 1 - in_nmc.txt
-  mc <- get_playlist(opts)
+  mc <- antaresEditObject::getPlaylist(opts)
   write(paste0(mc, collapse = " "), file = paste0(tmp_folder, "/", in_out_files$mc))
   
   # 2 - in_nw.txt
