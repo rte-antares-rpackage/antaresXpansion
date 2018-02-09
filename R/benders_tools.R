@@ -80,5 +80,5 @@ set_antares_options <- function(benders_options, candidates, opts = antaresRead:
   n_day <- (-sum(day_per_month[1:month_id]) + opts$parameters$general$simulation.start - 1) %% 7
   
   first_day_week <- day_name[((which(day_name == opts$parameters$general$january.1st) + n_day - 1) %% 7 ) +1]
-  set_week(first_day = first_day_week, opts)
+  antaresEditObject::updateGeneralSettings(first.weekday = first_day_week)
 }

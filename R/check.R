@@ -40,6 +40,7 @@ benders_check <- function(candidates, opts = antaresRead::simOptions())
     
   }
   
+  #3. Check that simplex range is week
   return(checked)
   
 }
