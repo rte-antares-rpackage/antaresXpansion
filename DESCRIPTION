@@ -19,7 +19,8 @@ Imports:
     data.table,
     magrittr,
     plotly,
-    shiny
+    shiny,
+    antaresEditObject (>= 0.1.2)
 RoxygenNote: 6.0.1
 Suggests: knitr,
     testthat,

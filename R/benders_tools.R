@@ -15,38 +15,52 @@
 #' 
 #' @importFrom assertthat assert_that
 #' @importFrom antaresRead simOptions getLinks getAreas
+#' @importFrom antaresEditObject updateGeneralSettings updateOptimizationSettings
 #' 
 set_antares_options <- function(benders_options, candidates, opts = antaresRead::simOptions())
 {
   # 1 - set output filtering options
-  enable_custom_filtering(TRUE, opts)
-  enable_year_by_year(TRUE, opts)
+  # set filtering of outputs and writing of year-by-year outputs
+  antaresEditObject::updateGeneralSettings(filtering = "true", year.by.year = "true", opts = opts)
   filter_output_areas(areas = antaresRead::getAreas(opts = opts), filter = c("weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
   filter_output_links(links = antaresRead::getLinks(opts = opts), filter = c("weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
   if (length(with_profile(candidates)) > 0 )
   {
     filter_output_links(links = with_profile(candidates), filter = c("hourly", "weekly", "annual"), type = c("year-by-year", "synthesis"), opts = opts)
   }
-  # 2 - set unit-commitment mode
+  
+  # 2 - set unit-commitment mode and optimization options
   if(benders_options$uc_type == "accurate")
   {
-    set_uc_mode(mode = "accurate", opts = opts)
-    enable_uc_heuristic(enable = TRUE, opts = opts)
+    antaresEditObject::updateOptimizationSettings(unit.commitment.mode = "accurate", 
+                                                  include.tc.min.stable.power = "true", 
+                                                  include.tc.min.up.down.time = "true", 
+                                                  include.dayahead = "true", 
+                                                  opts = opts)
   }
   if(benders_options$uc_type == "expansion_accurate")
   {
-    set_uc_mode(mode = "accurate", opts = opts)
-    enable_uc_heuristic(enable = TRUE, opts = opts)
+    antaresEditObject::updateOptimizationSettings(unit.commitment.mode = "accurate", 
+                                                  include.tc.min.stable.power = "true", 
+                                                  include.tc.min.up.down.time = "true", 
+                                                  include.dayahead = "true", 
+                                                  opts = opts)
   }
   if(benders_options$uc_type == "fast")
   {
-    set_uc_mode(mode = "fast", opts = opts)
-    enable_uc_heuristic(enable = TRUE, opts = opts)
+    antaresEditObject::updateOptimizationSettings(unit.commitment.mode = "fast", 
+                                                  include.tc.min.stable.power = "true", 
+                                                  include.tc.min.up.down.time = "true", 
+                                                  include.dayahead = "true", 
+                                                  opts = opts)
   }
   if(benders_options$uc_type == "expansion_fast")
   {
-    set_uc_mode(mode = "fast", opts = opts)
-    enable_uc_heuristic(enable = FALSE, opts = opts)
+    antaresEditObject::updateOptimizationSettings(unit.commitment.mode = "fast", 
+                                                  include.tc.min.stable.power = "false", 
+                                                  include.tc.min.up.down.time = "false", 
+                                                  include.dayahead = "false", 
+                                                  opts = opts)
   }
   
   # 3 - set week and initial day
