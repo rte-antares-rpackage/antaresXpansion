@@ -50,14 +50,22 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
     candidate$candidate_type <- "investment"
     candidate$investment_type <- "generation"
     candidate$link <- NA
-    candidate$cost <- 0
     candidate$unit_size <- 0
     candidate$max_unit <- 0
     candidate$max_invest <- 0
     candidate$relaxed <- FALSE
     candidate$has_link_profile <- FALSE
     candidate$link_profile <- 1#  data.frame(rep(1,8760))
-      
+    
+    # the next parameter is only used with one-year investment mode
+    candidate$cost <- NA  #here cost = annuity
+    
+    # the next parameters are only used when multi-year investment is made
+    candidate$investment_cost <- NA
+    candidate$operation_and_maintenance_cost <- NA
+    candidate$mothball_cost <- NA
+    candidate$lifetime <- NA
+    
     # read candidate characteristics
     for(line in (index[pr]+1):(index[pr+1]-1))
     {
@@ -134,6 +142,26 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
         assertthat::assert_that(!is.na(as.numeric(option_value)))
         candidate$max_invest <- as.numeric(option_value)
         candidate$relaxed <- TRUE
+      }
+      else if (option_name == "investment-cost")
+      {
+        assertthat::assert_that(!is.na(as.numeric(option_value)))
+        candidate$investment_cost <- as.numeric(option_value)
+      }
+      else if (option_name == "operation-and-maintenance-cost")
+      {
+        assertthat::assert_that(!is.na(as.numeric(option_value)))
+        candidate$operation_and_maintenance_cost <- as.numeric(option_value)
+      }
+      else if (option_name == "mothball-cost")
+      {
+        assertthat::assert_that(!is.na(as.numeric(option_value)))
+        candidate$mothball_cost <- as.numeric(option_value)
+      }
+      else if (option_name == "lifetime")
+      {
+        assertthat::assert_that(!is.na(as.numeric(option_value)))
+        candidate$lifetime <- round(as.numeric(option_value))
       }
       else
       {
