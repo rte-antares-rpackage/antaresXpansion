@@ -39,11 +39,10 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
 {
   # ---- 0. initialize benders iteration ----
 
-    # save current settings of the ANTARES study into a temporary file
-  assertthat::assert_that(file.exists(paste0(opts$studyPath, "/settings/generaldata.ini")))
-  assertthat::assert_that(file.copy(from = paste0(opts$studyPath, "/settings/generaldata.ini"), 
-            to = paste0(opts$studyPath, "/settings/generaldata_tmpsvg.ini"),
-            overwrite = TRUE))
+  # save current settings of the ANTARES study into a temporary file
+  save_general_settings(opts)
+  # reset options of the ANTARES study to their initial values when the function ends
+  on.exit(restore_general_settings(opts))
   
   # read expansion planning options
   exp_options <- read_options(file = paste(opts$studyPath,"/user/expansion/settings.ini",sep=""), opts)
@@ -358,11 +357,6 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   x$expansion_options <- read_options(file = paste(opts$studyPath,"/user/expansion/settings.ini",sep=""), opts)
   x$study_options <- opts
   x$candidates <- read_candidates(file = paste(opts$studyPath,"/user/expansion/candidates.ini",sep=""), opts)
-  
-  # reset options of the ANTARES study to their initial values
-  assertthat::assert_that(file.remove(paste0(opts$studyPath, "/settings/generaldata.ini")))
-  assertthat::assert_that(file.rename(from = paste0(opts$studyPath, "/settings/generaldata_tmpsvg.ini"), 
-                                    to = paste0(opts$studyPath, "/settings/generaldata.ini")))
 
 
   # set link capacities to their optimal value
