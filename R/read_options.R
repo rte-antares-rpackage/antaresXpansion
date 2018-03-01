@@ -146,22 +146,22 @@ read_options <- function(file, opts = antaresRead::simOptions())
         assertthat::assert_that(!is.na(as.numeric(option_value_bis)))
         options$relaxed_optimality_gap <- option_value
       }
-      else if (option_name == "discount_rate")
+    }
+    else if (option_name == "discount_rate")
+    {
+      # if the value is numeric, it is the percentage (example:0.08)
+      if (!is.na(suppressWarnings(as.numeric(option_value)))) 
       {
-        # if the value is numeric, it is the percentage (example:0.08)
-        if (!is.na(suppressWarnings(as.numeric(option_value)))) 
-        {
-          options$discount_rate <- as.numeric(option_value)
-        }
-        # else, the discount rate is given as a percentage (e.g 5.5 %) 
-        else
-        {
-          option_value <- gsub(" ", "", option_value, fixed = TRUE) 
-          assertthat::assert_that(grepl("%$", option_value)) 
-          option_value_bis <- gsub("%$", "", option_value) 
-          assertthat::assert_that(!is.na(as.numeric(option_value_bis)))
-          options$discount_rate <- (as.numeric(option_value_bis)/100)
-        }
+        options$discount_rate <- as.numeric(option_value)
+      }
+      # else, the discount rate is given as a percentage (e.g 5.5 %) 
+      else
+      {
+        option_value <- gsub(" ", "", option_value, fixed = TRUE) 
+        assertthat::assert_that(grepl("%$", option_value)) 
+        option_value_bis <- gsub("%$", "", option_value) 
+        assertthat::assert_that(!is.na(as.numeric(option_value_bis)))
+        options$discount_rate <- (as.numeric(option_value_bis)/100)
       }
     }
     else

@@ -1,7 +1,7 @@
 #' Read studies.ini file 
 #' 
 #' The studies.ini file contains path towards several Antares studies indexed
-#' by the year their represent. For instance \code{2025 = D:\antares1}.
+#' by the year their represent. For instance \code{2025 = D:/antares1}.
 #' 
 #' 
 #' @param studies_file_name character. file path of a studies.ini file
@@ -15,6 +15,14 @@
 read_studies <- function(studies_file_name)
 {
 
+  assertthat::assert_that((file.exists(studies_file_name)))
+  
+  #change the working directory while executing the function to the studies.ini directory
+  #enables to work with relative paths
+  current_wd <- getwd()
+  on.exit(setwd(current_wd))
+  setwd(dirname(studies_file_name))
+  
   # initiate output structure 
   studies<-list()
   studies$n_simulated_years<-0
@@ -23,7 +31,7 @@ read_studies <- function(studies_file_name)
   first_line <- 0
   
   #read file
-  param_data <- readLines(basename(studies_file_name),warn=FALSE)
+  param_data <- readLines(studies_file_name,warn=FALSE)
   
   # go through every line of the file from the first non-empty line (identified by id_year) to the end
   for(line in 1:length(param_data))
@@ -43,7 +51,10 @@ read_studies <- function(studies_file_name)
     option_value <- sub("\\s+$", "", option_value)
     
     #option_value<-gsub(\,/,option_value)
-    assertthat::assert_that(dir.exists(option_value))
+    if(!dir.exists(option_value))
+    {
+      stop("The following antares study does not exist : ", option_value)
+    }
     
     studies$n_simulated_years<-studies$n_simulated_years+1
     studies$simulated_years<-c(studies$simulated_years,option_name)
