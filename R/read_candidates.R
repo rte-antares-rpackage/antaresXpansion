@@ -56,8 +56,11 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
     candidate$max_invest <- 0
     candidate$relaxed <- FALSE
     candidate$has_link_profile <- FALSE
+    candidate$has_link_profile_indirect <- FALSE
     candidate$link_profile <- 1#  data.frame(rep(1,8760))
-      
+    candidate$link_profile_indirect <- 1#  data.frame(rep(1,8760))
+    
+    
     # read candidate characteristics
     for(line in (index[pr]+1):(index[pr+1]-1))
     {
@@ -122,10 +125,22 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
         if (file.info(profile_file)$size !=0) 
         {
           # read file
-          profile_data <-  read.table(profile_file, header=FALSE)
-          profile_data <- as.vector(t(profile_data))
-          assert_that(is.numeric(profile_data))
-          candidate$link_profile <- profile_data
+          profile_data <-  read.table(profile_file, header=FALSE,sep = "\t")
+          
+          profile_data1 <- as.vector(t(profile_data[,c(1)]))
+          assert_that(is.numeric(profile_data1))
+          candidate$link_profile <- profile_data1
+         if (ncol(profile_data)==2)  
+         {
+           profile_data2 <- as.vector(t(profile_data[,c(2)]))
+           assert_that(is.numeric(profile_data2))
+           candidate$link_profile_indirect <- profile_data2
+           candidate$has_link_profile_indirect <- TRUE
+         }
+         else
+         {
+           candidate$link_profile_indirect <- profile_data1          
+         }
           candidate$has_link_profile <- TRUE
         }
       }
@@ -187,7 +202,7 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
 
 
 
-#' Return vector of candidate names which have a link profile
+#' Return vector of candidate names which have a link profile in general 
 #' 
 #'   
 #' @param candidates
@@ -202,6 +217,49 @@ with_profile <- function(candidates)
 {
   f <- function(c)
   {if(c$has_link_profile) return(c$link)
+    else return (NA)
+  }
+  link_with_profile <- sapply(candidates, FUN = f)
+  return(link_with_profile[!is.na(link_with_profile)])
+}
+
+#' Return vector of candidate names which have just a unique link profile
+#' 
+#'   
+#' @param candidates
+#'   list of investment candidates, as returned by
+#'   \code{\link{read_candidates}}
+#'
+#' @return 
+#' Returns a vector of link name
+#' @noRd
+#' 
+with_profile_unique <- function(candidates)
+{
+  f <- function(c)
+  {if((c$has_link_profile)&(!c$has_link_profile_indirect)) return(c$link)
+    else return (NA)
+  }
+  link_with_profile <- sapply(candidates, FUN = f)
+  return(link_with_profile[!is.na(link_with_profile)])
+}
+
+
+#' Return vector of candidate names which have a direct link profile and an indirect profile
+#' 
+#'   
+#' @param candidates
+#'   list of investment candidates, as returned by
+#'   \code{\link{read_candidates}}
+#'
+#' @return 
+#' Returns a vector of link name
+#' @noRd
+#' 
+with_profile_indirect <- function(candidates)
+{
+  f <- function(c)
+  {if(c$has_link_profile_indirect) return(c$link)
     else return (NA)
   }
   link_with_profile <- sapply(candidates, FUN = f)
