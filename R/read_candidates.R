@@ -129,11 +129,13 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
           
           profile_data1 <- as.vector(t(profile_data[,c(1)]))
           assert_that(is.numeric(profile_data1))
+          expect_length(profile_data1, 8760)
           candidate$link_profile <- profile_data1
          if (ncol(profile_data)==2)  
          {
            profile_data2 <- as.vector(t(profile_data[,c(2)]))
            assert_that(is.numeric(profile_data2))
+           expect_length(profile_data2, 8760)
            candidate$link_profile_indirect <- profile_data2
            candidate$has_link_profile_indirect <- TRUE
          }
