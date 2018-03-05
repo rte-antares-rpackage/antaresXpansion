@@ -77,3 +77,29 @@ test_that("Return error when several candidates have the same name ", {
   candidate_file <- paste(opts$studyPath,"/user/expansion/other_inputs_for_test/candidates-identicalnames.ini",sep="") 
   expect_error(read_candidates(candidate_file, opts))
 })
+
+
+test_that("identify-horizon() works", {
+  
+  studies <- list()
+  studies$n_simulated_years <- 3
+  studies$simulated_years <- c(2025, 2030, 2035)
+  
+  #test one year
+  out <- identify_horizon("investment-cost[2030]", "investment-cost", studies)
+  expect_equal(out,2)
+  
+  #test all years
+  out <- identify_horizon("investment-cost", "investment-cost", studies)
+  expect_equal(out, c(1,2,3))
+  
+  # wrong name  
+  expect_warning(identify_horizon("invest-cost", "investment-cost", studies))
+  
+  # wrong syntax
+  expect_warning(identify_horizon("investment-cost(2030)", "investment-cost", studies))
+  
+  # wrong year
+  expect_warning(identify_horizon("investment-cost[2050]", "investment-cost", studies))
+  
+})
