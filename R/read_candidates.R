@@ -219,6 +219,7 @@ read_candidates <- function(file, studies = NULL, opts = antaresRead::simOptions
     if(is.null(studies))  assertthat::assert_that(!is.na(candidate$cost))
     if(!is.null(studies)) assertthat::assert_that(all(!is.na(candidate$investment_cost)))
     if(!is.null(studies)) assertthat::assert_that(all(!is.na(candidate$operation_and_maintenance_cost)))
+    if(!is.null(studies)) assertthat::assert_that(all(!is.na(candidate$max_installed)))
     
     # update candidate list if the candidate is enabled
     if(candidate$enable)

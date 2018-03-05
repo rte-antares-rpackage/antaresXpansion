@@ -14,23 +14,32 @@ initiate_candidate_capacities <- function(candidates, horizon)
 {
   n_candidates <- length(candidates)
   
-  # set initial value to each investment candidate 
-  # (here put to closest multiple of unit-size below max_invest/2)
-  cap <- sapply(candidates, FUN = function(c){
-    if(c$unit_size > 0)
-    {
-      out <- floor(c$max_invest/2/c$unit_size) * c$unit_size
-      out <- max(0, min(c$max_invest, out))
-    }
-    else
-    { out <- c$max_invest/2}
-    return(out)})
-  
+  # set initial value to each investment candidate
+  if(length(horizon) == 1)
+  {
+    # 1 year investment optimization
+    # (here put to closest multiple of unit-size below max_invest/2)
+    cap <- sapply(candidates, FUN = function(c){
+      if(c$unit_size > 0)
+      {
+        out <- floor(c$max_invest/2/c$unit_size) * c$unit_size
+        out <- max(0, min(c$max_invest, out))
+      }
+      else
+      { out <- c$max_invest/2}
+      return(out)}
+    )
+  }
+  else
+  {
+    #  multi-year investment optimization
+    cap <- rep(0,n_candidates * length(horizon))
+  }
   # build invested capacities data.frame
   invested_capacities <- data.frame(
-    it = rep(1, n_candidates),
-    year = rep(horizon,n_candidates),
-    candidate = sapply(candidates, FUN = function(c){c$name}),
+    it = rep(1, n_candidates * length(horizon)),
+    year = rep(horizon, each = n_candidates),
+    candidate = rep(sapply(candidates, FUN = function(c){c$name}), length(horizon)),
     value = cap
   )
   
