@@ -70,6 +70,7 @@ read_candidates <- function(file, studies = NULL, opts = antaresRead::simOptions
       candidate$investment_cost <- rep(NA, studies$n_simulated_years)
       candidate$operation_and_maintenance_cost <- rep(NA, studies$n_simulated_years)
       candidate$mothball_cost <- rep(NA, studies$n_simulated_years)
+      candidate$max_installed <- rep(NA, studies$n_simulated_years)
     }
     
     # read candidate characteristics
@@ -173,6 +174,14 @@ read_candidates <- function(file, studies = NULL, opts = antaresRead::simOptions
         
         assertthat::assert_that(!is.na(as.numeric(option_value)))
         candidate$mothball_cost[id] <- as.numeric(option_value)
+      }
+      else if (grepl("max-installed-capacity", option_name)) 
+      {
+        id <- identify_horizon(option_name, variable = "max-installed-capacity", studies)
+        if(is.null(id)) next()
+        
+        assertthat::assert_that(!i(s.naas.numeric(option_value)))
+        candidate$max_installed[id] <- as.numeric(option_value)
       }
       else if (option_name == "lifetime")
       {
