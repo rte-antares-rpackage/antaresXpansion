@@ -48,7 +48,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   exp_options <- read_options(file = paste(opts$studyPath,"/user/expansion/settings.ini",sep=""), opts)
   
   # read investment candidates file
-  candidates <- read_candidates(file = paste(opts$studyPath,"/user/expansion/candidates.ini",sep=""), opts)
+  candidates <- read_candidates(file = paste(opts$studyPath,"/user/expansion/candidates.ini",sep=""), opts = opts)
   n_candidates <- length(candidates)
   assertthat::assert_that(n_candidates > 0)
   
@@ -356,7 +356,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   # add information in the output file
   x$expansion_options <- read_options(file = paste(opts$studyPath,"/user/expansion/settings.ini",sep=""), opts)
   x$study_options <- opts
-  x$candidates <- read_candidates(file = paste(opts$studyPath,"/user/expansion/candidates.ini",sep=""), opts)
+  x$candidates <- read_candidates(file = paste(opts$studyPath,"/user/expansion/candidates.ini",sep=""), opts = opts)
 
 
   # set link capacities to their optimal value
