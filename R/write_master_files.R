@@ -56,9 +56,31 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
     # read Antares data
     if (length(with_profile(candidates)) > 0 )
     {
-      output_link_h_s = readAntares(areas = NULL, links = with_profile(candidates), mcYears = NULL, 
-                                    timeStep = "hourly", opts = output_antares, showProgress = FALSE,
-                                    select = "MARG. COST")
+      if (length(with_profile_unique(candidates)) > 0 )
+      {
+        
+        output_link_h_s = readAntares(areas = NULL, links = with_profile_unique(candidates), mcYears = NULL, 
+                                      timeStep = "hourly", opts = output_antares, showProgress = FALSE,
+                                      select = "MARG. COST")
+      }       
+      
+      
+      if (length(with_profile_indirect(candidates)) > 0 )
+      {
+        
+        output_link_h_s_i = readAntares(areas = NULL, links = with_profile_indirect(candidates), mcYears = NULL, 
+                                        timeStep = "hourly", opts = output_antares, showProgress = FALSE,
+                                        select = "MARG. COST")
+        
+        output_link_h_s_flux = readAntares(areas = NULL, links = with_profile_indirect(candidates), mcYears = NULL, 
+                                           timeStep = "hourly", opts = output_antares, showProgress = FALSE,
+                                           select = "FLOW LIN.")
+        
+        output_link_h_s_direct <- output_link_h_s_i
+        output_link_h_s_direct$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." < 0)]= 0
+        output_link_h_s_indirect <- output_link_h_s_i
+        output_link_h_s_indirect$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." > 0)]= 0
+      }
     }
     if (length(without_profile(candidates)) > 0 )
     {
@@ -70,15 +92,24 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
     script  <-  ""
     for (c in 1:n_candidates)
     {
-      if(candidates[[c]]$has_link_profile)
+      if((candidates[[c]]$has_link_profile)&(!candidates[[c]]$has_link_profile_indirect))
       {
         len = length(subset(output_link_h_s, link == candidates[[c]]$link)$"MARG. COST")
-        tmp_rentability <- sum(as.numeric(subset(output_link_h_s, link == candidates[[c]]$link)$"MARG. COST")*candidates[[c]]$link_profile[1:len]) - candidates[[c]]$cost * n_w / 52
+        tmp_rentability <- sum(as.numeric(subset(output_link_h_s, link == candidates[[c]]$link)$"MARG. COST")*candidates[[c]]$link_profile[1:len])
+        - candidates[[c]]$cost * n_w / 52
+      }      
+      
+      else if(candidates[[c]]$has_link_profile_indirect)
+      {
+        len = length(subset(output_link_h_s_direct, link == candidates[[c]]$link)$"MARG. COST")
+        tmp_rentability <- sum(as.numeric(subset(output_link_h_s_direct, link == candidates[[c]]$link)$"MARG. COST")*candidates[[c]]$link_profile[1:len]+as.numeric(subset(output_link_h_s_indirect, link == candidates[[c]]$link)$"MARG. COST")*candidates[[c]]$link_profile_indirect[1:len]) - candidates[[c]]$cost * n_w / 52
       }
+      
       else
       {
         tmp_rentability <- sum(as.numeric(subset(output_link_s, link == candidates[[c]]$link)$"MARG. COST")) - candidates[[c]]$cost * n_w / 52
       }
+      
       script <- paste0(script, current_it$id, " ", candidates[[c]]$name, " ", tmp_rentability)
       if (c != n_candidates) { script <- paste0(script, "\n")}
     }
@@ -101,11 +132,33 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
     script_cost <- ""
     
     # read antares data
-    if (length(with_profile(candidates)) > 0 )
+    if (length(antaresXpansion:::with_profile(candidates)) > 0 )
     {
-      output_link_h = readAntares(areas = NULL, links = with_profile(candidates), mcYears = current_it$mc_years, 
-                                    timeStep = "hourly", opts = output_antares, showProgress = FALSE,
-                                    select = "MARG. COST")
+      if (length(antaresXpansion:::with_profile_unique(candidates)) > 0 )
+      {
+        
+        output_link_h = readAntares(areas = NULL, links = antaresXpansion:::with_profile_unique(candidates), mcYears = current_it$mc_years, 
+                                      timeStep = "hourly", opts = output_antares, showProgress = FALSE,
+                                      select = "MARG. COST")
+      }       
+      
+      
+      if (length(antaresXpansion:::with_profile_indirect(candidates)) > 0 )
+      {
+        
+        output_link_h_i = readAntares(areas = NULL, links = antaresXpansion:::with_profile_indirect(candidates), mcYears = current_it$mc_years, 
+                                        timeStep = "hourly", opts = output_antares, showProgress = FALSE,
+                                        select = "MARG. COST")
+        
+        output_link_h_flux = readAntares(areas = NULL, links = antaresXpansion:::with_profile_indirect(candidates), mcYears = current_it$mc_years, 
+                                           timeStep = "hourly", opts = output_antares, showProgress = FALSE,
+                                           select = "FLOW LIN.")
+        
+        output_link_h_direct <- output_link_h_i
+        output_link_h_direct$"MARG. COST"[which(output_link_h_flux$"FLOW LIN." < 0)]= 0
+        output_link_h_indirect <- output_link_h_i
+        output_link_h_indirect$"MARG. COST"[which(output_link_h_flux$"FLOW LIN." > 0)]= 0
+      }
     }
   
     output_link_y = antaresRead::readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
@@ -154,12 +207,19 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
       # for every candidate
       for(c in 1:n_candidates)
       {
-        if(candidates[[c]]$has_link_profile)
+        if((candidates[[c]]$has_link_profile)&(!candidates[[c]]$has_link_profile_indirect))
         {
           # (!!!!) carreful : will no work if number of simulated week is not 52 (???)
           len = length(subset(output_link_h, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")
           tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")*candidates[[c]]$link_profile[1:len]) - candidates[[c]]$cost * n_w / 52
+        }      
+        
+        else if(candidates[[c]]$has_link_profile_indirect)
+        {
+          len = length(subset(output_link_h_direct, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")
+          tmp_rentability <- sum(as.numeric(subset(output_link_h_direct, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")*candidates[[c]]$link_profile[1:len]+as.numeric(subset(output_link_h_indirect, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")*candidates[[c]]$link_profile_indirect[1:len])- candidates[[c]]$cost * n_w / 52
         }
+
         else
         {
           tmp_rentability <- sum(as.numeric(subset(output_link_y, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")) - candidates[[c]]$cost * n_w / 52
@@ -194,9 +254,31 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
     # read antares data
     if (length(with_profile(candidates)) > 0 )
     {
-      output_link_h = readAntares(areas = NULL, links = with_profile(candidates), mcYears = current_it$mc_years, 
-                                  timeStep = "hourly", opts = output_antares, showProgress = FALSE,
-                                  select = "MARG. COST")
+      if (length(with_profile_unique(candidates)) > 0 )
+      {
+        
+        output_link_h = readAntares(areas = NULL, links = with_profile_unique(candidates), mcYears = current_it$mc_years, 
+                                    timeStep = "hourly", opts = output_antares, showProgress = FALSE,
+                                    select = "MARG. COST")
+      }       
+    
+    
+     if (length(with_profile_indirect(candidates)) > 0 )
+     {
+      
+       output_link_h_i = readAntares(areas = NULL, links = with_profile_indirect(candidates), mcYears = current_it$mc_years, 
+                                    timeStep = "hourly", opts = output_antares, showProgress = FALSE,
+                                    select = "MARG. COST")
+      
+       output_link_h_flux = readAntares(areas = NULL, links = with_profile_indirect(candidates), mcYears = current_it$mc_years, 
+                                       timeStep = "hourly", opts = output_antares, showProgress = FALSE,
+                                       select = "FLOW LIN.")
+      
+       output_link_h_direct <- output_link_h_i
+       output_link_h_direct$"MARG. COST"[which(output_link_h_flux$"FLOW LIN." < 0)]= 0
+       output_link_h_indirect <- output_link_h_i
+       output_link_h_indirect$"MARG. COST"[which(output_link_h_flux$"FLOW LIN." > 0)]= 0
+     }
     }
     
     output_link_w = antaresRead::readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
@@ -251,12 +333,20 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
         # for every candidate
         for(c in 1:n_candidates)
         {
-          if(candidates[[c]]$has_link_profile)
+          if((candidates[[c]]$has_link_profile)&(!candidates[[c]]$has_link_profile_indirect))
           {
             # (!!!!) carreful : will no work if number of simulated week is not 52 (???)
             first_h <- 7*24*(w-1)+1
             last_h <- 7*24*w
             tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y & timeId >= first_h & timeId <= last_h)$"MARG. COST")* candidates[[c]]$link_profile[first_h:last_h]) - candidates[[c]]$cost /52
+          }      
+          
+          else if(candidates[[c]]$has_link_profile_indirect)
+          {
+            # (!!!!) carreful : will no work if number of simulated week is not 52 (???)
+            first_h <- 7*24*(w-1)+1
+            last_h <- 7*24*w
+            tmp_rentability <- sum(as.numeric(subset(output_link_h_direct, link == candidates[[c]]$link & mcYear == y & timeId >= first_h & timeId <= last_h)$"MARG. COST")*candidates[[c]]$link_profile[first_h:last_h]+as.numeric(subset(output_link_h_indirect, link == candidates[[c]]$link & mcYear == y & timeId >= first_h & timeId <= last_h)$"MARG. COST")*candidates[[c]]$link_profile_indirect[first_h:last_h])-candidates[[c]]$cost  / 52 
           }
           else
           {
