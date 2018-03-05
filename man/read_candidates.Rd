@@ -4,10 +4,13 @@
 \alias{read_candidates}
 \title{Read investment candidates with their characteristics}
 \usage{
-read_candidates(file, opts = antaresRead::simOptions())
+read_candidates(file, studies = NULL, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{file}{path toward the text file which contains the candidates description}
+
+\item{studies}{list of simulated years with their according antares studies, as 
+returned by the function \code{\link{read_studies}}}
 
 \item{opts}{list of simulation parameters returned by the function
 \code{antaresRead::setSimulationPath}}

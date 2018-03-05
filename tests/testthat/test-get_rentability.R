@@ -8,7 +8,7 @@ test_that("get_rentability() works", {
   opts_fast <- setSimulationPath(paste0(study_path, "/output/20171108-1548eco-fast/"))
   current_it <- list()
   current_it$full <- TRUE
-  candidates <- read_candidates(file = paste0(opts_fast$studyPath, "/user/expansion/candidates.ini"), opts_fast)
+  candidates <- read_candidates(file = paste0(opts_fast$studyPath, "/user/expansion/candidates.ini"), opts = opts_fast)
   
   # launch function
   rentability <- antaresXpansion:::get_expected_rentability(opts_fast, current_it, candidates, n_w)

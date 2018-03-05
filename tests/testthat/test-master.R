@@ -4,7 +4,7 @@ opts <- setSimulationPath(study_path,0)
 
 
 test_that("Function initiate_master() works and all files are created", {
-  initiate_master(candidates = read_candidates(paste0(opts$studyPath,"/user/expansion/candidates.ini"), opts), 
+  initiate_master(candidates = read_candidates(paste0(opts$studyPath,"/user/expansion/candidates.ini"), opts =  opts), 
                   exp_options = read_options(paste0(opts$studyPath,"/user/expansion/settings.ini"), opts), 
                   opts = antaresRead::simOptions())
   

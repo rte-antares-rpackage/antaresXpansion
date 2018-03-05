@@ -7,7 +7,7 @@ opts <- setSimulationPath(study_path,0)
 
 test_that("read_candidates() works", {
   candidate_file <- paste(opts$studyPath,"/user/expansion/candidates.ini",sep="") 
-  candidates <- read_candidates(candidate_file, opts)
+  candidates <- read_candidates(candidate_file, opts = opts)
   
   expect_is(candidates, "list")
   expect_length(candidates, 5)
@@ -22,7 +22,7 @@ test_that("read_candidates() works", {
 
 test_that("candidates names do not contain blank spaces", {
   candidate_file <- paste(opts$studyPath,"/user/expansion/candidates.ini",sep="") 
-  candidates <- read_candidates(candidate_file, opts)
+  candidates <- read_candidates(candidate_file, opts =  opts)
   
   names <- sapply(candidates, FUN = function(c){c$name})
   have_space <- any(grepl(" ", names))
@@ -33,7 +33,7 @@ test_that("candidates names do not contain blank spaces", {
 
 test_that("candidates links exist in the Antares Study", {
   candidate_file <- paste(opts$studyPath,"/user/expansion/candidates.ini",sep="") 
-  candidates <- read_candidates(candidate_file, opts)
+  candidates <- read_candidates(candidate_file, opts = opts)
   
   links <- sapply(candidates, FUN = function(c){c$link})
   expect_true(any(links %in% opts$linkList))
@@ -43,7 +43,7 @@ test_that("candidates links exist in the Antares Study", {
 
 test_that("candidate link_profile exists and contains 8760 values", {
   candidate_file <- paste(opts$studyPath,"/user/expansion/candidates.ini",sep="") 
-  candidates <- read_candidates(candidate_file, opts)
+  candidates <- read_candidates(candidate_file, opts = opts)
   
   for(c in candidates)
   {
@@ -62,20 +62,20 @@ test_that("candidate link_profile exists and contains 8760 values", {
 
 test_that("Return warning when unknown characteristics is given", {
   candidate_file <- paste(opts$studyPath,"/user/expansion/other_inputs_for_test/candidates-unknownarg.ini",sep="") 
-  expect_warning(read_candidates(candidate_file, opts))
+  expect_warning(read_candidates(candidate_file, opts = opts))
 })
   
 
 
 test_that("Return error when link does not belong to the study", {
   candidate_file <- paste(opts$studyPath,"/user/expansion/other_inputs_for_test/candidates-unknownlink.ini",sep="") 
-  expect_error(read_candidates(candidate_file, opts))
+  expect_error(read_candidates(candidate_file, opts = opts))
 })
 
 
 test_that("Return error when several candidates have the same name ", {
   candidate_file <- paste(opts$studyPath,"/user/expansion/other_inputs_for_test/candidates-identicalnames.ini",sep="") 
-  expect_error(read_candidates(candidate_file, opts))
+  expect_error(read_candidates(candidate_file, opts = opts))
 })
 
 

@@ -5,17 +5,17 @@ opts <- setSimulationPath(study_path, 1)
 
 test_that("Test that set_antares_options() works ", {
   set_antares_options(benders_options =read_options(paste0(opts$studyPath,"/user/expansion/settings.ini"), opts), 
-                      candidates = read_candidates(paste0(opts$studyPath,"/user/expansion/candidates.ini"), opts), 
-                      opts)
+                      candidates = read_candidates(paste0(opts$studyPath,"/user/expansion/candidates.ini"), opts = opts), 
+                      opts = opts)
   
 
   set_antares_options(benders_options = read_options(paste0(opts$studyPath,"/user/expansion/other_inputs_for_test/settings-2.ini"), opts), 
-                      candidates = read_candidates(paste0(opts$studyPath,"/user/expansion/candidates.ini"), opts), 
-                      opts)
+                      candidates = read_candidates(paste0(opts$studyPath,"/user/expansion/candidates.ini"), opts = opts), 
+                      opts = opts)
   
   set_antares_options(benders_options = read_options(paste0(opts$studyPath,"/user/expansion/other_inputs_for_test/settings-3.ini"), opts), 
-                      candidates = read_candidates(paste0(opts$studyPath,"/user/expansion/candidates.ini"), opts), 
-                      opts)
+                      candidates = read_candidates(paste0(opts$studyPath,"/user/expansion/candidates.ini"), opts = opts), 
+                      opts = opts)
 })
 
 

@@ -18,7 +18,7 @@ test_that("write_master_files() works", {
   current_it$weeks <- 1:52
   current_it$cut_type <- "average"
   
-  candidates <- read_candidates(paste0(opts_fast$studyPath,"/user/expansion/candidates.ini"), opts_fast)
+  candidates <- read_candidates(paste0(opts_fast$studyPath,"/user/expansion/candidates.ini"), opts = opts_fast)
   exp_options <-  read_options(paste0(opts_fast$studyPath,"/user/expansion/settings.ini"), opts_fast)
   
   n_w <- length(current_it$weeks)
