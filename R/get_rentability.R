@@ -30,9 +30,31 @@ get_expected_rentability <- function(output_antares, current_it, candidates, n_w
     # hourly results (for candidates with link profile only)
     if (length(with_profile(candidates)) > 0 )
     {
-      output_link_h_s = readAntares(areas = NULL, links = with_profile(candidates), mcYears = NULL, 
+      
+      if (length(with_profile_unique(candidates)) > 0 )
+      {
+      
+       output_link_h_s = readAntares(areas = NULL, links = with_profile_unique(candidates), mcYears = NULL, 
                                     timeStep = "hourly", opts = output_antares, showProgress = FALSE,
                                     select = "MARG. COST")
+      }    
+
+      if (length(with_profile_indirect(candidates)) > 0 )
+      {
+        
+        output_link_h_s_i = readAntares(areas = NULL, links = with_profile_indirect(candidates), mcYears = NULL, 
+                                      timeStep = "hourly", opts = output_antares, showProgress = FALSE,
+                                      select = "MARG. COST")
+      
+      output_link_h_s_flux = readAntares(areas = NULL, links = with_profile_indirect(candidates), mcYears = NULL, 
+                                         timeStep = "hourly", opts = output_antares, showProgress = FALSE,
+                                         select = "FLOW LIN.")
+      
+      output_link_h_s_direct <- output_link_h_s_i
+      output_link_h_s_direct$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." < 0)]= 0
+      output_link_h_s_indirect <- output_link_h_s_i
+      output_link_h_s_indirect$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." > 0)]= 0
+      }
     }
     # synthetic results for other candidates 
     if (length(without_profile(candidates)) > 0 )
@@ -45,10 +67,15 @@ get_expected_rentability <- function(output_antares, current_it, candidates, n_w
     # second, get aggregated rentability for those links
     get_aggr_rentability <- function(c)
     {
-      if(c$has_link_profile)
+      # carreful : not sure the following line works in case of a partial iteration
+      if((c$has_link_profile)&(!c$has_link_profile_indirect))
       {
-        # carreful : not sure the following line works in case of a partial iteration
-        return(sum(as.numeric(subset(output_link_h_s, link == c$link)$"MARG. COST")*c$link_profile[1:8736]) - c$cost * n_w / 52) 
+        return(sum(as.numeric(subset(output_link_h_s,   link == c$link)$"MARG. COST")*c$link_profile[1:8736]) - c$cost * n_w / 52)         
+      }
+
+      else if(c$has_link_profile_indirect)
+      {        
+        return(sum(as.numeric(subset(output_link_h_s_direct,   link == c$link)$"MARG. COST")*c$link_profile[1:8736]+ as.numeric(subset(output_link_h_s_indirect, link == c$link)$"MARG. COST")*c$link_profile_indirect[1:8736])- c$cost * n_w / 52) 
       }
       else 
       {
