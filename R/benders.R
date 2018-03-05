@@ -161,11 +161,22 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     for(c in candidates)
     {
-      new_capacity <- get_capacity_profile(get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n),
-                                           c$link_profile, exp_options$uc_type)
-      # update study
-      update_link(c$link, "direct_capacity", new_capacity , opts)
-      update_link(c$link, "indirect_capacity", new_capacity, opts)
+      new_capacity_direct   <- get_capacity_profile(get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n),
+                                                    c$link_profile, exp_options$uc_type)
+      if(c$has_link_profile_indirect)
+      {
+        new_capacity_indirect <- get_capacity_profile(get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n),
+                                           c$link_profile_indirect, exp_options$uc_type)
+      }
+      else
+      {
+        new_capacity_indirect <- get_capacity_profile(get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n),
+                                                      c$link_profile, exp_options$uc_type)       
+      }
+      
+            # update study
+      update_link(c$link, "direct_capacity", new_capacity_direct , opts)
+      update_link(c$link, "indirect_capacity", new_capacity_indirect, opts)
     }
     
     
@@ -369,7 +380,14 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   for(c in candidates)
   {
     update_link(c$link, "direct_capacity", c$link_profile*get_capacity(x$invested_capacities, candidate = c$name, it =best_solution) , opts)
-    update_link(c$link, "indirect_capacity", c$link_profile*get_capacity(x$invested_capacities, candidate = c$name, it =best_solution) , opts)
+    if(c$has_link_profile_indirect)
+    {
+      update_link(c$link, "indirect_capacity", c$link_profile_indirect*get_capacity(x$invested_capacities, candidate = c$name, it =best_solution) , opts)
+    }
+    else
+    {
+      update_link(c$link, "indirect_capacity", c$link_profile*get_capacity(x$invested_capacities, candidate = c$name, it =best_solution) , opts)
+    }
   }
   
   
