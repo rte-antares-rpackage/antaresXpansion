@@ -180,7 +180,7 @@ read_candidates <- function(file, studies = NULL, opts = antaresRead::simOptions
         id <- identify_horizon(option_name, variable = "max-installed-capacity", studies)
         if(is.null(id)) next()
         
-        assertthat::assert_that(!i(s.naas.numeric(option_value)))
+        assertthat::assert_that(!is.na(as.numeric(option_value)))
         candidate$max_installed[id] <- as.numeric(option_value)
       }
       else if (option_name == "lifetime")
