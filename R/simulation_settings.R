@@ -205,11 +205,13 @@ save_general_settings <- function(opts = antaresRead::simOptions())
 #' 
 #' @importFrom assertthat assert_that
 #' @noRd
-restore_general_settings <- function(weeks, opts = antaresRead::simOptions())
+restore_general_settings <- function(opts = antaresRead::simOptions())
 {
-  
-  # reset options of the ANTARES study to their initial values
-  assertthat::assert_that(file.remove(paste0(opts$studyPath, "/settings/generaldata.ini")))
-  assertthat::assert_that(file.rename(from = paste0(opts$studyPath, "/settings/generaldata_tmpsvg.ini"), 
-                                      to = paste0(opts$studyPath, "/settings/generaldata.ini")))
+  if(file.exists(paste0(opts$studyPath, "/settings/generaldata_tmpsvg.ini")))
+  {
+    # reset options of the ANTARES study to their initial values
+    assertthat::assert_that(file.remove(paste0(opts$studyPath, "/settings/generaldata.ini")))
+    assertthat::assert_that(file.rename(from = paste0(opts$studyPath, "/settings/generaldata_tmpsvg.ini"), 
+                                        to = paste0(opts$studyPath, "/settings/generaldata.ini")))
+  }
 }
