@@ -82,8 +82,7 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
   
   # create output structure 
   x <- list()
-  x$invested_capacities <- initiate_candidate_capacities(candidates, studies$simulated_years)
-  x$installed_capacities <- initiate_candidate_capacities(candidates, studies$simulated_years) # temporary
+  x$invested_capacities <- initiate_candidate_capacities_multi_year(candidates, studies)
   x$costs <- data.frame(row.names = c("it", "year", "investment_costs", "operation_costs", "overall_costs"))
   x$rentability <- data.frame(row.names = sapply(candidates, FUN = function(c){c$name}))
   x$iterations <- list()

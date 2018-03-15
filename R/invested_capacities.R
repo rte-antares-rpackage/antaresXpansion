@@ -47,6 +47,9 @@ initiate_candidate_capacities <- function(candidates, horizon)
 }
 
 
+
+
+
 #' get invested capacity
 #'   
 #' @param invested_capacity
@@ -81,6 +84,40 @@ get_capacity <- function(invested_capacity, it, candidate, horizon = NULL)
 }
 
 
+#' Return data frame of initial values of installed, invested and decommissioned capacities
+#' 
+#'   
+#' @param candidates
+#'   list of investment candidates, as returned by
+#'   \code{\link{read_candidates}}
+#' @param studies
+#'   list of Antares studies, as returned by
+#'   \code{\link{read_studies}}
+#' @param x
+#'   output structure
+#'
+#' @return 
+#' Returns a vector of link name
+#' @noRd
+initiate_candidate_capacities_multi_year <- function(candidates, studies, x)
+{
+  years <- as.numeric(sapply(studies, FUN = function(x){x$year}))
+  capacities <- data.frame()
+  
+  for(c in candidates)
+  {
+    capacities <- rbind(capacities, data.frame(
+      it = rep(1,length(years)),
+      year = years,
+      candidate = rep(c$name, length(years)),
+      value = c$min_installed,
+      installed = c$min_installed,
+      invested = rep(NA, length(years)),
+      decommissioned = rep(NA, length(years))
+    ))
+  }
+  return(capacities)
+}
 
 
 
