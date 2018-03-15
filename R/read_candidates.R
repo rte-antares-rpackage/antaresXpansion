@@ -70,7 +70,8 @@ read_candidates <- function(file, studies = NULL, opts = antaresRead::simOptions
       candidate$investment_cost <- rep(NA, length(studies))
       candidate$operation_and_maintenance_cost <- rep(NA, length(studies))
       candidate$max_installed <- rep(NA, length(studies))
-      candidate$already_installed <- rep(NA, length(studies))
+      candidate$min_installed <- rep(0, length(studies))
+      candidate$already_installed <- rep(0, length(studies))
     }
     
     # read candidate characteristics
@@ -182,6 +183,14 @@ read_candidates <- function(file, studies = NULL, opts = antaresRead::simOptions
         
         assertthat::assert_that(!is.na(as.numeric(option_value)))
         candidate$max_installed[id] <- as.numeric(option_value)
+      }
+      else if (grepl("min-installed-capacity", option_name)) 
+      {
+        id <- identify_horizon(option_name, variable = "min-installed-capacity", studies)
+        if(is.null(id)) next()
+        
+        assertthat::assert_that(!is.na(as.numeric(option_value)))
+        candidate$min_installed[id] <- as.numeric(option_value)
       }
       else if (grepl("already-installed-capacity", option_name)) 
       {
