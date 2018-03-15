@@ -83,7 +83,8 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
   # create output structure 
   x <- list()
   x$invested_capacities <- initiate_candidate_capacities_multi_year(candidates, studies)
-  x$costs <- data.frame(row.names = c("it", "year", "investment_costs", "operation_costs", "overall_costs"))
+  x$costs <- data.frame(row.names = c("it", "investment_costs", "operation_costs", "overall_costs"))
+  x$costs_detailled <- data.frame(row.names = c("it", "year", "investment_costs", "operation_costs", "overall_costs"))
   x$rentability <- data.frame(row.names = sapply(candidates, FUN = function(c){c$name}))
   x$iterations <- list()
   x$digest <- list()
@@ -184,43 +185,43 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     
     # analyse some outputs of the just finished ANTARES simulation
     
-    for (s in  1:studies$n_simulated_years){
+    for (s in studies){
       
       # compute system operationnal and investment costs 
-      op_cost <- get_op_costs(output_antares[[s]], current_it, exp_options)
-      inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost[s] * get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n, horizon = studies$simulated_years[s])}))
-      inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation
-      ov_cost <-  op_cost + inv_cost
+      op_cost <- get_op_costs(s$output_antares, current_it, exp_options)
+      #inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost[s] * get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n, horizon = studies$simulated_years[s])}))
+      #inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation
+      #ov_cost <-  op_cost + inv_cost
       
       # update output structure
       x$costs <- rbind(x$costs, data.frame(
         it = current_it$n,
-        year = studies$simulated_years[s],
-        investment_costs = inv_cost,
+        year = studies$year,
+        investment_costs = NA,
         operation_costs = op_cost,
-        overall_costs = ov_cost
+        overall_costs = NA
       ))
     }
     
-    if(current_it$full)
-    {
-      # check if the current iteration provides the best solution
-      if(ov_cost <= min(x$costs$overall_costs, na.rm = TRUE)) {best_solution <- current_it$n}
-    }
+    # if(current_it$full)
+    # {
+    #   # check if the current iteration provides the best solution
+    #   if(ov_cost <= min(x$costs$overall_costs, na.rm = TRUE)) {best_solution <- current_it$n}
+    # }
     
     # compute average rentability of each candidate 
-    x$rentability[[current_it$id]] <- get_expected_rentability(output_antares, current_it, candidates, n_w)
+    # x$rentability[[current_it$id]] <- get_expected_rentability(s$output_antares, current_it, candidates, n_w)
     
     # compute lole for each area
-    x$digest[[current_it$id]] <- get_digest(output_antares, current_it)
+    # x$digest[[current_it$id]] <- get_digest(output_antares, current_it)
     
     
     # print results of the ANTARES simulation
-    if(display & current_it$full)
-    {
-      for (c in candidates){cat( "     . ", c$name, " -- ", get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n), " invested MW -- rentability = ", round(x$rentability[c$name, current_it$id]/1000), "ke/MW \n" , sep="")}
-      cat("--- op.cost = ", op_cost/1000000, " Me --- inv.cost = ", inv_cost/1000000, " Me --- ov.cost = ", ov_cost/1000000, " Me ---\n")
-    }
+    # if(display & current_it$full)
+    # {
+    #   for (c in candidates){cat( "     . ", c$name, " -- ", get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n), " invested MW -- rentability = ", round(x$rentability[c$name, current_it$id]/1000), "ke/MW \n" , sep="")}
+    #   cat("--- op.cost = ", op_cost/1000000, " Me --- inv.cost = ", inv_cost/1000000, " Me --- ov.cost = ", ov_cost/1000000, " Me ---\n")
+    # }
     
     
     
@@ -231,8 +232,10 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     # rentability of each investment candidates and on the obtained system
     # costs
     # cuts can be averaged on all MC years, yearly or weekly
-    write_master_files(tmp_folder, output_antares, current_it, candidates, exp_options, x, n_w)
-    
+    for(s in studies)
+    {
+       write_master_files(tmp_folder, s$output_antares, current_it, candidates, exp_options, x, n_w)
+    }
     
     
     # ---- 6. Solve master problem ---- 

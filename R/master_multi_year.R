@@ -37,7 +37,7 @@ initiate_master_multi_year <- function(candidates, exp_options , studies, tmp_fo
   in_out_files$mc <- "in_mc.txt"
   in_out_files$w <- "in_week.txt"
   in_out_files$candidates <- "in_candidates.txt"
-  in_out_files$candidate_costs <- "in_candidate_costs.txt"
+  in_out_files$candidate_costs <- "in_candidate_bis.txt"
   in_out_files$iterations  <- "in_iterations.txt"
   in_out_files$z0 <- "in_z0.txt"
   in_out_files$avg_rentability <- "in_avgrentability.txt"
@@ -113,7 +113,7 @@ initiate_master_multi_year <- function(candidates, exp_options , studies, tmp_fo
   write(script, file = paste0(tmp_folder, "/", in_out_files$candidates))
   
   
-  # 4 - in_candidate_costs.txt
+  # 4 - in_candidate_bis.txt
   script <- ""
   for(i in 1:length(candidates))
   {
@@ -122,7 +122,11 @@ initiate_master_multi_year <- function(candidates, exp_options , studies, tmp_fo
       script <- paste0(script, candidates[[i]]$name, " ", 
                      studies[[s]]$year, " ", 
                      candidates[[i]]$investment_cost[s], " ", 
-                     candidates[[i]]$operation_and_maintenance_cost[s]) 
+                     candidates[[i]]$operation_and_maintenance_cost[s], " ", 
+                     candidates[[i]]$min_installed[s] , " ", 
+                     candidates[[i]]$max_installed[s] , " ", 
+                     candidates[[i]]$already_installed[s]) 
+
                      #, " ", candidates[[i]]$mothball_cost[s])
       
       if(i != length(candidates) | s != length(studies))

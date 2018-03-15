@@ -24,7 +24,7 @@
 #' @importFrom assertthat assert_that
 #' @noRd
 
-write_master_files <- function(folder, output_antares, current_it, candidates, exp_options, x, n_w)
+write_master_files <- function(folder, output_antares, current_it, candidates, exp_options, x)
 {
   # 0. check : 
   assert_that(dir.exists(folder))
