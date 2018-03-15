@@ -24,10 +24,8 @@ read_studies <- function(studies_file_name)
   setwd(dirname(studies_file_name))
   
   # initiate output structure 
-  studies<-list()
-  studies$n_simulated_years<-0
-  studies$simulated_years<-c()
-  studies$opts<-list()
+  studies <-list()
+  n_simulated_years <- 0
   first_line <- 0
   
   #read file
@@ -56,13 +54,15 @@ read_studies <- function(studies_file_name)
       stop("The following antares study does not exist : ", option_value)
     }
     
-    studies$n_simulated_years<-studies$n_simulated_years+1
-    studies$simulated_years<-c(studies$simulated_years,option_name)
+    n_simulated_years<-n_simulated_years+1
+    studies[[n_simulated_years]] <- list()
     
+    studies[[n_simulated_years]]$year <- option_name
+
     id_year=line-first_line
     #id_year=1 for the first non empty line
-    studies$opts[[id_year]]<-setSimulationPath(option_value,simulation=0)
-    assertthat::assert_that(file.exists(studies$opts[[id_year]]$studyPath))
+    studies[[n_simulated_years]]$opts <- setSimulationPath(option_value,simulation=0)
+    assertthat::assert_that(file.exists(studies[[n_simulated_years]]$opts$studyPath))
     
   }
   return(studies)
