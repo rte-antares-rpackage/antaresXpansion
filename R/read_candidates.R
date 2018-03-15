@@ -67,10 +67,10 @@ read_candidates <- function(file, studies = NULL, opts = antaresRead::simOptions
     candidate$lifetime <- NA
     if(!is.null(studies))
     {
-      candidate$investment_cost <- rep(NA, studies$n_simulated_years)
-      candidate$operation_and_maintenance_cost <- rep(NA, studies$n_simulated_years)
-      candidate$mothball_cost <- rep(NA, studies$n_simulated_years)
-      candidate$max_installed <- rep(NA, studies$n_simulated_years)
+      candidate$investment_cost <- rep(NA, length(studies))
+      candidate$operation_and_maintenance_cost <- rep(NA, length(studies))
+      candidate$max_installed <- rep(NA, length(studies))
+      candidate$already_installed <- rep(NA, length(studies))
     }
     
     # read candidate characteristics
@@ -182,6 +182,14 @@ read_candidates <- function(file, studies = NULL, opts = antaresRead::simOptions
         
         assertthat::assert_that(!is.na(as.numeric(option_value)))
         candidate$max_installed[id] <- as.numeric(option_value)
+      }
+      else if (grepl("already-installed-capacity", option_name)) 
+      {
+        id <- identify_horizon(option_name, variable = "already-installed-capacity", studies)
+        if(is.null(id)) next()
+        
+        assertthat::assert_that(!is.na(as.numeric(option_value)))
+        candidate$already_installed[id] <- as.numeric(option_value)
       }
       else if (option_name == "lifetime")
       {
@@ -311,7 +319,7 @@ identify_horizon <- function(option_name, variable , studies)
   if(option_name == variable)
   {
      # syntax : investment_cost = 60000 # cost for all simulated years
-    return(1:studies$n_simulated_years)
+    return(1:length(studies))
   }
   
   # else, syntax investment_cost[2020]
@@ -328,13 +336,13 @@ identify_horizon <- function(option_name, variable , studies)
   year <- as.numeric(t[2])
   assertthat::assert_that(!is.na(year))
   
-  if(!(year %in% studies$simulated_years))
+  if(!(year %in% sapply(studies, FUN = function(x){x$year})))
   {
     warning("In candidates.ini file : '", option_name, " = ...'. Year ", year, " is not part of studies.ini.")
     return(NULL)
   }
   
   # retreive identifier
-  return(which(year == studies$simulated_years))
+  return(which(year == sapply(studies, FUN = function(x){x$year})))
 }
 

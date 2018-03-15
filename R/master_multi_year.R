@@ -76,22 +76,22 @@ initiate_master_multi_year <- function(candidates, exp_options , studies, tmp_fo
   # fill files which will be similar for every iteration of the benders decomposition
   # 1 - in_nmc.txt
   script <- ""
-  for(i in 1:studies$n_simulated_years)
+  for(s in studies)
   {
-    script_t <- paste0(studies$mc_years[[i]], collapse = paste0("\n", studies$simulated_years[[i]], " "))
-    if (i==1) script <- paste0(studies$simulated_years[[i]], " ", script_t)
-    else script <- paste0(script, "\n", studies$simulated_years[[i]], " ", script_t)
+    script_t <- paste0(s$mc_years, collapse = paste0("\n", s$year, " "))
+    if (script == "") script <- paste0(s$year, " ", script_t)
+    else script <- paste0(script, "\n", s$year, " ", script_t)
   }
   
   write(script, file = paste0(tmp_folder, "/", in_out_files$mc))
   
   # 2 - in_nw.txt
   script <- ""
-  for(i in 1:studies$n_simulated_years)
+  for(s in studies)
   {
-    script_t <- paste0(studies$weeks[[i]], collapse = paste0("\n", studies$simulated_years[[i]], " "))
-    if (i==1) script <- paste0(studies$simulated_years[[i]], " ", script_t)
-    else script <- paste0(script, "\n", studies$simulated_years[[i]], " ", script_t)
+    script_t <- paste0(s$weeks, collapse = paste0("\n", s$year, " "))
+    if (script == "") script <- paste0(s$year, " ", script_t)
+    else script <- paste0(script, "\n", s$year, " ", script_t)
   }
   
   write(script, file = paste0(tmp_folder, "/", in_out_files$w))
@@ -117,15 +117,15 @@ initiate_master_multi_year <- function(candidates, exp_options , studies, tmp_fo
   script <- ""
   for(i in 1:length(candidates))
   {
-    for(s in 1:studies$n_simulated_years)
+    for(s in 1:length(studies))
     {
       script <- paste0(script, candidates[[i]]$name, " ", 
-                     studies$simulated_years[s], " ", 
+                     studies[[s]]$year, " ", 
                      candidates[[i]]$investment_cost[s], " ", 
                      candidates[[i]]$operation_and_maintenance_cost[s]) 
                      #, " ", candidates[[i]]$mothball_cost[s])
       
-      if(i != length(candidates) | s != studies$n_simulated_years)
+      if(i != length(candidates) | s != length(studies))
       {
         script <- paste0(script, "\n")
       }
@@ -134,7 +134,7 @@ initiate_master_multi_year <- function(candidates, exp_options , studies, tmp_fo
   write(script, file = paste0(tmp_folder, "/", in_out_files$candidate_costs))
   
   # 5 - in_horizon.txt
-  write(paste0(studies$simulated_years, collapse = " "), file = paste0(tmp_folder, "/", in_out_files$horizon))
+  write(paste0(sapply(studies, FUN = function(x){x$year}), collapse = " "), file = paste0(tmp_folder, "/", in_out_files$horizon))
   
 
 }
