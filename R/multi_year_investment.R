@@ -93,8 +93,8 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
   current_it$n <- 1  # iteration number
   current_it$id <- paste0("it",current_it$n)  # iteration identifier
   current_it$full <- TRUE  # is it an iteration in which we simulate all weeks and all MC years ?
-  current_it$mc_years <- studies$mc_years # identidier of mc years to simulate at this current iteration
-  current_it$weeks <- studies$weeks # identidier of weeks to simulate at this current iteration
+  current_it$mc_years <- lapply(studies, FUN = function(x){x$mc_years}) # identidier of mc years to simulate at this current iteration
+  current_it$weeks <- lapply(studies, FUN = function(x){x$weeks}) # identidier of weeks to simulate at this current iteration
   current_it$cut_type <- exp_options$cut_type # type of cut for this iteration (average, weekly, yearly)
   current_it$need_full <- FALSE # is a complete iteration needed for next step ?
   current_it$last_full <- 1 # last iteration with full simulation
@@ -120,12 +120,12 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     # current_it <- week_selection(current_it, mc_years, weeks, tmp_folder, exp_options)
   
     n_weeks <- 0
-    for(s in 1:studies$n_simulated_years)
+    for(s in 1:length(studies))
     {
       # set simulation period
-      antaresXpansion:::set_simulation_period(current_it$weeks[[s]], studies$opts[[s]])
+      antaresXpansion:::set_simulation_period(current_it$weeks[[s]], studies[[s]]$opts)
       # set playlist
-      antaresEditObject::setPlaylist(current_it$mc_years[[s]], studies$opts[[s]])
+      antaresEditObject::setPlaylist(current_it$mc_years[[s]], studies[[s]]$opts)
       # n_weeks 
       n_weeks <- n_weeks + length(current_it$mc_years[[s]]) * length(current_it$weeks[[s]])
     }
@@ -143,14 +143,17 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     # update studies with current invested capacities on links
     
     
-    for(c in candidates) { for (s in  1:studies$n_simulated_years)
+    for(c in candidates) 
     {
-      new_capacity <- get_capacity_profile(get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n, 
-                                                        horizon = studies$simulated_years[s]), c$link_profile, exp_options$uc_type)
-      # update study
-      update_link(c$link, "direct_capacity", new_capacity , studies$opts[[s]])
-      update_link(c$link, "indirect_capacity", new_capacity, studies$opts[[s]])
-    }}
+      for (s in  studies)
+      {
+        new_capacity <- get_capacity_profile(get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n, 
+                                                          horizon = s$year), c$link_profile, exp_options$uc_type)
+        # update study
+        update_link(c$link, "direct_capacity", new_capacity , s$opts)
+        update_link(c$link, "indirect_capacity", new_capacity, s$opts)
+      }
+    }
     
     
     
@@ -162,14 +165,14 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     
     simulation_name <- paste0("expansion-benders-", unique_key, "-", current_it$id)
     
-    for (s in  1:studies$n_simulated_years)
+    for (s in 1:length(studies))
     {
-      if(display){  cat("   ANTARES simulation running [ year ", studies$simulated_year[s], " ] ... ", sep="")}
+      if(display){  cat("   ANTARES simulation running [ year ", studies[[s]]$year, " ] ... ", sep="")}
       run_simulation(simulation_name, mode = ifelse(exp_options$uc_type == "expansion_accurate", "expansion", "economy"),
-                    path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts = studies$opts[[s]])
+                    path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts = studies[[s]]$opts)
       if(display){  cat("[done] \n", sep="")}
       
-      output_antares[[s]] <- antaresRead::setSimulationPath(paste0(studies$opts[[s]]$studyPath, "/output/", get_whole_simulation_name(simulation_name, opts = studies$opts[[s]])))
+      studies[[s]]$output_antares <- antaresRead::setSimulationPath(paste0(studies[[s]]$opts$studyPath, "/output/", get_whole_simulation_name(simulation_name, opts = studies[[s]]$opts)))
     }
 
     

@@ -70,6 +70,7 @@ read_studies <- function(studies_file_name)
     studies[[n_simulated_years]]$weeks <- first_sim_week:(first_sim_week + studies[[n_simulated_years]]$n_w - 1) # identifier of weeks to simulate for all expansion planning optimisation
     studies[[n_simulated_years]]$mc_years <- antaresEditObject::getPlaylist(studies[[n_simulated_years]]$opts) # identifier of mc years to simulate for all expansion planning optimisation
     studies[[n_simulated_years]]$n_mc <- length(studies[[n_simulated_years]]$mc_years) # number of mc_years
+    studies[[n_simulated_years]]$output_antares <- NA
     #studies[[n_simulated_years]]$all_areas <- antaresRead::getAreas(opts = studies[[n_simulated_years]]$opts) # all area of the first
     
     
