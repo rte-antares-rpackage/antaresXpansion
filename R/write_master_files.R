@@ -15,8 +15,8 @@
 #'   \code{\link{read_options}}.
 #' @param x
 #'   benders data structure
-#' @param n_w
-#'   number of weeks in the study
+#' @param horizon
+#'   horizon of the study
 #' @return 
 #' nothing
 #' 
@@ -24,7 +24,7 @@
 #' @importFrom assertthat assert_that
 #' @noRd
 
-write_master_files <- function(folder, output_antares, current_it, candidates, exp_options, x)
+write_master_files <- function(folder, output_antares, current_it, candidates, exp_options, x, horizon)
 {
   # 0. check : 
   assert_that(dir.exists(folder))
@@ -37,7 +37,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
   script <-  ""
   for (c in 1:n_candidates)
   {
-    script <- paste0(script, current_it$id, " ", candidates[[c]]$name, " ", get_capacity(x$invested_capacities, candidate = candidates[[c]]$name, it = current_it$n))
+    script <- paste0(script, current_it$id, " ", horizon, " ", candidates[[c]]$name, " ", get_capacity(x$invested_capacities, candidate = candidates[[c]]$name, it = current_it$n, horizon = horizon))
     if (c != n_candidates) {script <- paste0(script, "\n")}
   }
   write(script, file = paste0(folder, "/in_z0.txt"), append = TRUE )  
@@ -50,7 +50,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
     assert_that(current_it$full)
 
     # write in_avgcuts.txt file 
-    script  <-  paste0(current_it$id, " ", subset(x$costs, it == current_it$n)$overall_costs)
+    script  <-  paste0(current_it$id, " ", horizon, " ", get_op_costs(output_antares, current_it, exp_options))
     write(script, file = paste0(folder, "/in_avgcuts.txt"), append = TRUE )      
     
     # read Antares data
@@ -73,13 +73,13 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
       if(candidates[[c]]$has_link_profile)
       {
         len = length(subset(output_link_h_s, link == candidates[[c]]$link)$"MARG. COST")
-        tmp_rentability <- sum(as.numeric(subset(output_link_h_s, link == candidates[[c]]$link)$"MARG. COST")*candidates[[c]]$link_profile[1:len]) - candidates[[c]]$cost * n_w / 52
+        tmp_rentability <- sum(as.numeric(subset(output_link_h_s, link == candidates[[c]]$link)$"MARG. COST")*candidates[[c]]$link_profile[1:len])
       }
       else
       {
-        tmp_rentability <- sum(as.numeric(subset(output_link_s, link == candidates[[c]]$link)$"MARG. COST")) - candidates[[c]]$cost * n_w / 52
+        tmp_rentability <- sum(as.numeric(subset(output_link_s, link == candidates[[c]]$link)$"MARG. COST"))
       }
-      script <- paste0(script, current_it$id, " ", candidates[[c]]$name, " ", tmp_rentability)
+      script <- paste0(script, current_it$id, " ", horizon, " ", candidates[[c]]$name, " ", tmp_rentability)
       if (c != n_candidates) { script <- paste0(script, "\n")}
     }
     write(script, file = paste0(folder, "/in_avgrentability.txt"), append = TRUE )
@@ -131,24 +131,22 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
         # part of the ANTARES optimization  
         y_cost <- sum(as.numeric(subset(output_area_y, mcYear == y)$"OV. COST")) +
           sum(as.numeric(subset(output_link_y, mcYear == y)$"HURDLE COST")) -
-          sum(as.numeric(subset(output_area_y, mcYear == y)$"NP COST")) +
-          subset(x$costs, it == current_it$n)$investment_costs
+          sum(as.numeric(subset(output_area_y, mcYear == y)$"NP COST"))
       }
       else if(exp_options$uc_type == "expansion_accurate")
       {
         # in that case, the considered cost is the criterion of the optimization problem (not yet post-treated)
-        y_cost <- sum(as.numeric(subset(criterion, mcYear == y)$"criterion1")) + subset(x$costs, it == current_it$n)$investment_costs
+        y_cost <- sum(as.numeric(subset(criterion, mcYear == y)$"criterion1"))
       }
       else
       {
         # old "fast" and "accurate" mode which shouldn't be used anymore
         y_cost <- sum(as.numeric(subset(output_area_y, mcYear == y)$"OV. COST")) +
-          sum(as.numeric(subset(output_link_y, mcYear == y)$"HURDLE COST")) +
-          subset(x$costs, it == current_it$n)$investment_costs
+          sum(as.numeric(subset(output_link_y, mcYear == y)$"HURDLE COST"))
       }
       
       
-      script_cost <- paste0(script_cost, current_it$id, " ", y , " ",y_cost)
+      script_cost <- paste0(script_cost, current_it$id, " ", horizon, " ", y , " ",y_cost)
       if (y != last_y) {script_cost <- paste0(script_cost, "\n")}
       
       # for every candidate
@@ -158,14 +156,14 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
         {
           # (!!!!) carreful : will no work if number of simulated week is not 52 (???)
           len = length(subset(output_link_h, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")
-          tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")*candidates[[c]]$link_profile[1:len]) - candidates[[c]]$cost * n_w / 52
+          tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")*candidates[[c]]$link_profile[1:len])
         }
         else
         {
-          tmp_rentability <- sum(as.numeric(subset(output_link_y, link == candidates[[c]]$link & mcYear == y)$"MARG. COST")) - candidates[[c]]$cost * n_w / 52
+          tmp_rentability <- sum(as.numeric(subset(output_link_y, link == candidates[[c]]$link & mcYear == y)$"MARG. COST"))
         }
         
-        script_rentability <- paste0(script_rentability, current_it$id, " ", y, " ", candidates[[c]]$name, " ", tmp_rentability)
+        script_rentability <- paste0(script_rentability, current_it$id, " ",horizon, " ",  y, " ", candidates[[c]]$name, " ", tmp_rentability)
         if (c != n_candidates || y != last_y)
         {
           script_rentability <- paste0(script_rentability, "\n")
@@ -228,24 +226,21 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
           # part of the ANTARES optimization  
           w_cost <- sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"OV. COST")) +
             sum(as.numeric(subset(output_link_w, mcYear == y & timeId == w)$"HURDLE COST")) -
-            sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"NP COST")) +
-            subset(x$costs, it == current_it$n)$investment_costs /n_w
+            sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"NP COST"))
         }
         else if(exp_options$uc_type == "expansion_accurate")
         {
           # in that case, the considered cost is the criterion of the optimization problem (not yet post-treated)
-          w_cost <- sum(as.numeric(subset(criterion, mcYear == y & timeId == w)$"criterion1")) + 
-            subset(x$costs, it == current_it$n)$investment_costs /n_w
+          w_cost <- sum(as.numeric(subset(criterion, mcYear == y & timeId == w)$"criterion1"))
         }
         else
         {
           # old "fast" and "accurate" mode which shouldn't be used anymore
           w_cost <- sum(as.numeric(subset(output_area_w, mcYear == y & timeId == w)$"OV. COST")) +
-            sum(as.numeric(subset(output_link_w, mcYear == y & timeId == w)$"HURDLE COST")) +
-            subset(x$costs, it == current_it$n)$investment_costs /n_w
+            sum(as.numeric(subset(output_link_w, mcYear == y & timeId == w)$"HURDLE COST"))
         }
         
-        script_cost <- paste0(script_cost, current_it$id, " ", y , " ", w, " ", w_cost)
+        script_cost <- paste0(script_cost, current_it$id, " ", horizon, " ", y , " ", w, " ", w_cost)
         if (y != last_y || w != last_w) {script_cost <- paste0(script_cost, "\n")}
         
         # for every candidate
@@ -256,14 +251,14 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
             # (!!!!) carreful : will no work if number of simulated week is not 52 (???)
             first_h <- 7*24*(w-1)+1
             last_h <- 7*24*w
-            tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y & timeId >= first_h & timeId <= last_h)$"MARG. COST")* candidates[[c]]$link_profile[first_h:last_h]) - candidates[[c]]$cost /52
+            tmp_rentability <- sum(as.numeric(subset(output_link_h, link == candidates[[c]]$link & mcYear == y & timeId >= first_h & timeId <= last_h)$"MARG. COST")* candidates[[c]]$link_profile[first_h:last_h])
           }
           else
           {
-            tmp_rentability <- sum(as.numeric(subset(output_link_w, link == candidates[[c]]$link & mcYear == y & timeId == w)$"MARG. COST")) - candidates[[c]]$cost /52
+            tmp_rentability <- sum(as.numeric(subset(output_link_w, link == candidates[[c]]$link & mcYear == y & timeId == w)$"MARG. COST")) 
           }
           
-          script_rentability <- paste0(script_rentability, current_it$id, " ", y , " ", w , " ", candidates[[c]]$name, " ", tmp_rentability)
+          script_rentability <- paste0(script_rentability, current_it$id, " ", horizon, " ", y , " ", w , " ", candidates[[c]]$name, " ", tmp_rentability)
           if (c != n_candidates || y != last_y || w != last_w)
           {
             script_rentability <- paste0(script_rentability, "\n")
