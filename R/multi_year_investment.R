@@ -232,9 +232,15 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     # rentability of each investment candidates and on the obtained system
     # costs
     # cuts can be averaged on all MC years, yearly or weekly
-    for(s in studies)
+    write(current_it$id, file = paste0(folder, "/in_iterations.txt"), append = TRUE)  
+    
+    for(s in 1:length(studies))
     {
-       write_master_files(tmp_folder, s$output_antares, current_it, candidates, exp_options, x, n_w)
+      current_it_temp <- current_it
+      current_it_temp$weeks <-current_it$weeks[[s]]
+      current_it_temp$mc_years <- current_it$mc_years[[s]]
+      
+      write_master_files(tmp_folder, studies[[s]]$output_antares, current_it_temp, candidates, exp_options, x, studies[[s]]$year)
     }
     
     
