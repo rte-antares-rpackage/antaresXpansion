@@ -10,11 +10,13 @@
 
 data;
 
+set HORIZON := include in_horizon.txt;
+
 #number of mc years
-set YEAR := include in_mc.txt;
+set YEAR_TEMP := include in_mc.txt;
 
 #number of weeks
-set WEEK := include in_week.txt;
+set WEEK_TEMP := include in_week.txt;
 
 #iteration
 set ITERATION := include in_iterations.txt;
@@ -24,13 +26,14 @@ param z0 := include in_z0.txt ;
 
 
 #investment candidates description
-param : INV_CANDIDATE : c_inv  unit_size max_unit relaxed := include in_candidates.txt ;
+param : INV_CANDIDATE : unit_size max_unit lifetime relaxed := include in_candidates.txt ;
+param : c_inv  c_om min_installed max_installed  already_installed := include in_candidate_bis.txt ;
+
 
 #bender cuts 
 param : AVG_CUT : c0_avg := include in_avgcuts.txt ;
 param : YEARLY_CUT : c0_yearly := include in_yearlycuts.txt ;
 param : WEEKLY_CUT : c0_weekly := include in_weeklycuts.txt ;
-
 
 
 #marg. cost of each investment (as returned by ANTARES)

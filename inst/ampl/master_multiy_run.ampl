@@ -7,34 +7,44 @@
 
 reset;
 
-model master_mod.ampl;    # load model
-data  master_dat.ampl;     # load data
+model master_multiy_mod.ampl;    # load model
+data  master_multiy_dat.ampl;     # load data
 
 # include options
 include in_options.txt;
 
 option solver cbc;    # set solver (should this be an input data which could be set differently ?)
 
+
  # solver master problem
 solve >> out_log.txt;
 
 
+display Installed_capacity;
+display Delta_capa_negative;
+display Delta_capa_positive;
+
 # write results (in the same folder)
 
 printf "" > out_solutionmaster.txt;
-for {z in INV_CANDIDATE}
+for {z in INV_CANDIDATE, h in HORIZON}
 {
-	printf "%s;%f\n", z, Invested_capacity[z] >> out_solutionmaster.txt;
+	printf "%s;%d;%f;%f;%f\n", z, h, Installed_capacity[z,h], Delta_capa_positive[z,h], Delta_capa_negative[z,h] >> out_solutionmaster.txt;
 }
 
 printf "%f\n", master >> out_underestimator.txt;
 
+printf "" > out_invcost.txt;
+for{h in HORIZON}
+{
+	printf " %d;%f\n", h, sum{z in INV_CANDIDATE}(c_inv[z,h] * Delta_capa_positive[z, h] +  Installed_capacity[z,h] * c_om[z,h]) >>  out_invcost.txt
+}
 
 # write theta
 
-for {y in YEAR, w in WEEK}
+for {h in HORIZON, y in YEAR[h], w in WEEK[h]}
 {
-	printf "%s;%s;%s;%f\n", card(ITERATION), y,w, Theta[y,w] >> out_theta.txt;
+	printf "%d,%s;%s;%s;%f\n", card(ITERATION), h, y,w, Theta[h,y,w] >> out_theta.txt;
 }
 
 
