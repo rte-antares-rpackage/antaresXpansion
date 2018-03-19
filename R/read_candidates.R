@@ -59,7 +59,9 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
     candidate$has_link_profile_indirect <- FALSE
     candidate$link_profile <- 1#  data.frame(rep(1,8760))
     candidate$link_profile_indirect <- 1#  data.frame(rep(1,8760))
-    
+    candidate$already_installed_capacity <- 0#     
+    candidate$already_installed_link_profile <- 1#  data.frame(rep(1,8760))
+    candidate$already_installed_link_profile_indirect <- 1#  data.frame(rep(1,8760))
     
     # read candidate characteristics
     for(line in (index[pr]+1):(index[pr+1]-1))
@@ -117,6 +119,11 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
         assertthat::assert_that(!is.na(as.numeric(option_value)))
         candidate$unit_size <- as.numeric(option_value)
       }
+      else if (option_name == "already-installed-capacity")
+      {
+        assertthat::assert_that(!is.na(as.numeric(option_value)))
+        candidate$already_installed_capacity <- as.numeric(option_value)
+      }
       else if (option_name == "link-profile")
       {
         profile_file <- paste0(paste(opts$studyPath,"/user/expansion/capa/", sep=""), option_value)
@@ -144,6 +151,33 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
            candidate$link_profile_indirect <- profile_data1          
          }
           candidate$has_link_profile <- TRUE
+        }
+      }
+      else if (option_name == "already-link-profile")
+      {
+        profile_file <- paste0(paste(opts$studyPath,"/user/expansion/capa/", sep=""), option_value)
+        assert_that(file.exists(profile_file))
+        
+        if (file.info(profile_file)$size !=0) 
+        {
+          # read file
+          profile_data <-  read.table(profile_file, header=FALSE,sep = "\t")
+          
+          profile_data1 <- as.vector(t(profile_data[,c(1)]))
+          assert_that(is.numeric(profile_data1))
+          assert_that(length(profile_data1) %in% c(1,8760))
+          candidate$already_installed_link_profile <- profile_data1
+          if (ncol(profile_data)==2)  
+          {
+            profile_data2 <- as.vector(t(profile_data[,c(2)]))
+            assert_that(is.numeric(profile_data2))
+            assert_that(length(profile_data2) %in% c(1,8760))
+            candidate$already_installed_link_profile_indirect <- profile_data2
+          }
+          else
+          {
+            candidate$already_installed_link_profile_indirect <- profile_data1          
+          }
         }
       }
       else if (option_name == "max-investment")
@@ -177,6 +211,7 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
     assertthat::assert_that(candidate$unit_size >= 0)
     assertthat::assert_that(candidate$max_unit >= 0)
     assertthat::assert_that(candidate$max_invest >= 0)
+    assertthat::assert_that(candidate$already_installed_capacity >= 0)
     assertthat::assert_that(!is.na(candidate$name))
     assertthat::assert_that(!is.na(candidate$link))
     assertthat::assert_that(candidate$link %in% opts$linkList)
