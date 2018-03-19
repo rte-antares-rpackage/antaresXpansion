@@ -38,6 +38,7 @@ initiate_master_multi_year <- function(candidates, exp_options , studies, tmp_fo
   in_out_files$w <- "in_week.txt"
   in_out_files$candidates <- "in_candidates.txt"
   in_out_files$candidate_costs <- "in_candidate_bis.txt"
+  in_out_files$discount_rate <- "in_r.txt"
   in_out_files$iterations  <- "in_iterations.txt"
   in_out_files$z0 <- "in_z0.txt"
   in_out_files$avg_rentability <- "in_avgrentability.txt"
@@ -104,6 +105,7 @@ initiate_master_multi_year <- function(candidates, exp_options , studies, tmp_fo
     script <- paste0(script, candidates[[i]]$name, " ", 
                      candidates[[i]]$unit_size, " ", 
                      candidates[[i]]$max_unit, " ",
+                     candidates[[i]]$lifetime, " ",
                      tolower(as.character(candidates[[i]]$relaxed)))
     if(i != length(candidates))
     {
@@ -139,6 +141,9 @@ initiate_master_multi_year <- function(candidates, exp_options , studies, tmp_fo
   
   # 5 - in_horizon.txt
   write(paste0(sapply(studies, FUN = function(x){x$year}), collapse = " "), file = paste0(tmp_folder, "/", in_out_files$horizon))
+  
+  # 5 - in_r.txt
+  write(exp_options$discount_rate, file = paste0(tmp_folder, "/",  in_out_files$discount_rate))
   
 
 }
