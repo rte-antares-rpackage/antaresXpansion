@@ -39,7 +39,7 @@ read_options <- function(file, opts = antaresRead::simOptions())
   options$week_selection <- FALSE
   options$relaxed_optimality_gap <- "0.01%"
   options$discount_rate <- NA
-  
+  options$ref_year <- NA
   
   # if the file is empty, the default values are kept 
   if(length(param_data) == 0){return(options)}
@@ -163,6 +163,11 @@ read_options <- function(file, opts = antaresRead::simOptions())
         assertthat::assert_that(!is.na(as.numeric(option_value_bis)))
         options$discount_rate <- (as.numeric(option_value_bis)/100)
       }
+    }
+    else if (option_name == "reference-year")
+    {
+      assertthat::assert_that(!is.na(as.numeric(option_value)))
+      options$ref_year <- round(as.numeric(option_value))
     }
     else
     {
