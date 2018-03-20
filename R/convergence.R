@@ -126,3 +126,49 @@ have_capacities_changed <-function(benders_sol, installed_capacities, tol){
   }
   return(TRUE)
 }
+
+
+
+
+#' Check if installed capacities have evolved since previous iteration
+#' 
+#' 
+#' @param benders_sol
+#' capacities returned by master problem
+#' @param installed_capacities
+#' data.table of installed capacities
+#' @param tol
+#' tolerance
+#' @return logical, indicating weither or not the expansion problem has converged within the optimality gap
+#' 
+#' @importFrom assertthat assert_that
+#' @noRd
+#' 
+have_capacities_changed_multi_year <-function(benders_sol, installed_capacities, tol){
+  
+  assertthat::assert_that(tol >=0 )
+  assertthat::assert_that(is.data.frame(installed_capacities))
+  assertthat::assert_that(is.data.frame(benders_sol))
+  assertthat::assert_that(all(c("it", "candidate", "installed") %in% names(installed_capacities)))
+  assertthat::assert_that(all(c("candidate", "installed_capacity")  %in%  names(benders_sol)))
+  
+  # get last iteration number
+  it_last <- max(installed_capacities$it)
+  
+  # get horizons, get candidates
+  horizons <- unique(installed_capacities$year)
+  candidates <- unique(benders_sol$candidate)
+  
+  # check differences between the two tables
+  for(ca in candidates)
+  {
+    for(ho in horizons)
+    {
+      if(abs(subset(installed_capacities, candidate == ca & it == it_last & year == ho)$installed - subset(benders_sol, candidate == ca & horizon == ho)$installed_capacity) > tol)
+      { 
+        return(FALSE)
+      }
+    }
+  }
+  return(TRUE)
+}
