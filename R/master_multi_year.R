@@ -170,10 +170,9 @@ initiate_master_multi_year <- function(candidates, exp_options , studies, tmp_fo
 #' @importFrom assertthat assert_that
 #' @noRd
 #' 
-solve_master_multi_year <- function(opts = antaresRead::simOptions(), relax_integrality = FALSE, ampl_path = NULL)
+solve_master_multi_year <- function(tmp_folder, relax_integrality = FALSE, ampl_path = NULL)
 {
-  tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
-  
+
   if(relax_integrality)
   {
     write("option relax_integrality 1;", file = paste0(tmp_folder, "/in_options.txt"))
@@ -190,12 +189,12 @@ solve_master_multi_year <- function(opts = antaresRead::simOptions(), relax_inte
   
   if(is.null(ampl_path))
   {
-    cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & ampl "', tmp_folder, '/master_run.ampl" ')
+    cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & ampl "', tmp_folder, '/master_multiy_run.ampl" ')
   }
   else
   {
     assertthat::assert_that(file.exists(ampl_path))
-    cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & "', ampl_path ,'" "', tmp_folder, '/master_run.ampl" ')
+    cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & "', ampl_path ,'" "', tmp_folder, '/master_multiy_run.ampl" ')
   }
   a <- shell(cmd, wait = TRUE, intern = TRUE)
 }

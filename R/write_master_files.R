@@ -29,8 +29,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
   # 0. check : 
   assert_that(dir.exists(folder))
   
- 
-  
+
   # 2. write current invested capacity in in_z0.txt
   n_candidates <- length(candidates)
   script <-  ""

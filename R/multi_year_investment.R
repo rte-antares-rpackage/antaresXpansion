@@ -124,9 +124,9 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     for(s in 1:length(studies))
     {
       # set simulation period
-      antaresXpansion:::set_simulation_period(current_it$weeks[[s]], studies[[s]]$opts)
+      set_simulation_period(current_it$weeks[[s]], studies[[s]]$opts)
       # set playlist
-      antaresEditObject::setPlaylist(current_it$mc_years[[s]], studies[[s]]$opts)
+      setPlaylist(current_it$mc_years[[s]], studies[[s]]$opts)
       # n_weeks 
       n_weeks <- n_weeks + length(current_it$mc_years[[s]]) * length(current_it$weeks[[s]])
     }
@@ -183,45 +183,46 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     
     # ---- 4. Assess system costs and marginal rentability of each investment candidate ---- 
     
-    # analyse some outputs of the just finished ANTARES simulation
     
     for (s in studies){
-      
       # compute system operationnal and investment costs 
-      op_cost <- get_op_costs(s$output_antares, current_it, exp_options)
-      #inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost[s] * get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n, horizon = studies$simulated_years[s])}))
-      #inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation
-      #ov_cost <-  op_cost + inv_cost
+      op_cost <- get_op_costs(s$output_antares, current_it, exp_options) / (1 + exp_options$discount_rate)^(as.numeric(s$year) - exp_options$ref_year)
+      if(current_it$n > 1) inv_cost <- subset(benders_cost, horizon == s$year)$investment_costs
+      else inv_cost <- Inf
       
       # update output structure
-      x$costs <- rbind(x$costs, data.frame(
+      x$costs_detailled <- rbind(x$costs_detailled, data.frame(
         it = current_it$n,
-        year = studies$year,
-        investment_costs = NA,
+        year = s$year,
+        investment_costs = inv_cost,
         operation_costs = op_cost,
-        overall_costs = NA
+        overall_costs = inv_cost+op_cost
       ))
     }
+    x$costs <- rbind(x$costs, data.frame(
+      it = current_it$n,
+      investment_costs = sum(subset(x$costs_detailled, it == current_it$n )$investment_costs),
+      operation_costs = sum(subset(x$costs_detailled, it == current_it$n )$operation_costs),
+      overall_costs = sum(subset(x$costs_detailled, it == current_it$n )$investment_costs) + sum(subset(x$costs_detailled, it == current_it$n )$operation_costs)
+    ))
     
-    # if(current_it$full)
-    # {
-    #   # check if the current iteration provides the best solution
-    #   if(ov_cost <= min(x$costs$overall_costs, na.rm = TRUE)) {best_solution <- current_it$n}
-    # }
-    
-    # compute average rentability of each candidate 
-    # x$rentability[[current_it$id]] <- get_expected_rentability(s$output_antares, current_it, candidates, n_w)
-    
+   
+    if(current_it$full)
+    {
+      # check if the current iteration provides the best solution
+      if(subset(x$costs, it == current_it$n)$overall_costs <= min(x$costs$overall_costs, na.rm = TRUE)) {best_solution <- current_it$n}
+    }
+   
     # compute lole for each area
     # x$digest[[current_it$id]] <- get_digest(output_antares, current_it)
     
-    
     # print results of the ANTARES simulation
-    # if(display & current_it$full)
-    # {
-    #   for (c in candidates){cat( "     . ", c$name, " -- ", get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n), " invested MW -- rentability = ", round(x$rentability[c$name, current_it$id]/1000), "ke/MW \n" , sep="")}
-    #   cat("--- op.cost = ", op_cost/1000000, " Me --- inv.cost = ", inv_cost/1000000, " Me --- ov.cost = ", ov_cost/1000000, " Me ---\n")
-    # }
+    if(display)
+    {
+      cat("--- it", current_it$n, " : investment cost = ", subset(x$costs, it == current_it$n)$investment_costs/1000000, 
+          " Me --- operation costs = ", subset(x$costs, it == current_it$n)$operation_costs/1000000, 
+          " Me --- overall costs = ", subset(x$costs, it == current_it$n)$overall_costs/1000000, " Me\n", sep = "") 
+    }
     
     
     
@@ -232,7 +233,7 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     # rentability of each investment candidates and on the obtained system
     # costs
     # cuts can be averaged on all MC years, yearly or weekly
-    write(current_it$id, file = paste0(folder, "/in_iterations.txt"), append = TRUE)  
+    write(current_it$id, file = paste0(tmp_folder, "/in_iterations.txt"), append = TRUE)  
     
     for(s in 1:length(studies))
     {
@@ -249,23 +250,25 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     # solve master optimisation problem (using AMPL) and read results of
     # this problem
     
-    # if option "integer" has been chosen, should the integrality be added ?
-    if(exp_options$master == "integer" && !first_iteration && relax_integrality)
-    {
-      if(convergence_relaxed(best_sol = min(x$costs$overall_costs, na.rm = TRUE), best_under_estimator, exp_options))
-      {
-        relax_integrality <- FALSE
-        # reintialize ov.cost and op.costs (which are not admissible because computed with relaxed investments decisions)
-        x$costs$operation_costs <- rep(NA, nrow(x$costs))
-        x$costs$overall_costs <- rep(NA, nrow(x$costs))
-        current_it$need_full <- TRUE
-        
-        if (display){cat("--- ADDITION of INTEGER variables into investment decisions --- \n")}
-      }
-    }
+    # # if option "integer" has been chosen, should the integrality be added ?
+    # if(exp_options$master == "integer" && !first_iteration && relax_integrality)
+    # {
+    #    if(convergence_relaxed(best_sol = min(x$costs$overall_costs, na.rm = TRUE), best_under_estimator, exp_options))
+    #    {
+    #      relax_integrality <- FALSE
+    #      # reintialize ov.cost and op.costs (which are not admissible because computed with relaxed investments decisions)
+    #      x$costs$operation_costs <- rep(NA, nrow(x$costs))
+    #      x$costs$overall_costs <- rep(NA, nrow(x$costs))
+    #     current_it$need_full <- TRUE
+    #     
+    #     if (display){cat("--- ADDITION of INTEGER variables into investment decisions --- \n")}
+    #   }
+    # }
     
     # run AMPL with system command
-    log <- solve_master(opts, relax_integrality, ampl_path)
+    if(display){  cat("   Solve master problem ... ", sep="")}
+    log <- solve_master_multi_year(tmp_folder, relax_integrality)
+    if(display){  cat("[done] \n", sep="")}
     
     # load AMPL output
     #     - underestimator
@@ -273,11 +276,14 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     best_under_estimator <-  max(x$under_estimator)
     
     #    - investment solution
-    benders_sol <-  read.table(paste0(tmp_folder,"/out_solutionmaster.txt"), sep =";", col.names = c("candidate", "value"))
-    if(display)
-    {
-      cat("--- lower bound on ov.cost = ", best_under_estimator/1000000 ," Me --- best solution (it", best_solution, ") = ", subset(x$costs, it == best_solution)$overall_costs/1000000   ,"Me \n")
-    }
+    benders_sol <-  read.table(paste0(tmp_folder,"/out_solutionmaster.txt"), sep =";", col.names = c("candidate", "horizon", "installed_capacity", "investment", "decommissioning"))
+    benders_cost <- read.table(paste0(tmp_folder,"/out_invcost.txt"), sep =";", col.names = c("horizon", "investment_costs"))
+
+
+    
+    
+    if(display) cat("--- lower bound on ov.cost = ", best_under_estimator/1000000 ," Me --- best solution (it", best_solution, ") = ", subset(x$costs, it == best_solution)$overall_costs/1000000   ,"Me \n")
+    
     
     
     # ---- 7. Check convergence ---- 
@@ -296,7 +302,7 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
       # if master problem solution didn't evolve at this (full) iteration, then the decomposition has
       # converged
       
-      if(have_capacities_changed(benders_sol, x$invested_capacities, tol = 0.05))
+      if(have_capacities_changed_multi_year(benders_sol, x$invested_capacities, tol = 0.05))
       {
         if(current_it$full)
         { 
