@@ -153,7 +153,7 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
           candidate$has_link_profile <- TRUE
         }
       }
-      else if (option_name == "already-link-profile")
+      else if (option_name == "already-installed-link-profile")
       {
         profile_file <- paste0(paste(opts$studyPath,"/user/expansion/capa/", sep=""), option_value)
         assert_that(file.exists(profile_file))
