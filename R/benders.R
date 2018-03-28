@@ -221,7 +221,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     }
     
     # compute average rentability of each candidate 
-    x$rentability[[current_it$id]] <- get_expected_rentability(output_antares, current_it, candidates, n_w)
+    x$rentability[[current_it$id]] <- get_expected_rentability(output_antares, current_it, candidates, n_w, x)
     
     # compute lole for each area
     x$digest[[current_it$id]] <- get_digest(output_antares, current_it)

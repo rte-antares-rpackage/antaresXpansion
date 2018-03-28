@@ -9,15 +9,26 @@
 #'   \code{\link{read_candidates}}
 #' @param n_w
 #'   number of weeks in the study
+#' @param x
+#'   data structure of the benders decomposition
 #' @return 
 #' vector of rentability
 #' 
 #' @importFrom antaresRead readAntares 
 #' @noRd
 
-get_expected_rentability <- function(output_antares, current_it, candidates, n_w)
+get_expected_rentability <- function(output_antares, current_it, candidates, n_w, x)
 {
   n_candidates <- length(candidates)
+  capa_zero <- data.frame(link = 0, capa = 0 )
+  for (c in 1:n_candidates)
+  {
+    capacite <- antaresXpansion:::get_capacity(x$invested_capacities, candidate = candidates[[c]]$name, it = current_it$n)
+    temp <- data.frame(link = candidates[[c]]$link, capa = capacite)
+    capa_zero <- rbind(capa_zero, temp)
+  }
+  capa_zero <- capa_zero[-1,]  
+
   if(!current_it$full)
   {
     # in case of a partial iteration, expected rentability over all weeks 
@@ -42,18 +53,31 @@ get_expected_rentability <- function(output_antares, current_it, candidates, n_w
       if (length(with_profile_indirect(candidates)) > 0 )
       {
         
-        output_link_h_s_i = readAntares(areas = NULL, links = with_profile_indirect(candidates), mcYears = NULL, 
+        output_link_h_s_i = readAntares(areas = NULL, links = with_profile_indirect(candidates), mcYears = current_it$mc_years, 
                                       timeStep = "hourly", opts = output_antares, showProgress = FALSE,
                                       select = "MARG. COST")
-      
-      output_link_h_s_flux = readAntares(areas = NULL, links = with_profile_indirect(candidates), mcYears = NULL, 
+        
+      # distinction between rentability in direct and indirect way (in "average" cut_type, it's necessary to come back to year_by_year value and averaged the rentability only at the end) :
+      output_link_h_s_flux = readAntares(areas = NULL, links = with_profile_indirect(candidates), mcYears = current_it$mc_years, 
                                          timeStep = "hourly", opts = output_antares, showProgress = FALSE,
                                          select = "FLOW LIN.")
-      
       output_link_h_s_direct <- output_link_h_s_i
-      output_link_h_s_direct$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." < 0)]= 0
       output_link_h_s_indirect <- output_link_h_s_i
+      output_link_h_s_direct$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." < 0)]= 0
       output_link_h_s_indirect$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." > 0)]= 0
+      
+      # when FLOW LIN == 0 : "MARG. COST" can be different from 0 if (x$invested_capacities == 0) or if (x$invested_capacities !=0 and link_profile[direct or indirect] = 0) :
+      # - if x$invested_capacities == 0 : "MARG. COST" is counted twice in both direct way and indirect way
+      # - if x$invested_capacities !=0 and link_profile[direct or indirect] == 0 : "MARG. COST" is set to 0 
+      output_link_h_s_direct <-  merge( output_link_h_s_direct, capa_zero , by = "link")
+      output_link_h_s_direct$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." == 0 & output_link_h_s_direct$"capa"!=0)]= 0
+      output_link_h_s_indirect$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." == 0 & output_link_h_s_direct$"capa"!=0)]= 0
+      # average rentability over the mc_years :
+      output_link_h_s_direct <- output_link_h_s_direct[, mean(`MARG. COST`), by = c("link","timeId","time","day","month","hour")]
+      colnames(output_link_h_s_direct )[7] <- "MARG. COST"
+      output_link_h_s_indirect <- output_link_h_s_indirect[, mean(`MARG. COST`), by = c("link","timeId","time","day","month","hour")]
+      colnames(output_link_h_s_indirect )[7] <- "MARG. COST"
+      
       }
     }
     # synthetic results for other candidates 
