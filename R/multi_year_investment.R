@@ -186,7 +186,8 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     
     for (s in studies){
       # compute system operationnal and investment costs 
-      op_cost <- get_op_costs(s$output_antares, current_it, exp_options) / (1 + exp_options$discount_rate)^(as.numeric(s$year) - exp_options$ref_year)
+      #op_cost <- get_op_costs(s$output_antares, current_it, exp_options) / (1 + exp_options$discount_rate)^(as.numeric(s$year) - exp_options$ref_year)
+      op_cost <- get_op_costs(s$output_antares, current_it, exp_options) 
       if(current_it$n > 1) inv_cost <- subset(benders_cost, horizon == s$year)$investment_costs
       else inv_cost <- Inf
       
@@ -347,24 +348,21 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     if(!has_converged && current_it$n <= exp_options$max_iteration)
     {
       new_capacity <- data.frame(
-        it = rep(current_it$n, n_candidates),
-        year = rep(horizon,n_candidates),
+        it = rep(current_it$n, nrow(benders_sol)),
+        year = benders_sol$horizon,
         candidate = benders_sol$candidate,
-        value = benders_sol$value
+        value = benders_sol$installed_capacity,
+        installed = benders_sol$installed_capacity,
+        invested = benders_sol$investment,
+        decommissioned = benders_sol$decommissioning
       )
       x$invested_capacities <- rbind(x$invested_capacities, new_capacity)
     }
     
-    
     # ---- 9. Clean ANTARES output ----
-    if(clean) { clean_output_benders(best_solution, unique_key, opts)}
-    
-    
-    
-    
-    
+    if(clean) { for(s in studies) clean_output_benders(best_solution, unique_key, s$opts)}
   }
   
-  
+  return(x)
 
 }
