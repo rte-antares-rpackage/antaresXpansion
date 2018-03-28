@@ -83,8 +83,8 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
                                            select = "FLOW LIN.")
         output_link_h_s_direct <- output_link_h_s_i
         output_link_h_s_indirect <- output_link_h_s_i
-        output_link_h_s_direct$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." <= 0)]= 0
-        output_link_h_s_indirect$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." >= 0)]= 0
+        output_link_h_s_direct$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." < 0)]= 0
+        output_link_h_s_indirect$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." > 0)]= 0
         
         # when FLOW LIN == 0 : "MARG. COST" can be different from 0 if (x$invested_capacities == 0) or if (x$invested_capacities !=0 and link_profile[direct or indirect] = 0) :
         # - if x$invested_capacities == 0 : "MARG. COST" is counted twice in both direct way and indirect way
