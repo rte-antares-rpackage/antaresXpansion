@@ -137,20 +137,30 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
           profile_data1 <- as.vector(t(profile_data[,c(1)]))
           assert_that(is.numeric(profile_data1))
           assert_that(length(profile_data1) %in% c(1,8760))
-          candidate$link_profile <- profile_data1
+          
          if (ncol(profile_data)==2)  
          {
            profile_data2 <- as.vector(t(profile_data[,c(2)]))
            assert_that(is.numeric(profile_data2))
            assert_that(length(profile_data2) %in% c(1,8760))
-           candidate$link_profile_indirect <- profile_data2
-           candidate$has_link_profile_indirect <- TRUE
+           if(!isTRUE(all.equal(unique(profile_data1),1)) || !isTRUE(all.equal(unique(profile_data2),1)) )
+           {
+             candidate$link_profile_indirect <- profile_data2
+             candidate$has_link_profile_indirect <- TRUE
+             candidate$link_profile <- profile_data1
+             candidate$has_link_profile <- TRUE
+           }
          }
          else
-         {
-           candidate$link_profile_indirect <- profile_data1          
+         { 
+           if(!isTRUE(all.equal(unique(profile_data1),1)))
+           {
+             candidate$link_profile <- profile_data1
+             candidate$link_profile_indirect <- profile_data1
+             candidate$has_link_profile <- TRUE
+           }
          }
-          candidate$has_link_profile <- TRUE
+          
         }
       }
       else if (option_name == "already-installed-link-profile")
