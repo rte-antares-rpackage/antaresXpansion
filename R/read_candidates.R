@@ -65,6 +65,7 @@ read_candidates <- function(file, studies = NULL, opts = antaresRead::simOptions
     
     # the next parameters are only used when multi-year investment is made
     candidate$lifetime <- NA
+    candidate$expected_rentability <- NA
     if(!is.null(studies))
     {
       candidate$investment_cost <- rep(NA, length(studies))
@@ -204,6 +205,23 @@ read_candidates <- function(file, studies = NULL, opts = antaresRead::simOptions
       {
         assertthat::assert_that(!is.na(as.numeric(option_value)))
         candidate$lifetime <- round(as.numeric(option_value))
+      }
+      else if (option_name == "expected-rentability")
+      {
+        # if the value is numeric, it is the percentage (example:0.08)
+        if (!is.na(suppressWarnings(as.numeric(option_value)))) 
+        {
+          candidate$expected_rentability <- as.numeric(option_value)
+        }
+        # else, the expected rentability is given as a percentage (e.g 5.5 %) 
+        else
+        {
+          option_value <- gsub(" ", "", option_value, fixed = TRUE) 
+          assertthat::assert_that(grepl("%$", option_value)) 
+          option_value_bis <- gsub("%$", "", option_value) 
+          assertthat::assert_that(!is.na(as.numeric(option_value_bis)))
+          candidate$expected_rentability <- (as.numeric(option_value_bis)/100)
+        }
       }
       else
       {
