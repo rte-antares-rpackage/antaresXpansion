@@ -46,6 +46,11 @@ set WEEKLY_CUT within {ITERATION, HORIZON, ALL_YEAR, ALL_WEEK} ;
 #--- PARAMETERS ----
 #-------------------
 
+# discount rate
+param r; # discount rate
+param ref_year; # reference year
+param actuation_coefficient {h in HORIZON} :=  1/(1+r)^(h - ref_year);
+
 # investment candidates
 param c_inv{INV_CANDIDATE, HORIZON};      	# investment costs 
 param c_om{INV_CANDIDATE, HORIZON};      	# operation and maintenance costs
@@ -94,7 +99,9 @@ var Theta{h in HORIZON, YEAR[h], WEEK[h]};
 #-----------
 
 # objective :
-minimize master : sum{z in INV_CANDIDATE, h in HORIZON} ( c_inv[z,h] * Delta_capa_positive[z, h] +  Installed_capacity[z,h] * c_om[z,h]) + sum{h in HORIZON, y in YEAR[h], w in WEEK[h]} (prob[h,y] * Theta[h,y,w]);
+minimize master : sum{h in HORIZON}( actuation_coefficient[h] *   
+                  sum{z in INV_CANDIDATE} (c_inv[z,h] * Delta_capa_positive[z, h] +  Installed_capacity[z,h] * c_om[z,h]) + 
+                  sum{y in YEAR[h], w in WEEK[h]} (prob[h,y] * Theta[h,y,w]));
 
 # description of invested capacity :		 
 subject to integer_constraint{z in INV_CANDIDATE, h in HORIZON : relaxed[z] != "true"} : Installed_capacity[z,h] = unit_size[z] * N_invested[z,h];		 

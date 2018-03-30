@@ -24,6 +24,9 @@ set ITERATION := include in_iterations.txt;
 #invested capacity in the simulated iterations
 param z0 := include in_z0.txt ;
 
+# discount rate
+param  r := include in_r.txt ;
+param ref_year := include in_refyear.txt ;
 
 #investment candidates description
 param : INV_CANDIDATE : unit_size max_unit lifetime relaxed := include in_candidates.txt ;
