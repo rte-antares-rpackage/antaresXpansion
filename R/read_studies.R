@@ -57,7 +57,7 @@ read_studies <- function(studies_file_name)
     n_simulated_years<-n_simulated_years+1
     studies[[n_simulated_years]] <- list()
     
-    studies[[n_simulated_years]]$year <- option_name
+    studies[[n_simulated_years]]$year <- as.numeric(option_name)
 
     id_year=line-first_line
     #id_year=1 for the first non empty line

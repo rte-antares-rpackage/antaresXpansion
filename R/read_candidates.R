@@ -73,6 +73,7 @@ read_candidates <- function(file, studies = NULL, opts = antaresRead::simOptions
       candidate$max_installed <- rep(NA, length(studies))
       candidate$min_installed <- rep(0, length(studies))
       candidate$already_installed <- rep(0, length(studies))
+ 
     }
     
     # read candidate characteristics

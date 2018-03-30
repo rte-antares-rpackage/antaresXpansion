@@ -123,7 +123,7 @@ initiate_master_multi_year <- function(candidates, exp_options , studies, tmp_fo
     {
       script <- paste0(script, candidates[[i]]$name, " ", 
                      studies[[s]]$year, " ", 
-                     candidates[[i]]$investment_cost[s], " ", 
+                     candidates[[i]]$apparent_cost[s], " ", 
                      candidates[[i]]$operation_and_maintenance_cost[s], " ", 
                      candidates[[i]]$min_installed[s] , " ", 
                      candidates[[i]]$max_installed[s] , " ", 

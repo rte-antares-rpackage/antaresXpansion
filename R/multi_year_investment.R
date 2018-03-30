@@ -32,7 +32,6 @@
 multi_year_investment <- function(path_solver, directory_path = getwd(), display = TRUE, report = TRUE, clean = TRUE, parallel = TRUE)
 {
   
-  
   # ---- 0. initialize benders iteration ----
   
   # read studies.ini file
@@ -50,9 +49,10 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     exp_options <- read_options(file = paste0(directory_path,"/settings.ini"), opts = s$opts)
     candidates <- read_candidates(file = paste0(directory_path,"/candidates.ini"), studies = studies, opts = s$opts)
   }
-    
+  
   n_candidates <- length(candidates)
   assertthat::assert_that(n_candidates > 0)
+  candidates <- get_apparent_cost(candidates, exp_options, studies)
   
   # if all investments are distributed (no integer variables), relax master problem
   if(all(sapply(candidates, FUN = function(c){return(c$relaxed)})))
