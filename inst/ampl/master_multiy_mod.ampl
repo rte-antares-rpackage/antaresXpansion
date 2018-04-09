@@ -99,7 +99,7 @@ var Theta{h in HORIZON, YEAR[h], WEEK[h]};
 #-----------
 
 # objective :
-minimize master : sum{h in HORIZON}( actuation_coefficient[h] *   
+minimize master : sum{h in HORIZON} actuation_coefficient[h] * (  
                   sum{z in INV_CANDIDATE} (c_inv[z,h] * Delta_capa_positive[z, h] +  Installed_capacity[z,h] * c_om[z,h]) + 
                   sum{y in YEAR[h], w in WEEK[h]} (prob[h,y] * Theta[h,y,w]));
 

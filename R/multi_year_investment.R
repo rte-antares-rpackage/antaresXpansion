@@ -186,8 +186,7 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     
     for (s in studies){
       # compute system operationnal and investment costs 
-      #op_cost <- get_op_costs(s$output_antares, current_it, exp_options) / (1 + exp_options$discount_rate)^(as.numeric(s$year) - exp_options$ref_year)
-      op_cost <- get_op_costs(s$output_antares, current_it, exp_options) 
+      op_cost <- get_op_costs(s$output_antares, current_it, exp_options) / (1 + exp_options$discount_rate)^(as.numeric(s$year) - exp_options$ref_year)
       if(current_it$n > 1) inv_cost <- subset(benders_cost, horizon == s$year)$investment_costs
       else inv_cost <- Inf
       

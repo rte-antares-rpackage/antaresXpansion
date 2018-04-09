@@ -37,7 +37,7 @@ printf "%f\n", master >> out_underestimator.txt;
 printf "" > out_invcost.txt;
 for{h in HORIZON}
 {
-	printf " %d;%f\n", h, sum{z in INV_CANDIDATE}(c_inv[z,h] * Delta_capa_positive[z, h] +  Installed_capacity[z,h] * c_om[z,h]) >>  out_invcost.txt
+	printf " %d;%f\n", h, actuation_coefficient[h] * sum{z in INV_CANDIDATE}(c_inv[z,h] * Delta_capa_positive[z, h] +  Installed_capacity[z,h] * c_om[z,h]) >>  out_invcost.txt
 }
 
 # write theta
