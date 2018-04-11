@@ -61,7 +61,7 @@ get_expected_rentability <- function(output_antares, current_it, candidates, n_w
         
         output_link_h_s_i = readAntares(areas = NULL, links = with_profile_indirect(candidates), mcYears = current_it$mc_years, 
                                       timeStep = "hourly", opts = output_antares, showProgress = FALSE,
-                                      select = "MARG. COST")
+                                      select = c("MARG. COST", "FLOW LIN."))
         output_link_w_s_i = readAntares(areas = NULL, links = with_profile_indirect(candidates), mcYears = current_it$mc_years, 
                                         timeStep = "weekly", opts = output_antares, showProgress = FALSE,
                                         select = "MARG. COST")
@@ -70,29 +70,28 @@ get_expected_rentability <- function(output_antares, current_it, candidates, n_w
                                         select = "MARG. COST")        
         
         
+
         # distinction between rentability in direct and indirect way (in "average" cut_type, it's necessary to come back to year_by_year value and averaged the rentability only at the end) :
-        output_link_h_s_flux = readAntares(areas = NULL, links = with_profile_indirect(candidates), mcYears = current_it$mc_years, 
-                                           timeStep = "hourly", opts = output_antares, showProgress = FALSE,
-                                           select = "FLOW LIN.")
-        output_link_h_s_direct <- output_link_h_s_i
-        output_link_h_s_indirect <- output_link_h_s_i
-        output_link_h_s_direct$sens <- 0
-        output_link_h_s_indirect$sens <- 0
-        output_link_h_s_direct$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." < 0)]= 0
-        output_link_h_s_direct$sens[which(output_link_h_s_flux$"FLOW LIN." > 0)]= 1
-        output_link_h_s_indirect$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." > 0)]= 0
-        output_link_h_s_indirect$sens[which(output_link_h_s_flux$"FLOW LIN." < 0)]= 1
+        
+        output_link_h_s_i$`MARG. COST DIRECT`<- output_link_h_s_i$"MARG. COST"
+        output_link_h_s_i$sens_direct <- 0        
+        output_link_h_s_i$`MARG. COST INDIRECT`<- output_link_h_s_i$"MARG. COST"
+        output_link_h_s_i$sens_indirect <- 0        
+        output_link_h_s_i$"MARG. COST DIRECT"[which(output_link_h_s_i$"FLOW LIN." < 0)]= 0
+        output_link_h_s_i$sens_direct[which(output_link_h_s_i$"FLOW LIN." > 0)]= 1
+        output_link_h_s_i$"MARG. COST INDIRECT"[which(output_link_h_s_i$"FLOW LIN." > 0)]= 0
+        output_link_h_s_i$sens_indirect[which(output_link_h_s_i$"FLOW LIN." < 0)]= 1
         
         # when FLOW LIN == 0 : "MARG. COST" can be different from 0 if (x$invested_capacities == 0) or if (x$invested_capacities !=0 and link_profile[direct or indirect] = 0) :
         # - if x$invested_capacities == 0 : "MARG. COST" is counted twice in both direct way and indirect way
         # - if x$invested_capacities !=0 and link_profile[direct or indirect] == 0 : "MARG. COST" is set to 0
-        output_link_h_s_direct$sens[which(output_link_h_s_direct$"capa" == 0 )] = 1
-        output_link_h_s_indirect$sens[which(output_link_h_s_indirect$"capa" == 0 )] = 1
-        output_link_h_s_direct <-  merge( output_link_h_s_direct, capa_zero , by = "link")
-        output_link_h_s_direct$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." == 0 & output_link_h_s_direct$"capa"!=0)]= 0
-        output_link_h_s_direct$sens[which(output_link_h_s_flux$"FLOW LIN." == 0 & output_link_h_s_direct$"capa"!=0 & output_link_h_s_direct$"MARG. COST" == 0)]= 1
-        output_link_h_s_indirect$"MARG. COST"[which(output_link_h_s_flux$"FLOW LIN." == 0 & output_link_h_s_direct$"capa"!=0)]= 0
-        output_link_h_s_indirect$sens[which(output_link_h_s_flux$"FLOW LIN." == 0 & output_link_h_s_direct$"capa"!=0 & output_link_h_s_indirect$"MARG. COST" == 0)]= 1
+        output_link_h_s_i <-  merge(output_link_h_s_i, capa_zero , by = "link")
+        output_link_h_s_i$sens_direct[which(output_link_h_s_i$"capa" == 0 )] = 1
+        output_link_h_s_i$sens_indirect[which(output_link_h_s_i$"capa" == 0 )] = 1
+        output_link_h_s_i$"MARG. COST DIRECT"[which(output_link_h_s_i$"FLOW LIN." == 0 & output_link_h_s_i$"capa"!=0)]= 0
+        output_link_h_s_i$sens_direct[which(output_link_h_s_i$"FLOW LIN." == 0 & output_link_h_s_i$"capa"!=0 & output_link_h_s_i$"MARG. COST" == 0)]= 1
+        output_link_h_s_i$"MARG. COST INDIRECT"[which(output_link_h_s_i$"FLOW LIN." == 0 & output_link_h_s_i$"capa"!=0)]= 0
+        output_link_h_s_i$sens_indirect[which(output_link_h_s_i$"FLOW LIN." == 0 & output_link_h_s_i$"capa"!=0 & output_link_h_s_i$"MARG. COST" == 0)]= 1
         # average rentability over the mc_years :
         #output_link_h_s_direct <- output_link_h_s_direct[, mean(`MARG. COST`), by = c("link","timeId","time","day","month","hour")]
         #colnames(output_link_h_s_direct )[7] <- "MARG. COST"
@@ -151,7 +150,7 @@ get_expected_rentability <- function(output_antares, current_it, candidates, n_w
         for(y in current_it$mc_years)
         {
           # if link_profile is constant during the 8760 hours, we prefer extract annual values from Antares (better rounding)          
-          if(length(unique(c$link_profile))==1 && sum(subset(output_link_h_s_direct, mcYear == y)$sens) == 8736)
+          if(length(unique(c$link_profile))==1 && sum(subset(output_link_h_s, mcYear == y)$sens_direct) == 8736)
           {
             tmp_rentability_direct <- tmp_rentability_direct + as.numeric(subset(output_link_y_s_i, link == c$link & mcYear == y)$"MARG. COST"*unique(c$link_profile))
           }
@@ -162,19 +161,19 @@ get_expected_rentability <- function(output_antares, current_it, candidates, n_w
               first_h <- 7*24*(w-1)+1
               last_h <- 7*24*w
               # if link_profile is constant during a week, we prefer extract weekly values from Antares (better rounding)
-              if (length(unique(c$link_profile[first_h:last_h]))==1 && sum(subset(output_link_h_s_direct,mcYear == y )$sens[first_h:last_h]) == 168)
+              if (length(unique(c$link_profile[first_h:last_h]))==1 && sum(subset(output_link_h_s_i,mcYear == y )$sens_direct[first_h:last_h]) == 168)
               {
                 tmp_rentability_direct <-  tmp_rentability_direct + as.numeric(subset(output_link_w_s_i, link == c$link & timeId == w  & mcYear == y)$"MARG. COST"*unique(c$link_profile[first_h:last_h]))
               }
               else
               {
-                tmp_rentability_direct <- tmp_rentability_direct + sum(as.numeric(subset(output_link_h_s_direct, link == c$link & timeId >= first_h & timeId <= last_h & mcYear == y)$"MARG. COST")*c$link_profile[first_h:last_h])
+                tmp_rentability_direct <- tmp_rentability_direct + sum(as.numeric(subset(output_link_h_s_i, link == c$link & timeId >= first_h & timeId <= last_h & mcYear == y)$"MARG. COST DIRECT")*c$link_profile[first_h:last_h])
               }
             }
           }  
           
           ###### # Indirect :          
-          if(length(unique(c$link_profile_indirect))==1 &&  sum(subset(output_link_h_s_indirect, mcYear == y)$sens) == 8736)
+          if(length(unique(c$link_profile_indirect))==1 &&  sum(subset(output_link_h_s_i, mcYear == y)$sens_indirect) == 8736)
           {
             tmp_rentability_indirect <-  as.numeric(subset(output_link_y_s_i, link == c$link & mcYear == y)$"MARG. COST"*unique(c$link_profile_indirect))
           }
@@ -185,13 +184,13 @@ get_expected_rentability <- function(output_antares, current_it, candidates, n_w
               first_h <- 7*24*(w-1)+1
               last_h <- 7*24*w
               # if link_profile is constant during a week, we prefer extract weekly values from Antares (better rounding)
-              if (length(unique(c$link_profile_indirect[first_h:last_h]))==1 && sum(subset(output_link_h_s_indirect,mcYear == y )$sens[first_h:last_h]) == 168)
+              if (length(unique(c$link_profile_indirect[first_h:last_h]))==1 && sum(subset(output_link_h_s_i,mcYear == y )$sens_indirect[first_h:last_h]) == 168)
               {
                 tmp_rentability_indirect <-  tmp_rentability_indirect + as.numeric(subset(output_link_w_s_i, link == c$link & timeId == w  & mcYear == y)$"MARG. COST"*unique(c$link_profile_indirect[first_h:last_h]))
               }
               else
               {
-                tmp_rentability_indirect <- tmp_rentability_indirect + sum(as.numeric(subset(output_link_h_s_indirect, link == c$link & timeId >= first_h & timeId <= last_h  & mcYear == y)$"MARG. COST")*c$link_profile_indirect[first_h:last_h])
+                tmp_rentability_indirect <- tmp_rentability_indirect + sum(as.numeric(subset(output_link_h_s_i, link == c$link & timeId >= first_h & timeId <= last_h  & mcYear == y)$"MARG. COST INDIRECT")*c$link_profile_indirect[first_h:last_h])
               }
             }
           }
