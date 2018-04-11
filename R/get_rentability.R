@@ -150,7 +150,7 @@ get_expected_rentability <- function(output_antares, current_it, candidates, n_w
         for(y in current_it$mc_years)
         {
           # if link_profile is constant during the 8760 hours, we prefer extract annual values from Antares (better rounding)          
-          if(length(unique(c$link_profile))==1 && sum(subset(output_link_h_s, mcYear == y)$sens_direct) == 8736)
+          if(length(unique(c$link_profile))==1 && sum(subset(output_link_h_s_i, mcYear == y)$sens_direct) == 8736)
           {
             tmp_rentability_direct <- tmp_rentability_direct + as.numeric(subset(output_link_y_s_i, link == c$link & mcYear == y)$"MARG. COST"*unique(c$link_profile))
           }
