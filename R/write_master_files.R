@@ -483,7 +483,6 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
                                       timeStep = "hourly", opts = output_antares, showProgress = FALSE,
                                       select = c("MARG. COST","FLOW LIN."))
         # distinction between rentability in direct and indirect way :
-        
         output_link_h_i$`MARG. COST DIRECT`<- output_link_h_i$"MARG. COST"
         output_link_h_i$sens_direct <- 0        
         output_link_h_i$`MARG. COST INDIRECT`<- output_link_h_i$"MARG. COST"

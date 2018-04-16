@@ -170,14 +170,23 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
       
       if(c$has_link_profile_indirect)
       { 
-        new_capacity_direct <-  as.data.table(new_capacity_direct)
-        colnames(new_capacity_direct) <-  "value"
-        new_capacity_direct <- new_capacity_direct[, normalize_capacity := if (value>0 && value<1){1} else {value} ]
-        new_capacity_direct <- as.numeric(new_capacity_direct$normalize_capacity)
-        new_capacity_indirect <-  as.data.table(new_capacity_indirect)
-        colnames(new_capacity_indirect) <-  "value"
-        new_capacity_indirect <- new_capacity_indirect[, normalize_capacity := if (value>0 && value<1){1} else {value} ]
-        new_capacity_indirect <- as.numeric(new_capacity_indirect$normalize_capacity)
+        new_capacity_direct[new_capacity_direct < 1 ] <- 1
+        new_capacity_indirect[new_capacity_indirect < 1 ] <- 1
+        # new_capacity_direct[new_capacity_direct < 1 && new_capacity_direct > 0] <- 1
+        # new_capacity_indirect[new_capacity_indirect < 1 && new_capacity_indirect > 0] <- 1
+        
+        # new_capacity_direct <-  as.data.table(new_capacity_direct)
+        # colnames(new_capacity_direct) <-  "value"
+        # #new_capacity_direct <- new_capacity_direct[, normalize_capacity := if (value>0 && value<1){1} else {value} ]
+        # new_capacity_direct <- new_capacity_direct[, normalize_capacity := if (value<1){1} else {value} ]
+        # 
+        # new_capacity_direct <- as.numeric(new_capacity_direct$normalize_capacity)
+        # new_capacity_indirect <-  as.data.table(new_capacity_indirect)
+        # colnames(new_capacity_indirect) <-  "value"
+        # #new_capacity_indirect <- new_capacity_indirect[, normalize_capacity := if (value>0 && value<1){1} else {value} ]
+        # new_capacity_indirect <- new_capacity_indirect[, normalize_capacity := if (value<1){1} else {value} ]
+        # 
+        # new_capacity_indirect <- as.numeric(new_capacity_indirect$normalize_capacity)
       }
 
             # update study
