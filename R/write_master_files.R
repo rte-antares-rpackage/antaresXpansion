@@ -117,14 +117,15 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
         #colnames(output_link_h_s_indirect )[7] <- "MARG. COST"
         
       }
-      
+    }
+    
       if (length(without_profile(candidates)) > 0 )
       {
         output_link_s = antaresRead::readAntares(areas = NULL, links = without_profile(candidates), mcYears = NULL, 
                                                  timeStep = "annual", opts = output_antares, showProgress = FALSE,
                                                  select = "MARG. COST")
       }
-    }       
+           
     # write in_avgrentability.txt file
     script  <-  ""
     for (c in 1:n_candidates)
