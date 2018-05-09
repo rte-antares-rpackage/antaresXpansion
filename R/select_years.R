@@ -41,7 +41,7 @@
 #'
 #' @return 
 #' 
-#' @importFrom data.table
+#' @import data.table
 #' @importFrom dplyr filter group_by summarise arrange
 #' @importFrom cluster pam
 #' @importFrom antaresRead simOptions readClusterDesc
