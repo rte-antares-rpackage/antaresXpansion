@@ -161,7 +161,7 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
     matlines(matrix_conso_clusters, col = 3:(3+ncol(matrix_conso_clusters)), lty = 2, lwd = 2)
     matlines(complete_conso, col = "black", lwd = 2)
     matlines(complete_conso_clusters, col = "red", lwd = 2)
-    legend("topright", legend = c("Ensemble des monotones", "Monotone globale ré-échantillonée", "Monotone des clusters ré-échantillonée", paste("Cluster : Monotone de l'année ", info_clusters$medoids, "- Poids : ", info_clusters$poids*100/ncol(matrix_conso), "%")), col = c("grey", "black", "red", 3:(3+ncol(matrix_conso_clusters))), pch = 1)
+    legend("topright", legend = c("Ensemble des monotones", "Monotone globale re-echantillonee", "Monotone des clusters re-echantillonee", paste("Cluster : Monotone de l'annee ", info_clusters$medoids, "- Poids : ", info_clusters$poids*100/ncol(matrix_conso), "%")), col = c("grey", "black", "red", 3:(3+ncol(matrix_conso_clusters))), pch = 1)
   }
   
   # Fonction permettant la création d'un tableau de comparaison de valeurs clés : LOLD, OP. COST, UNSP ENRG
@@ -201,6 +201,9 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
   
   
   ##### TRAITEMENT DES DONNEES SUR LA ZONE PRINCIPALE #####
+    
+  # Lecture de l'étude Antares et création des jeux de données sur la zone principale
+  data_etude_main <- readAntares(areas = mainAreas, clusters = mainAreas,  mcYears = "all", thermalAvailabilities = subtractNuclearAvailabilityMain, select = c("LOAD", "OP. COST","LOLD", "UNSP. ENRG", "ROW BAL.", "PSP", "MISC. NDG", "H. ROR", "WIND", "SOLAR"))
   
   # Ajout de la consommation nette définie comme NETLOAD = LOAD - PRODUCTION FATALE - DISPO NUCLEAIRE
   if (subtractUnavoidableEnergyMain == TRUE) {
@@ -233,9 +236,6 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
     
     # Lecture de l'étude Antares et création des jeux de données sur la zone principale
     data_etude_extra <- readAntares(areas = extraAreas, mcYears = "all", thermalAvailabilities = subtractNuclearAvailabilityExtra, select = c("LOAD", "OP. COST","LOLD", "UNSP. ENRG", "ROW BAL.", "PSP", "MISC. NDG", "H. ROR", "WIND", "SOLAR"))
-  
-    # Lecture de l'étude Antares et création des jeux de données sur la zone principale
-    data_etude_main <- readAntares(areas = mainAreas, clusters = mainAreas,  mcYears = "all", thermalAvailabilities = subtractNuclearAvailabilityMain, select = c("LOAD", "OP. COST","LOLD", "UNSP. ENRG", "ROW BAL.", "PSP", "MISC. NDG", "H. ROR", "WIND", "SOLAR"))
     
     # Ajout de la consommation nette définie comme NETLOAD = LOAD - PRODUCTION FATALE - DISPO NUCLEAIRE
     if (subtractUnavoidableEnergyExtra == TRUE) {
@@ -279,7 +279,7 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
   info_clusters <- arrange(info_clusters, medoids)
   
   # Impression des informations finales de la sélection
-  print("Les clusters sont les années MC suivantes :")
+  print("Les clusters sont les annees MC suivantes :")
   print(info_clusters$medoids)
   print("Les poids de chacun de ces clusters sont les suivants :")
   print(info_clusters$poids)
@@ -291,29 +291,43 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
   if (showCurves == TRUE) {
     # Création des monotones des années MC sélectionnées après clustering
     matrix_conso_clusters_main <- matrix_conso_main[,info_clusters$medoids]
-    matrix_conso_clusters_extra <- matrix_conso_extra[,info_clusters$medoids]
     
     # Création des monotones globales des années MC sélectionnées après clustering (ré-échantillonée)
     complete_conso_clusters_main <- completeLoadMonotonous(matrix_conso_main[, rep(info_clusters$medoids, info_clusters$poids)])
-    complete_conso_clusters_extra <- completeLoadMonotonous(matrix_conso_extra[, rep(info_clusters$medoids, info_clusters$poids)])
     
     # Visualisation de toutes ces monotones
     plotMonotonous("Zone principale", matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main)
-    plotMonotonous("Zone secondaire", matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra)
     
     # Visualisation de toutes ces monotones sur le pic de consommation
     plotMonotonous("Pic sur la zone principale", matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim=c(0,60), y_lim=c(-1000,40000))
-    plotMonotonous("Pic sur la zone secondaire", matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(0,60), y_lim = c(60000,100000))
     
     # Visualisation de toutes ces monotones sur le creux de consommation
     plotMonotonous("Creux sur la zone principale", matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim = c(8680,8740), y_lim = c(-90000,-50000))
-    plotMonotonous("Creux sur la zone secondaire", matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(8680,8740), y_lim = c(-90000,-45000))
     
     # Impression de l'écart entre la monotone de référence et la monotone ré-échantillonée de l'ensemble des clusters (pour comparer la sensibité aux paramètres d'entrée : nMCyears, poids, etc.)
-    print("Ecart L2 entre la monotone de référence et la monotone globale ré-échantillonée sur la zone principale :")
+    print("Ecart L2 entre la monotone de reference et la monotone globale re-echantillonee sur la zone principale :")
     print(sum((complete_conso_main-complete_conso_clusters_main)^2))
-    print("Ecart L2 entre la monotone de référence et la monotone globale ré-échantillonée sur la zone secondaire :")
-    print(sum((complete_conso_extra-complete_conso_clusters_extra)^2))
+    
+    if(is.null(extraAreas) == FALSE) {
+      # Création des monotones des années MC sélectionnées après clustering
+      matrix_conso_clusters_extra <- matrix_conso_extra[,info_clusters$medoids]
+      
+      # Création des monotones globales des années MC sélectionnées après clustering (ré-échantillonée)
+      complete_conso_clusters_extra <- completeLoadMonotonous(matrix_conso_extra[, rep(info_clusters$medoids, info_clusters$poids)])
+      
+      # Visualisation de toutes ces monotones
+      plotMonotonous("Zone secondaire", matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra)
+      
+      # Visualisation de toutes ces monotones sur le pic de consommation
+       plotMonotonous("Pic sur la zone secondaire", matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(0,60), y_lim = c(60000,100000))
+      
+      # Visualisation de toutes ces monotones sur le creux de consommation
+      plotMonotonous("Creux sur la zone secondaire", matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(8680,8740), y_lim = c(-90000,-45000))
+      
+      # Impression de l'écart entre la monotone de référence et la monotone ré-échantillonée de l'ensemble des clusters (pour comparer la sensibité aux paramètres d'entrée : nMCyears, poids, etc.)
+      print("Ecart L2 entre la monotone de reference et la monotone globale re-echantillonee sur la zone secondaire :")
+      print(sum((complete_conso_extra-complete_conso_clusters_extra)^2))
+    }
   }
   
   
@@ -327,13 +341,13 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
   if (showTable == TRUE) {
     # Création d'un tableau de valeurs et de comparaison sur l'operating cost et le loss of load duration entre la moyenne des 1000 années et la moyenne pondérée des clusters
     data_comparison_main <- costAnalysis(data_etude_main$areas, info_clusters)
-    data_comparison_extra <- costAnalysis(data_etude_extra, info_clusters)
+    #data_comparison_extra <- costAnalysis(data_etude_extra, info_clusters)
     
-    # Impression des 2 tableaux
+    # Impression des tableaux
     print("Sur la zone PRINCIPALE :")
     print(data_comparison_main)
-    print("Sur la zone SECONDAIRE :")
-    print(data_comparison_extra)
+    #print("Sur la zone SECONDAIRE :")
+    #print(data_comparison_extra)
   }
   
   
