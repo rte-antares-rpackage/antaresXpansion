@@ -160,11 +160,11 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   
   # Fonction permettant la visualisation de toutes ces monotones
   plotMonotonous <- function(title, matrix_conso, matrix_conso_clusters, complete_conso, complete_conso_clusters, x_lim = NULL, y_lim = NULL) {
-    matplot(matrix_conso, type = "l", lty = 3, xlab = "Temps de fonctionnement (en heures)", ylab = "Consommation nette (en W)", col = "grey", xlim = x_lim, ylim = y_lim, main = title)
+    matplot(matrix_conso, type = "l", lty = 3, xlab = "Operating time (hours)", ylab = "Net load (W)", col = "grey", xlim = x_lim, ylim = y_lim, main = title)
     matlines(matrix_conso_clusters, col = 3:(3+ncol(matrix_conso_clusters)), lty = 2, lwd = 2)
     matlines(complete_conso, col = "black", lwd = 2)
     matlines(complete_conso_clusters, col = "red", lwd = 2)
-    legend("topright", legend = c("Ensemble des monotones", "Monotone globale re-echantillonee", "Monotone des clusters re-echantillonee", paste("Cluster : Monotone de l'annee ", info_clusters$`Selected years`, "- Poids : ", info_clusters$Weighting*100/ncol(matrix_conso), "%")), col = c("grey", "black", "red", 3:(3+ncol(matrix_conso_clusters))), pch = 1)
+    legend("topright", legend = c("All load monotonous", "Reference monotonous", "Weighted mean monotonous of the clusters", paste("Cluster : MC year ", info_clusters$`Selected years`, "- Weighting : ", info_clusters$Weighting*100/ncol(matrix_conso), "%")), col = c("grey", "black", "red", 3:(3+ncol(matrix_conso_clusters))), pch = 1)
   }
   
   # Fonction permettant la création d'un tableau de comparaison de valeurs clés : LOLD, OP. COST, UNSP ENRG
@@ -206,7 +206,7 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   ##### TRAITEMENT DES DONNEES SUR LA ZONE PRINCIPALE #####
     
   # Lecture de l'étude Antares et création des jeux de données sur la zone principale
-  cat("Importing data from the main areas", mainAreas)
+  cat("Processing data from the main areas :", mainAreas, ":\n")
   data_etude_main <- readAntares(areas = mainAreas, clusters = mainAreas,  mcYears = MCYears, thermalAvailabilities = subtractNuclearAvailabilityMain, select = c("LOAD", "OP. COST","LOLD", "UNSP. ENRG", "ROW BAL.", "PSP", "MISC. NDG", "H. ROR", "WIND", "SOLAR"))
   
   # Ajout de la consommation nette définie comme NETLOAD = LOAD - PRODUCTION FATALE - DISPO NUCLEAIRE
@@ -239,7 +239,7 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   if (is.null(extraAreas) == FALSE) {
     
     # Lecture de l'étude Antares et création des jeux de données sur la zone principale
-    cat("\n Importing data from the extra areas", extraAreas)
+    cat("\nProcessing data from the extra areas :", extraAreas, ":\n")
     data_etude_extra <- readAntares(areas = extraAreas, mcYears = MCYears, thermalAvailabilities = subtractNuclearAvailabilityExtra, select = c("LOAD", "OP. COST","LOLD", "UNSP. ENRG", "ROW BAL.", "PSP", "MISC. NDG", "H. ROR", "WIND", "SOLAR"))
     
     # Ajout de la consommation nette définie comme NETLOAD = LOAD - PRODUCTION FATALE - DISPO NUCLEAIRE
@@ -296,13 +296,13 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     complete_conso_clusters_main <- completeLoadMonotonous(matrix_conso_main[, rep(info_clusters$`Selected years`, info_clusters$Weighting)])
     
     # Visualisation de toutes ces monotones
-    plotMonotonous("Zone principale", matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main)
+    plotMonotonous(title = paste(c("Load monotonous on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main)
     
     # Visualisation de toutes ces monotones sur le pic de consommation
-    plotMonotonous("Pic sur la zone principale", matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim=c(0,60), y_lim=c(-1000,40000))
+    plotMonotonous(title = paste(c("Load peak on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim=c(0,60), y_lim=c(-1000,40000))
     
     # Visualisation de toutes ces monotones sur le creux de consommation
-    plotMonotonous("Creux sur la zone principale", matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim = c(8680,8740), y_lim = c(-90000,-50000))
+    plotMonotonous(title = paste(c("Load troughs on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim = c(8680,8740), y_lim = c(-90000,-50000))
     
     # # Impression de l'écart entre la monotone de référence et la monotone ré-échantillonée de l'ensemble des clusters (pour comparer la sensibité aux paramètres d'entrée : selection, poids, etc.)
     # print("Ecart L2 entre la monotone de reference et la monotone globale re-echantillonee sur la zone principale :")
@@ -316,13 +316,13 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
       complete_conso_clusters_extra <- completeLoadMonotonous(matrix_conso_extra[, rep(info_clusters$`Selected years`, info_clusters$Weighting)])
       
       # Visualisation de toutes ces monotones
-      plotMonotonous("Zone secondaire", matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra)
+      plotMonotonous(title = paste(c("Load monotonous on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra)
       
       # Visualisation de toutes ces monotones sur le pic de consommation
-       plotMonotonous("Pic sur la zone secondaire", matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(0,60), y_lim = c(60000,100000))
+       plotMonotonous(title = paste(c("Load peak on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(0,60), y_lim = c(60000,100000))
       
       # Visualisation de toutes ces monotones sur le creux de consommation
-      plotMonotonous("Creux sur la zone secondaire", matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(8680,8740), y_lim = c(-90000,-45000))
+      plotMonotonous(title = paste(c("Load troughs on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(8680,8740), y_lim = c(-90000,-45000))
       
       # # Impression de l'écart entre la monotone de référence et la monotone ré-échantillonée de l'ensemble des clusters (pour comparer la sensibité aux paramètres d'entrée : selection, poids, etc.)
       # print("Ecart L2 entre la monotone de reference et la monotone globale re-echantillonee sur la zone secondaire :")
@@ -344,9 +344,9 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     #data_comparison_extra <- costAnalysis(data_etude_extra, info_clusters)
     
     # Impression des tableaux
-    cat("\n Cost analysis on the main areas :")
+    cat("\n Cost analysis on the main areas :", mainAreas, ":\n")
     print(data_comparison_main)
-    #cat("\nCost analysis on the secondary areas :")
+    #cat("\nCost analysis on the extra areas :", extraAreas, ":\n")
     #print(data_comparison_extra)
     cat("\n")
   }
