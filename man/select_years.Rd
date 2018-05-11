@@ -4,9 +4,10 @@
 \alias{select_years}
 \title{Identify some representative time series of an ANTARES project containing a significant amount of Monte-Carlo years}
 \usage{
-select_years(mainAreas = "fr", extraAreas = NULL, nMCyears = 5,
-  weightMain = 0.5, weightExtra = 0, weightPeakMain = 0.5,
-  weightPeakExtra = 0, subtractUnavoidableEnergyMain = TRUE,
+select_years(mainAreas = "fr", extraAreas = NULL, selection = 5,
+  MCYears = "all", weightMain = 0.5, weightExtra = 0,
+  weightPeakMain = 0.5, weightPeakExtra = 0,
+  subtractUnavoidableEnergyMain = TRUE,
   subtractUnavoidableEnergyExtra = TRUE,
   subtractNuclearAvailabilityMain = TRUE,
   subtractNuclearAvailabilityExtra = FALSE, showCurves = TRUE,
@@ -19,7 +20,10 @@ select_years(mainAreas = "fr", extraAreas = NULL, nMCyears = 5,
 Usually it contains areas that need to be taken into accounts in the algorithm but in a smaller scale than the ones in mainAreas.
 If \code{NULL}, no extra area is imported.}
 
-\item{nMCyears}{Numeric representing the amount of Monte-Carlo years to get after the function.}
+\item{selection}{Numeric representing the amount of Monte-Carlo years to get after the function.}
+
+\item{MCYears}{Index of the Monte-Carlo years to import. 
+If \code{"all"}, every MC years are read, else the specified Monte-Carlo simulations are imported.}
 
 \item{weightMain}{Numeric (between 0 and 1) giving the weighting of the load monotonous for the main areas into the clustering algorithm choices.
 If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.}

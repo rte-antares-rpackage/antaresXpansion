@@ -7,8 +7,11 @@
 #'   Vector containing the names of the additional areas on which the clustering algorithm will be based.
 #'   Usually it contains areas that need to be taken into accounts in the algorithm but in a smaller scale than the ones in mainAreas.
 #'   If \code{NULL}, no extra area is imported.
-#' @param nMCyears
+#' @param selection
 #'   Numeric representing the amount of Monte-Carlo years to get after the function.
+#' @param MCYears
+#'   Index of the Monte-Carlo years to import. 
+#'   If \code{"all"}, every MC years are read, else the specified Monte-Carlo simulations are imported. 
 #' @param weightMain
 #'   Numeric (between 0 and 1) giving the weighting of the load monotonous for the main areas into the clustering algorithm choices.
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
@@ -47,7 +50,7 @@
 #' @importFrom antaresRead simOptions readClusterDesc
 #' @export
 
-select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weightMain = 0.5, weightExtra = 0, weightPeakMain = 0.5, weightPeakExtra = 0, subtractUnavoidableEnergyMain = TRUE, subtractUnavoidableEnergyExtra = TRUE, subtractNuclearAvailabilityMain = TRUE, subtractNuclearAvailabilityExtra = FALSE, showCurves = TRUE, showTable = TRUE, opts = antaresRead::simOptions())
+select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCYears = "all", weightMain = 0.5, weightExtra = 0, weightPeakMain = 0.5, weightPeakExtra = 0, subtractUnavoidableEnergyMain = TRUE, subtractUnavoidableEnergyExtra = TRUE, subtractNuclearAvailabilityMain = TRUE, subtractNuclearAvailabilityExtra = FALSE, showCurves = TRUE, showTable = TRUE, opts = antaresRead::simOptions())
 {
   ##### INITIALISATION #####
   
@@ -161,7 +164,7 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
     matlines(matrix_conso_clusters, col = 3:(3+ncol(matrix_conso_clusters)), lty = 2, lwd = 2)
     matlines(complete_conso, col = "black", lwd = 2)
     matlines(complete_conso_clusters, col = "red", lwd = 2)
-    legend("topright", legend = c("Ensemble des monotones", "Monotone globale re-echantillonee", "Monotone des clusters re-echantillonee", paste("Cluster : Monotone de l'annee ", info_clusters$medoids, "- Poids : ", info_clusters$poids*100/ncol(matrix_conso), "%")), col = c("grey", "black", "red", 3:(3+ncol(matrix_conso_clusters))), pch = 1)
+    legend("topright", legend = c("Ensemble des monotones", "Monotone globale re-echantillonee", "Monotone des clusters re-echantillonee", paste("Cluster : Monotone de l'annee ", info_clusters$`Selected years`, "- Poids : ", info_clusters$Weighting*100/ncol(matrix_conso), "%")), col = c("grey", "black", "red", 3:(3+ncol(matrix_conso_clusters))), pch = 1)
   }
   
   # Fonction permettant la création d'un tableau de comparaison de valeurs clés : LOLD, OP. COST, UNSP ENRG
@@ -172,22 +175,22 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
     name <- c("MEAN OF ALL MC YEARS", "WEIGHTED MEAN OF CLUSTERS", "DIFFERENCE", "RELATIVE DIFFERENCE (in %)")
     # Création du vecteur OP. COST 
     opcost_all <- mean(antaresDataList_areas$`OP. COST`)
-    opcost_cluster <- antaresDataList_areas[mcYear %in% clusterList$medoids,]$`OP. COST`
-    opcost_cluster_pondere <- sum(opcost_cluster * clusterList$poids)/max(antaresDataList_areas$mcYear)
+    opcost_cluster <- antaresDataList_areas[mcYear %in% clusterList$`Selected years`,]$`OP. COST`
+    opcost_cluster_pondere <- sum(opcost_cluster * clusterList$Weighting)/max(antaresDataList_areas$mcYear)
     opcost_diff <- opcost_all - opcost_cluster_pondere
     opcost_rel <- (opcost_all - opcost_cluster_pondere)*100/opcost_all
     opcost <- c(opcost_all, opcost_cluster_pondere, opcost_diff, opcost_rel)
     # Création du vectebur LOLD
     lold_all <- mean(antaresDataList_areas$`LOLD`)
-    lold_cluster <- antaresDataList_areas[mcYear %in% clusterList$medoids,]$`LOLD`
-    lold_cluster_pondere <- sum(lold_cluster * clusterList$poids)/max(antaresDataList_areas$mcYear)
+    lold_cluster <- antaresDataList_areas[mcYear %in% clusterList$`Selected years`,]$`LOLD`
+    lold_cluster_pondere <- sum(lold_cluster * clusterList$Weighting)/max(antaresDataList_areas$mcYear)
     lold_diff <- lold_all - lold_cluster_pondere
     lold_rel <- (lold_all - lold_cluster_pondere)*100/lold_all
     lold <- c(lold_all, lold_cluster_pondere, lold_diff, lold_rel)
     # Création du vecteur UNSP. ENRG
     unsp_all <- mean(antaresDataList_areas$`UNSP. ENRG`)
-    unsp_cluster <- antaresDataList_areas[mcYear %in% clusterList$medoids,]$`UNSP. ENRG`
-    unsp_cluster_pondere <- sum(unsp_cluster * clusterList$poids)/max(antaresDataList_areas$mcYear)
+    unsp_cluster <- antaresDataList_areas[mcYear %in% clusterList$`Selected years`,]$`UNSP. ENRG`
+    unsp_cluster_pondere <- sum(unsp_cluster * clusterList$Weighting)/max(antaresDataList_areas$mcYear)
     unsp_diff <- unsp_all - unsp_cluster_pondere
     unsp_rel <- (unsp_all - unsp_cluster_pondere)*100/unsp_all
     unsp <- c(unsp_all, unsp_cluster_pondere, unsp_diff, unsp_rel)
@@ -203,7 +206,8 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
   ##### TRAITEMENT DES DONNEES SUR LA ZONE PRINCIPALE #####
     
   # Lecture de l'étude Antares et création des jeux de données sur la zone principale
-  data_etude_main <- readAntares(areas = mainAreas, clusters = mainAreas,  mcYears = "all", thermalAvailabilities = subtractNuclearAvailabilityMain, select = c("LOAD", "OP. COST","LOLD", "UNSP. ENRG", "ROW BAL.", "PSP", "MISC. NDG", "H. ROR", "WIND", "SOLAR"))
+  cat("Importing data from the main areas", mainAreas)
+  data_etude_main <- readAntares(areas = mainAreas, clusters = mainAreas,  mcYears = MCYears, thermalAvailabilities = subtractNuclearAvailabilityMain, select = c("LOAD", "OP. COST","LOLD", "UNSP. ENRG", "ROW BAL.", "PSP", "MISC. NDG", "H. ROR", "WIND", "SOLAR"))
   
   # Ajout de la consommation nette définie comme NETLOAD = LOAD - PRODUCTION FATALE - DISPO NUCLEAIRE
   if (subtractUnavoidableEnergyMain == TRUE) {
@@ -235,7 +239,8 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
   if (is.null(extraAreas) == FALSE) {
     
     # Lecture de l'étude Antares et création des jeux de données sur la zone principale
-    data_etude_extra <- readAntares(areas = extraAreas, mcYears = "all", thermalAvailabilities = subtractNuclearAvailabilityExtra, select = c("LOAD", "OP. COST","LOLD", "UNSP. ENRG", "ROW BAL.", "PSP", "MISC. NDG", "H. ROR", "WIND", "SOLAR"))
+    cat("\n Importing data from the extra areas", extraAreas)
+    data_etude_extra <- readAntares(areas = extraAreas, mcYears = MCYears, thermalAvailabilities = subtractNuclearAvailabilityExtra, select = c("LOAD", "OP. COST","LOLD", "UNSP. ENRG", "ROW BAL.", "PSP", "MISC. NDG", "H. ROR", "WIND", "SOLAR"))
     
     # Ajout de la consommation nette définie comme NETLOAD = LOAD - PRODUCTION FATALE - DISPO NUCLEAIRE
     if (subtractUnavoidableEnergyExtra == TRUE) {
@@ -274,15 +279,10 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
   }
    
   # Algorithme des k-medoids
-  kmed_data <- pam(cluster_indicators, nMCyears)
-  info_clusters <- data.table(medoids = kmed_data$id.med, poids = kmed_data$clusinfo[,"size"])
-  info_clusters <- arrange(info_clusters, medoids)
+  kmed_data <- pam(cluster_indicators, selection)
+  info_clusters <- data.table("Selected years" = kmed_data$id.med, "Weighting" = kmed_data$clusinfo[,"size"])
+  info_clusters <- arrange(info_clusters, `Selected years`)
   
-  # Impression des informations finales de la sélection
-  print("Les clusters sont les annees MC suivantes :")
-  print(info_clusters$medoids)
-  print("Les poids de chacun de ces clusters sont les suivants :")
-  print(info_clusters$poids)
   
   
   
@@ -290,10 +290,10 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
   ##### ANALYSE DES RESULTATS PAR LES MONOTONES #####
   if (showCurves == TRUE) {
     # Création des monotones des années MC sélectionnées après clustering
-    matrix_conso_clusters_main <- matrix_conso_main[,info_clusters$medoids]
+    matrix_conso_clusters_main <- matrix_conso_main[,info_clusters$`Selected years`]
     
     # Création des monotones globales des années MC sélectionnées après clustering (ré-échantillonée)
-    complete_conso_clusters_main <- completeLoadMonotonous(matrix_conso_main[, rep(info_clusters$medoids, info_clusters$poids)])
+    complete_conso_clusters_main <- completeLoadMonotonous(matrix_conso_main[, rep(info_clusters$`Selected years`, info_clusters$Weighting)])
     
     # Visualisation de toutes ces monotones
     plotMonotonous("Zone principale", matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main)
@@ -304,16 +304,16 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
     # Visualisation de toutes ces monotones sur le creux de consommation
     plotMonotonous("Creux sur la zone principale", matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim = c(8680,8740), y_lim = c(-90000,-50000))
     
-    # Impression de l'écart entre la monotone de référence et la monotone ré-échantillonée de l'ensemble des clusters (pour comparer la sensibité aux paramètres d'entrée : nMCyears, poids, etc.)
-    print("Ecart L2 entre la monotone de reference et la monotone globale re-echantillonee sur la zone principale :")
-    print(sum((complete_conso_main-complete_conso_clusters_main)^2))
+    # # Impression de l'écart entre la monotone de référence et la monotone ré-échantillonée de l'ensemble des clusters (pour comparer la sensibité aux paramètres d'entrée : selection, poids, etc.)
+    # print("Ecart L2 entre la monotone de reference et la monotone globale re-echantillonee sur la zone principale :")
+    # print(sum((complete_conso_main-complete_conso_clusters_main)^2))
     
     if(is.null(extraAreas) == FALSE) {
       # Création des monotones des années MC sélectionnées après clustering
-      matrix_conso_clusters_extra <- matrix_conso_extra[,info_clusters$medoids]
+      matrix_conso_clusters_extra <- matrix_conso_extra[,info_clusters$`Selected years`]
       
       # Création des monotones globales des années MC sélectionnées après clustering (ré-échantillonée)
-      complete_conso_clusters_extra <- completeLoadMonotonous(matrix_conso_extra[, rep(info_clusters$medoids, info_clusters$poids)])
+      complete_conso_clusters_extra <- completeLoadMonotonous(matrix_conso_extra[, rep(info_clusters$`Selected years`, info_clusters$Weighting)])
       
       # Visualisation de toutes ces monotones
       plotMonotonous("Zone secondaire", matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra)
@@ -324,9 +324,9 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
       # Visualisation de toutes ces monotones sur le creux de consommation
       plotMonotonous("Creux sur la zone secondaire", matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(8680,8740), y_lim = c(-90000,-45000))
       
-      # Impression de l'écart entre la monotone de référence et la monotone ré-échantillonée de l'ensemble des clusters (pour comparer la sensibité aux paramètres d'entrée : nMCyears, poids, etc.)
-      print("Ecart L2 entre la monotone de reference et la monotone globale re-echantillonee sur la zone secondaire :")
-      print(sum((complete_conso_extra-complete_conso_clusters_extra)^2))
+      # # Impression de l'écart entre la monotone de référence et la monotone ré-échantillonée de l'ensemble des clusters (pour comparer la sensibité aux paramètres d'entrée : selection, poids, etc.)
+      # print("Ecart L2 entre la monotone de reference et la monotone globale re-echantillonee sur la zone secondaire :")
+      # print(sum((complete_conso_extra-complete_conso_clusters_extra)^2))
     }
   }
   
@@ -344,10 +344,11 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, nMCyears = 5, weig
     #data_comparison_extra <- costAnalysis(data_etude_extra, info_clusters)
     
     # Impression des tableaux
-    print("Sur la zone PRINCIPALE :")
+    cat("\n Cost analysis on the main areas :")
     print(data_comparison_main)
-    #print("Sur la zone SECONDAIRE :")
+    #cat("\nCost analysis on the secondary areas :")
     #print(data_comparison_extra)
+    cat("\n")
   }
   
   
