@@ -15,12 +15,12 @@
 #' @param weightMain
 #'   Numeric (between 0 and 1) giving the weighting of the load monotonous for the main areas into the clustering algorithm choices.
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
+#' @param weightPeakMean
+#'   Numeric (between 0 and 1) giving the weighting of the peak period (20 most crucial hours) for the main areas into the clustering algorithm choices. 
+#'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param weightExtra
 #'   Numeric (between 0 and 1) giving the weighting of the load monotonous for the additional areas into the clustering algorithm choices.
 #'   It is usually lower than weightMain. 
-#'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
-#' @param weightPeakMean
-#'   Numeric (between 0 and 1) giving the weighting of the peak period (20 most crucial hours) for the main areas into the clustering algorithm choices. 
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param weightPeakExtra
 #'   Numeric (between 0 and 1) giving the weighting of the peak period (20 most crucial hours) for the additional areas into the clustering algorithm choices. 
@@ -34,15 +34,36 @@
 #'   If \code{TRUE}, nuclear availability is subtracted from LOAD of the main areas.
 #' @param subtractNuclearAvailabilityExtra
 #'   If \code{TRUE}, nuclear availability is subtracted from LOAD of the additional areas.   
-#' @param showCurves
+#' @param displayCurves
 #'   If \code{TRUE}, the function displays a load monotonous curve analysis
-#' @param showTable
+#' @param displayTable
 #'   If \code{TRUE}, the function displays a cost analysis (OP. COST, LOLD, UNSP. ENRG)   
 #'   @param opts
 #'   List of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
 #'
-#' @return 
+#' @details 
+#' When \code{subtractUnavoidableEnergyMain}, \code{subtractUnavoidableEnergyExtra}, \code{subtractNuclearAvailabilityMain} and \code{subtractNuclearAvailabilityExtra} are all \code{TRUE}, the function may crash because of insufficient memory. 
+#' In such a case, it is necessary to reduce the size of the input.
+#' Different strategies are available depending on your objective : do not subtract nuclear availability (especially on extra areas), take fewer areas, reduce the number of Monte-Carlo years, increase the memory (with setRam), etc.
+#'
+#' @return
+#' If \code{displayCurves} and \code{displayTable} are both \code{FALSE}, only identities and weightings of the selected Monte-Carlo years are displayed.
+#' Else, curves of load monotonous for imported areas will be also plotted (for every MC years, clusters and average curves) and a cost analysis will be given (bases on OP. COST, LOLD and UNSP. ENRG).
+#' 
+#' @examples 
+#' # Import simulation
+#' setSimulationPath()
+#' 
+#' # Find 5 Monte-Carlo year clusters for the simulation
+#' # Study France as the main area and europe as the secondary area
+#' # Base algorithm on :
+#' # 40% for the load monotonous in France
+#' # 40% for the peak period in France
+#' # 20% for the load monotonous in all europe
+#' # 0% for the peak period in all europe
+#' europe <- c("at", "be", "ch", "de", "es", "gb", "ie", "it", "lu_be", "lu_de", "ni", "nl", "pt")
+#' select_years(mainAreas = "fr", extraAreas = europe, weightMain = 0.4, weightPeakMain = 0.4, weightExtra = 0.2)
 #' 
 #' @import data.table
 #' @importFrom dplyr filter group_by summarise arrange
@@ -50,7 +71,7 @@
 #' @importFrom antaresRead simOptions readClusterDesc
 #' @export
 
-select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCYears = "all", weightMain = 0.5, weightExtra = 0, weightPeakMain = 0.5, weightPeakExtra = 0, subtractUnavoidableEnergyMain = TRUE, subtractUnavoidableEnergyExtra = TRUE, subtractNuclearAvailabilityMain = TRUE, subtractNuclearAvailabilityExtra = FALSE, showCurves = TRUE, showTable = TRUE, opts = antaresRead::simOptions())
+select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCYears = "all", weightMain = 0.5, weightPeakMain = 0.5, weightExtra = 0, weightPeakExtra = 0, subtractUnavoidableEnergyMain = TRUE, subtractUnavoidableEnergyExtra = TRUE, subtractNuclearAvailabilityMain = TRUE, subtractNuclearAvailabilityExtra = FALSE, displayCurves = TRUE, displayTable = TRUE, opts = antaresRead::simOptions())
 {
   ##### INITIALISATION #####
   
@@ -58,7 +79,7 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   set.seed(1)
   
   # Définition de la RAM nécessaire
-  setRam(500)
+  #setRam(500)
   
   
   
@@ -288,7 +309,7 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   
   
   ##### ANALYSE DES RESULTATS PAR LES MONOTONES #####
-  if (showCurves == TRUE) {
+  if (displayCurves == TRUE) {
     # Création des monotones des années MC sélectionnées après clustering
     matrix_conso_clusters_main <- matrix_conso_main[,info_clusters$`Selected years`]
     
@@ -338,7 +359,7 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   
   
   ##### ANALYSE DES RESULTATS PAR LES COUTS #####
-  if (showTable == TRUE) {
+  if (displayTable == TRUE) {
     # Création d'un tableau de valeurs et de comparaison sur l'operating cost et le loss of load duration entre la moyenne des 1000 années et la moyenne pondérée des clusters
     data_comparison_main <- costAnalysis(data_etude_main$areas, info_clusters)
     #data_comparison_extra <- costAnalysis(data_etude_extra, info_clusters)

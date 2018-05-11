@@ -5,13 +5,13 @@
 \title{Identify some representative time series of an ANTARES project containing a significant amount of Monte-Carlo years}
 \usage{
 select_years(mainAreas = "fr", extraAreas = NULL, selection = 5,
-  MCYears = "all", weightMain = 0.5, weightExtra = 0,
-  weightPeakMain = 0.5, weightPeakExtra = 0,
+  MCYears = "all", weightMain = 0.5, weightPeakMain = 0.5,
+  weightExtra = 0, weightPeakExtra = 0,
   subtractUnavoidableEnergyMain = TRUE,
   subtractUnavoidableEnergyExtra = TRUE,
   subtractNuclearAvailabilityMain = TRUE,
-  subtractNuclearAvailabilityExtra = FALSE, showCurves = TRUE,
-  showTable = TRUE, opts = antaresRead::simOptions())
+  subtractNuclearAvailabilityExtra = FALSE, displayCurves = TRUE,
+  displayTable = TRUE, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{mainAreas}{Vector containing the names of the areas on which the clustering algorithm will be based.}
@@ -44,9 +44,9 @@ If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm
 
 \item{subtractNuclearAvailabilityExtra}{If \code{TRUE}, nuclear availability is subtracted from LOAD of the additional areas.}
 
-\item{showCurves}{If \code{TRUE}, the function displays a load monotonous curve analysis}
+\item{displayCurves}{If \code{TRUE}, the function displays a load monotonous curve analysis}
 
-\item{showTable}{If \code{TRUE}, the function displays a cost analysis (OP. COST, LOLD, UNSP. ENRG)
+\item{displayTable}{If \code{TRUE}, the function displays a cost analysis (OP. COST, LOLD, UNSP. ENRG)
 @param opts
 List of simulation parameters returned by the function
 \code{antaresRead::setSimulationPath}}
@@ -55,8 +55,29 @@ List of simulation parameters returned by the function
 If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.}
 }
 \value{
-
+If \code{displayCurves} and \code{displayTable} are both \code{FALSE}, only identities and weightings of the selected Monte-Carlo years are displayed.
+Else, curves of load monotonous for imported areas will be also plotted (for every MC years, clusters and average curves) and a cost analysis will be given (bases on OP. COST, LOLD and UNSP. ENRG).
 }
 \description{
 Identify some representative time series of an ANTARES project containing a significant amount of Monte-Carlo years
+}
+\details{
+When \code{subtractUnavoidableEnergyMain}, \code{subtractUnavoidableEnergyExtra}, \code{subtractNuclearAvailabilityMain} and \code{subtractNuclearAvailabilityExtra} are all \code{TRUE}, the function may crash because of insufficient memory. 
+In such a case, it is necessary to reduce the size of the input.
+Different strategies are available depending on your objective : do not subtract nuclear availability (especially on extra areas), take fewer areas, reduce the number of Monte-Carlo years, increase the memory (with setRam), etc.
+}
+\examples{
+# Import simulation
+setSimulationPath()
+
+# Find 5 Monte-Carlo year clusters for the simulation
+# Study France as the main area and europe as the secondary area
+# Base algorithm on :
+# 40\% for the load monotonous in France
+# 40\% for the peak period in France
+# 20\% for the load monotonous in all europe
+# 0\% for the peak period in all europe
+europe <- c("at", "be", "ch", "de", "es", "gb", "ie", "it", "lu_be", "lu_de", "ni", "nl", "pt")
+select_years(mainAreas = "fr", extraAreas = europe, weightMain = 0.4, weightPeakMain = 0.4, weightExtra = 0.2)
+
 }
