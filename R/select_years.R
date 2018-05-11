@@ -1,11 +1,17 @@
-#' Identify some representative time series of an ANTARES project containing a significant amount of Monte-Carlo years
+#' Identify some representative time series of an ANTARES project
 #' 
+#' @description 
+#' Identify some representative time series of an ANTARES project containing a significant amount of Monte-Carlo years.
+#' Usually based on France (= \code{mainAreas}) load monotonous.
+#' Europe can also be imported as \code{extraAreas} to take energy imports and exports into account.
 #' 
 #' @param mainAreas
 #'   Vector containing the names of the areas on which the clustering algorithm will be based.
+#'   Usually \code{mainAreas} = \code{"fr"}.
 #' @param extraAreas
 #'   Vector containing the names of the additional areas on which the clustering algorithm will be based.
-#'   Usually it contains areas that need to be taken into accounts in the algorithm but in a smaller scale than the ones in mainAreas.
+#'   Usually it contains areas that need to be taken into account in the algorithm but in a smaller scale than the ones in \code{mainAreas}.
+#'   If \code{mainAreas} = \code{"fr"}, \code{extraAreas} must not contain \code{"fr"} again to be relevant enough.
 #'   If \code{NULL}, no extra area is imported.
 #' @param selection
 #'   Numeric representing the amount of Monte-Carlo years to get after the function.
@@ -20,11 +26,11 @@
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param weightExtra
 #'   Numeric (between 0 and 1) giving the weighting of the load monotonous for the additional areas into the clustering algorithm choices.
-#'   It is usually lower than weightMain. 
+#'   It is usually lower than \code{WeightExtra}. 
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param weightPeakExtra
 #'   Numeric (between 0 and 1) giving the weighting of the peak period (20 most crucial hours) for the additional areas into the clustering algorithm choices. 
-#'   It is usually lower than weightPeakMain. 
+#'   It is usually lower than \code{WeightPeakMain}. 
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param subtractUnavoidableEnergyMain
 #'   If \code{TRUE}, unavoidable energy (Solar, Wind, etc.) is subtracted from LOAD of the main areas.
@@ -38,18 +44,17 @@
 #'   If \code{TRUE}, the function displays a load monotonous curve analysis
 #' @param displayTable
 #'   If \code{TRUE}, the function displays a cost analysis (OP. COST, LOLD, UNSP. ENRG)   
-#'   @param opts
-#'   List of simulation parameters returned by the function
-#'   \code{antaresRead::setSimulationPath}
+#' @param opts
+#'   List of simulation parameters returned by the function \code{antaresRead::setSimulationPath}
 #'
 #' @details 
 #' When \code{subtractUnavoidableEnergyMain}, \code{subtractUnavoidableEnergyExtra}, \code{subtractNuclearAvailabilityMain} and \code{subtractNuclearAvailabilityExtra} are all \code{TRUE}, the function may crash because of insufficient memory. 
 #' In such a case, it is necessary to reduce the size of the input.
-#' Different strategies are available depending on your objective : do not subtract nuclear availability (especially on extra areas), take fewer areas, reduce the number of Monte-Carlo years, increase the memory (with setRam), etc.
+#' Different strategies are available depending on your objective : reduce the number of Monte-Carlo years, do not subtract nuclear availability (especially on extra areas), take fewer areas, increase the memory (with setRam), etc.
 #'
 #' @return
 #' If \code{displayCurves} and \code{displayTable} are both \code{FALSE}, only identities and weightings of the selected Monte-Carlo years are displayed.
-#' Else, curves of load monotonous for imported areas will be also plotted (for every MC years, clusters and average curves) and a cost analysis will be given (bases on OP. COST, LOLD and UNSP. ENRG).
+#' Else, curves of load monotonous for imported areas will be also plotted (for every MC years, clusters and average curves) and a cost analysis will be given (based on OP. COST, LOLD and UNSP. ENRG).
 #' 
 #' @examples 
 #' # Import simulation
