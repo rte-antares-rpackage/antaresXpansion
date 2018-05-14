@@ -80,10 +80,10 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
 {
   ##### INITIALISATION #####
   
-  # Définition du tirage aléatoire
+  # Definition du tirage aleatoire
   set.seed(1)
   
-  # Définition de la RAM nécessaire
+  # Definition de la RAM necessaire
   #setRam(500)
   
   
@@ -193,9 +193,9 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     legend("topright", legend = c("All load monotonous", "Reference monotonous", "Weighted mean monotonous of the clusters", paste("Cluster : MC year ", info_clusters$`Selected years`, "- Weighting : ", info_clusters$Weighting*100/ncol(matrix_conso), "%")), col = c("grey", "black", "red", 3:(3+ncol(matrix_conso_clusters))), pch = 1)
   }
   
-  # Fonction permettant la création d'un tableau de comparaison de valeurs clés : LOLD, OP. COST, UNSP ENRG
+  # Fonction permettant la creation d'un tableau de comparaison de valeurs cles : LOLD, OP. COST, UNSP ENRG
   costAnalysis <- function(antaresDataList_areas, clusterList) {
-    # Conversion des données initiales en données annuelles
+    # Conversion des données initiales en donnees annuelles
     antaresDataList_areas <- changeTimeStep(antaresDataList_areas, "annual")
     # Création du vecteur nom
     name <- c("MEAN OF ALL MC YEARS", "WEIGHTED MEAN OF CLUSTERS", "DIFFERENCE", "RELATIVE DIFFERENCE (in %)")
@@ -206,14 +206,14 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     opcost_diff <- opcost_all - opcost_cluster_pondere
     opcost_rel <- (opcost_all - opcost_cluster_pondere)*100/opcost_all
     opcost <- c(opcost_all, opcost_cluster_pondere, opcost_diff, opcost_rel)
-    # Création du vectebur LOLD
+    # Creation du vectebur LOLD
     lold_all <- mean(antaresDataList_areas$`LOLD`)
     lold_cluster <- antaresDataList_areas[mcYear %in% clusterList$`Selected years`,]$`LOLD`
     lold_cluster_pondere <- sum(lold_cluster * clusterList$Weighting)/max(antaresDataList_areas$mcYear)
     lold_diff <- lold_all - lold_cluster_pondere
     lold_rel <- (lold_all - lold_cluster_pondere)*100/lold_all
     lold <- c(lold_all, lold_cluster_pondere, lold_diff, lold_rel)
-    # Création du vecteur UNSP. ENRG
+    # Creation du vecteur UNSP. ENRG
     unsp_all <- mean(antaresDataList_areas$`UNSP. ENRG`)
     unsp_cluster <- antaresDataList_areas[mcYear %in% clusterList$`Selected years`,]$`UNSP. ENRG`
     unsp_cluster_pondere <- sum(unsp_cluster * clusterList$Weighting)/max(antaresDataList_areas$mcYear)
@@ -325,10 +325,10 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     plotMonotonous(title = paste(c("Load monotonous on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main)
     
     # Visualisation de toutes ces monotones sur le pic de consommation
-    plotMonotonous(title = paste(c("Load peak on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim=c(0,60), y_lim=c(-1000,40000))
+    plotMonotonous(title = paste(c("Load peak on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim=c(0,60), y_lim=c(mean(matrix_conso_main),max(matrix_conso_main)*1.05))
     
     # Visualisation de toutes ces monotones sur le creux de consommation
-    plotMonotonous(title = paste(c("Load troughs on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim = c(8680,8740), y_lim = c(-90000,-50000))
+    plotMonotonous(title = paste(c("Load troughs on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim = c(8680,8740), y_lim = c(min(matrix_conso_main)*1.05,mean(matrix_conso_main)))
     
     # # Impression de l'écart entre la monotone de référence et la monotone ré-échantillonée de l'ensemble des clusters (pour comparer la sensibité aux paramètres d'entrée : selection, poids, etc.)
     # print("Ecart L2 entre la monotone de reference et la monotone globale re-echantillonee sur la zone principale :")
@@ -345,10 +345,10 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
       plotMonotonous(title = paste(c("Load monotonous on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra)
       
       # Visualisation de toutes ces monotones sur le pic de consommation
-       plotMonotonous(title = paste(c("Load peak on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(0,60), y_lim = c(60000,100000))
+       plotMonotonous(title = paste(c("Load peak on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(0,60), y_lim = c(mean(matrix_conso_extra),max(matrix_conso_extra)*1.05))
       
       # Visualisation de toutes ces monotones sur le creux de consommation
-      plotMonotonous(title = paste(c("Load troughs on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(8680,8740), y_lim = c(-90000,-45000))
+      plotMonotonous(title = paste(c("Load troughs on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(8680,8740), y_lim = c(min(matrix_conso_extra)*1.05,mean(matrix_conso_extra)))
       
       # # Impression de l'écart entre la monotone de référence et la monotone ré-échantillonée de l'ensemble des clusters (pour comparer la sensibité aux paramètres d'entrée : selection, poids, etc.)
       # print("Ecart L2 entre la monotone de reference et la monotone globale re-echantillonee sur la zone secondaire :")
