@@ -27,14 +27,14 @@ If \code{NULL}, no extra area is imported.}
 \item{MCYears}{Index of the Monte-Carlo years to import. 
 If \code{"all"}, every MC years are read, else the specified Monte-Carlo simulations are imported.}
 
-\item{weightMain}{Numeric (between 0 and 1) giving the weighting of the load monotonous for the main areas into the clustering algorithm choices.
+\item{weightMain}{Numeric giving the weighting of the load monotonous for the main areas into the clustering algorithm choices.
 If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.}
 
-\item{weightExtra}{Numeric (between 0 and 1) giving the weighting of the load monotonous for the additional areas into the clustering algorithm choices.
+\item{weightExtra}{Numeric giving the weighting of the load monotonous for the additional areas into the clustering algorithm choices.
 It is usually lower than \code{WeightExtra}. 
 If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.}
 
-\item{weightPeakExtra}{Numeric (between 0 and 1) giving the weighting of the peak period (20 most crucial hours) for the additional areas into the clustering algorithm choices. 
+\item{weightPeakExtra}{Numeric giving the weighting of the peak period (20 most crucial hours) for the additional areas into the clustering algorithm choices. 
 It is usually lower than \code{WeightPeakMain}. 
 If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.}
 
@@ -52,7 +52,7 @@ If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm
 
 \item{opts}{List of simulation parameters returned by the function \code{antaresRead::setSimulationPath}}
 
-\item{weightPeakMean}{Numeric (between 0 and 1) giving the weighting of the peak period (20 most crucial hours) for the main areas into the clustering algorithm choices. 
+\item{weightPeakMean}{Numeric giving the weighting of the peak period (20 most crucial hours) for the main areas into the clustering algorithm choices. 
 If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.}
 }
 \value{
