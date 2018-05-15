@@ -107,43 +107,23 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     # Identifying clusters dealing with nuclear availability with the right areas
     liste_clusters <- readClusterDesc()
     liste_clusters <- filter(liste_clusters, area %in% areas & group == "nuclear")
-    # Adaptation du data.table "clusters" au format du data.table "areas"
-    # On filtre tout d'abord pour ne garder que le nucléaire concerné, puis on groupe les données selon les timeId et les années MC et enfin on somme les différents clusters de nucléaire du ou des pays
+    # Adaptation of data.table "clusters" to the format of data.table "areas"
+    # Filtering nuclear, grouping data and summing the right areas
     antaresDataList$clusters <- filter(antaresDataList$clusters, cluster %in% liste_clusters$cluster)
     antaresDataList$clusters <- group_by(antaresDataList$clusters, area, timeId, mcYear)
     antaresDataList$clusters <- summarise(antaresDataList$clusters, nuclearAvailability = sum(thermalAvailability))
-    # On enlève alors la disponiblité thermique nucléaire à la consommation nette
+    # Subtracting nuclear availability
     if ( nrow(antaresDataList$clusters) == nrow(antaresDataList$areas) ) {
       antaresDataList$areas$LOAD <- antaresDataList$areas$LOAD - antaresDataList$clusters$nuclearAvailability
     }
     return(antaresDataList)
   }
   
-  # Function that gives the mean and the variance of nuclear availability as two clustering indicators for every Monte-Carlo year
-  NucAvailability <- function(antaresDataList, areas) {
-    # Identification des clusters traitant de la disponiblité nucléaire dans les pays concernés
-    liste_clusters <- readClusterDesc()
-    liste_clusters <- filter(liste_clusters, area %in% areas & group == "nuclear")
-    # Adaptation du data.table "clusters" au format du data.table "areas"
-    # On filtre tout d'abord pour ne garder que le nucléaire concerné, puis on groupe les données selon les timeId et les années MC et enfin on somme les différents clusters de nucléaire du ou des pays
-    antaresDataList$clusters <- filter(antaresDataList$clusters, cluster %in% liste_clusters$cluster)
-    antaresDataList$clusters <- group_by(antaresDataList$clusters, area, timeId, mcYear)
-    antaresDataList$clusters <- summarise(antaresDataList$clusters, nuclearAvailability = sum(thermalAvailability))
-    # Initialisation du tableau contenant la moyenne et la variance de la disponiblit? nucl?aire sur chaque ann?e
-    info_nucAvailability <- matrix(data = NA, ncol = 2, nrow = max(antaresDataList$clusters$mcYear))
-    for (MC_year in 1 : max(antaresDataList$clusters$mcYear)) {
-      info_nucAvailability[MC_year, 1] <- mean(antaresDataList$clusters[antaresDataList$clusters$mcYear == MC_year, ]$nuclearAvailability)
-      info_nucAvailability[MC_year, 2] <- var(antaresDataList$clusters[antaresDataList$clusters$mcYear == MC_year, ]$nuclearAvailability)
-    }
-    return(info_nucAvailability)
-  } 
-  
-  # Fonction permettant de créer une matrice classant les consommations par valeurs décroissantes selon les années MC (pour pouvoir étudier les monotones)
-  loadMonotonousMatrix <- function(antaresDataList_areas) {
+  # Function creating a load matrix in a descendent way for every MC year (in order to study load duration curves)
+  loadDurationMatrix <- function(antaresDataList_areas) {
     antaresDataList_areas <- group_by(antaresDataList_areas, mcYear, timeId)
     antaresDataList_areas <- summarise(antaresDataList_areas, LOAD = sum(LOAD))
     antaresDataList_areas <- arrange(antaresDataList_areas, mcYear, desc(LOAD))
-    # Initialisation de la matrice de consommation sur la zone totale considérée
     matrix_conso <- matrix(data = NA, ncol = max(antaresDataList_areas$mcYear), nrow = max(antaresDataList_areas$timeId))
     for (MC_year in 1 : max(antaresDataList_areas$mcYear)) {
       matrix_conso[, MC_year] <- antaresDataList_areas[antaresDataList_areas$mcYear == MC_year, ]$LOAD
@@ -151,29 +131,27 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     return(matrix_conso)
   }
   
-  # Fonction permettant de créer une monotone globale ré-échantillonée prenant en compte un ensemble de monotones
-  completeLoadMonotonous <- function(loadMatrix) {
-    # Initialisation du vecteur contenant toutes les valeurs de consommation suivant tous les pas de temps
+  # Function creating a reference matrix (re-sampled) for a batch of load duration curves
+  completeLoadDuration <- function(loadMatrix) {
+    # Initialisation of the vector containing every load data
     conso_globale_full <- as.vector(loadMatrix)
     conso_globale_full <- sort(conso_globale_full, decreasing = TRUE)
     conso_globale <- rep(NA, times = nrow(loadMatrix))
-    # Pour ré-échantilloner, on ne garde que les années 1, 1001, 2001, 4001, etc. (s'il y a 1000 monotones différentes)
+    # To re-sample, we only keep the following years 1, 1001, 2001, 4001, etc. (if there is 1000 load duration curves)
     for (time in 1 : nrow(loadMatrix)) {
       conso_globale[time] <- conso_globale_full[ncol(loadMatrix)*(time-1)+1]
     }
     return(conso_globale)
   }
   
-  # Fonction permettant de renvoyer un vecteur de distance L3 (pour mettre en valeur les gros écarts tout en gardant le signe de la position comme un indicateur) entre chaque monotone et la montone de référence
-  l3DistanceRef <- function(matrix_conso, completeMonotonous) {
-    # Initialisation de la matrice des écarts de consommation avec la monotone de référence
+  # Function creating a vector of L3 distance between every load duration curves and the reference load duration one 
+  # L3 distance has been chosen to stress big deviations and to take into account the sign (-) for the position, contrary to a L2 distance 
+  l3DistanceRef <- function(matrix_conso, completeLoadData) {
     matrix_ecart_ref <- matrix(data = NA, ncol = ncol(matrix_conso), nrow = nrow(matrix_conso))
-    # Initialisation du vecteur de distance avec la monotone de référence
     dist_reference <- rep(NA, times = ncol(matrix_conso))
-    # Définition des distances (on prends le cube des distances pour pouvoir favoriser l'étude des grands écarts tout en gardant la notion de signe)
     for (MC_year in 1 : ncol(matrix_conso)) {
       for (time in 1 : nrow(matrix_conso)) {
-        matrix_ecart_ref[time, MC_year] <- (matrix_conso[time,MC_year] - completeMonotonous[time]) ^ 3
+        matrix_ecart_ref[time, MC_year] <- (matrix_conso[time,MC_year] - completeLoadData[time]) ^ 3
       }
       dist_reference[MC_year] <- sum(matrix_ecart_ref[,MC_year])
     }
