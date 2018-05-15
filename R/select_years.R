@@ -304,16 +304,16 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   
   
   
-  ##### AGREGATION DES DEUX ZONES ET CLUSTERING #####
+  ##### AGGREGATING BOTH AREAS DATA AND CLUSTERING METHOD #####
   
-  # Création d'un data.frame normalisé regroupant tous les indicateurs selon leur poids (attention à l'ordre)
+  # Creation a scaled data.frame containing every indicators (/!\ mind the order of the indicators)
   if (is.null(extraAreas) == FALSE) {
     cluster_indicators <- aggregateIndicators(l3_dist_main, l3_peak_dist_main, l3_dist_extra, l3_peak_dist_extra)
   } else {
     cluster_indicators <- aggregateIndicators(l3_dist_main, l3_peak_dist_main)
   }
    
-  # Algorithme des k-medoids
+  # K-medoids algorithm
   kmed_data <- pam(cluster_indicators, selection)
   info_clusters <- data.table("Selected years" = kmed_data$id.med, "Weighting" = kmed_data$clusinfo[,"size"])
   info_clusters <- arrange(info_clusters, `Selected years`)
@@ -322,46 +322,39 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   
   
   
-  ##### ANALYSE DES RESULTATS PAR LES MONOTONES #####
+  ##### ANALYSING RESULTS THROUGH LOAD DURATION CURVES #####
+  
   if (displayCurves == TRUE) {
-    # Création des monotones des années MC sélectionnées après clustering
+    # Creation of the load duration matrix of the selected years after clustering on the main areas
     matrix_conso_clusters_main <- matrix_conso_main[,info_clusters$`Selected years`]
     
-    # Création des monotones globales des années MC sélectionnées après clustering (ré-échantillonée)
+    # Creation of the general load duration matrix of the selected years after clustering (re-sampled) on the main areas
     complete_conso_clusters_main <- completeLoadMonotonous(matrix_conso_main[, rep(info_clusters$`Selected years`, info_clusters$Weighting)])
     
-    # Visualisation de toutes ces monotones
+    # Displaying curves of the main areas
     plotMonotonous(title = paste(c("Load monotonous on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main)
     
-    # Visualisation de toutes ces monotones sur le pic de consommation
+    # Displaying curves on the peak period of the main areas
     plotMonotonous(title = paste(c("Load peak on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim=c(0,60), y_lim=c(mean(matrix_conso_main),max(matrix_conso_main)*1.05))
     
-    # Visualisation de toutes ces monotones sur le creux de consommation
+    # Displaying curves on the trough period of the main areas
     plotMonotonous(title = paste(c("Load troughs on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim = c(8680,8740), y_lim = c(min(matrix_conso_main)*1.05,mean(matrix_conso_main)))
     
-    # # Impression de l'écart entre la monotone de référence et la monotone ré-échantillonée de l'ensemble des clusters (pour comparer la sensibité aux paramètres d'entrée : selection, poids, etc.)
-    # print("Ecart L2 entre la monotone de reference et la monotone globale re-echantillonee sur la zone principale :")
-    # print(sum((complete_conso_main-complete_conso_clusters_main)^2))
-    
     if(is.null(extraAreas) == FALSE) {
-      # Création des monotones des années MC sélectionnées après clustering
+      # Creation of the load duration matrix of the selected years after clustering on the main areas
       matrix_conso_clusters_extra <- matrix_conso_extra[,info_clusters$`Selected years`]
       
-      # Création des monotones globales des années MC sélectionnées après clustering (ré-échantillonée)
+      # Creation of the general load duration matrix of the selected years after clustering (re-sampled) on the extra areas
       complete_conso_clusters_extra <- completeLoadMonotonous(matrix_conso_extra[, rep(info_clusters$`Selected years`, info_clusters$Weighting)])
       
-      # Visualisation de toutes ces monotones
+      # Displaying curves of the main areas
       plotMonotonous(title = paste(c("Load monotonous on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra)
       
-      # Visualisation de toutes ces monotones sur le pic de consommation
+      # Displaying curves on the peak period of the main areas
        plotMonotonous(title = paste(c("Load peak on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(0,60), y_lim = c(mean(matrix_conso_extra),max(matrix_conso_extra)*1.05))
       
-      # Visualisation de toutes ces monotones sur le creux de consommation
+      # Displaying curves on the trough period of the main areas
       plotMonotonous(title = paste(c("Load troughs on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(8680,8740), y_lim = c(min(matrix_conso_extra)*1.05,mean(matrix_conso_extra)))
-      
-      # # Impression de l'écart entre la monotone de référence et la monotone ré-échantillonée de l'ensemble des clusters (pour comparer la sensibité aux paramètres d'entrée : selection, poids, etc.)
-      # print("Ecart L2 entre la monotone de reference et la monotone globale re-echantillonee sur la zone secondaire :")
-      # print(sum((complete_conso_extra-complete_conso_clusters_extra)^2))
     }
   }
   
@@ -372,12 +365,12 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   
   
   
-  ##### ANALYSE DES RESULTATS PAR LES COUTS #####
+  ##### ANALYSING RESULTS THROUGH KEY DATA #####
   if (displayTable == TRUE) {
-    # Création d'un tableau de valeurs et de comparaison sur l'operating cost et le loss of load duration entre la moyenne des 1000 années et la moyenne pondérée des clusters
+    # Creating a table to compare key values for the selected years
     data_comparison_main <- costAnalysis(data_etude_main$areas, data_load_main, info_clusters)
     
-    # Impression des tableaux
+    # Printing the table
     cat("\n Cost analysis on the main areas :", mainAreas, ":\n")
     print(data_comparison_main)
     cat("\n")
