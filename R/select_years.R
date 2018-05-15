@@ -158,25 +158,23 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     return(dist_reference)
   }
   
-  # Fonction permettant de renvoyer un vecteur de distance L3 entre chaque monotone et la monotone de référence sur la pointe (écart calculé sur les 20 premières heures)
-  l3PeakDistanceRef <- function(matrix_conso, completeMonotonous) {
-    # Initialisation de la matrice des écarts de consommation avec la monotone de référence
+  # Function creating a vector of L3 distance between every load duration curves and the reference load duration one on the peak period (first 20 hours)
+  # L3 distance has been chosen to stress big deviations and to take into account the sign (-) for the position, contrary to a L2 distance 
+  l3PeakDistanceRef <- function(matrix_conso, completeLoadData) {
     matrix_peak_ecart_ref <- matrix(data = NA, ncol = ncol(matrix_conso), nrow = 20)
-    # Initialisation du vecteur de distance avec la monotone de référence
     dist_peak_reference <- rep(NA, times = ncol(matrix_conso))
-    # Définition des distances (on prends le cube des distances pour pouvoir favoriser l'étude des grands écarts tout en gardant la notion de signe)
-    for (MC_year in 1 : ncol(matrix_conso)) {
+     for (MC_year in 1 : ncol(matrix_conso)) {
       for (time in 1 : 20) {
-        matrix_peak_ecart_ref[time, MC_year] <- (matrix_conso[time,MC_year] - completeMonotonous[time]) ^ 3
+        matrix_peak_ecart_ref[time, MC_year] <- (matrix_conso[time,MC_year] - completeLoadData[time]) ^ 3
       }
       dist_peak_reference[MC_year] <- sum(matrix_peak_ecart_ref[,MC_year])
     }
     return(dist_peak_reference)
   }
   
-  # Fonction permettant l'agrégation des indicateurs (normalisés) pour l'algorithme de clustering
-  aggregateIndicators <- function(dist_reference_main, dist_reference_peak_main, dist_reference_extra = rep(0, length(dist_reference_main)), dist_reference_peak_extra = rep(0, length(dist_reference_main)), nuc_info_main = matrix(0, length(dist_reference_main), 2)) {
-    cluster_indicators <- matrix(c(dist_reference_main, dist_reference_peak_main, dist_reference_extra, dist_reference_peak_extra, nuc_info_main), nrow = length(dist_reference_main), ncol = 6)
+  # Function aggregating indicators (scaled) for the clustering algorithm
+  aggregateIndicators <- function(dist_reference_main, dist_reference_peak_main, dist_reference_extra = NULL, dist_reference_peak_extra = NULL) {
+    cluster_indicators <- matrix(c(dist_reference_main, dist_reference_peak_main, dist_reference_extra, dist_reference_peak_extra), nrow = length(dist_reference_main), ncol = 4)
     cluster_indicators <- as.data.frame(scale(cluster_indicators))
     cluster_indicators[,1] <- cluster_indicators[,1] * weightMain
     cluster_indicators[,2] <- cluster_indicators[,2] * weightPeakMain
@@ -185,7 +183,7 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     return(cluster_indicators)
   }
   
-  # Fonction permettant la visualisation de toutes ces monotones
+  # Function plotting load duration curves
   plotMonotonous <- function(title, matrix_conso, matrix_conso_clusters, complete_conso, complete_conso_clusters, x_lim = NULL, y_lim = NULL) {
     matplot(matrix_conso, type = "l", lty = 3, xlab = "Operating time (hours)", ylab = "Net load (W)", col = "grey", xlim = x_lim, ylim = y_lim, main = title)
     matlines(matrix_conso_clusters, col = 3:(3+ncol(matrix_conso_clusters)), lty = 2, lwd = 2)
@@ -194,41 +192,41 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     legend("topright", legend = c("All load monotonous", "Reference monotonous", "Weighted mean monotonous of the clusters", paste("Cluster : MC year ", info_clusters$`Selected years`, "- Weighting : ", info_clusters$Weighting*100/ncol(matrix_conso), "%")), col = c("grey", "black", "red", 3:(3+ncol(matrix_conso_clusters))), pch = 1)
   }
   
-  # Fonction permettant la creation d'un tableau de comparaison de valeurs cles : LOLD, OP. COST, UNSP ENRG
+  # Function creating a table that compares some key values : ANNUAL LOAD, LOLD, OP. COST, UNSP ENRG
   costAnalysis <- function(antaresDataList_areas, antares_load, clusterList) {
-    # Conversion des données initiales en donnees annuelles
+    # Converting initial data in annual mode
     antaresDataList_areas <- changeTimeStep(antaresDataList_areas, "annual")
-    # Création du vecteur nom
+    # Creating vector NAME
     name <- c("MEAN OF ALL MC YEARS", "WEIGHTED MEAN OF CLUSTERS", "DIFFERENCE", "RELATIVE DIFFERENCE (in %)")
-    # Création du vecteur ANNUAL LOAD
+    # Creation vector ANNUAL LOAD
     load_all <- mean(antares_load$`TOTLOAD`)
     load_cluster <- antares_load[antares_load$mcYear %in% clusterList$`Selected years`,]$`TOTLOAD`
     load_cluster_pondere <- sum(load_cluster * clusterList$Weighting)/max(antares_load$mcYear)
     load_diff <- load_all - load_cluster_pondere
     load_rel <- (load_all - load_cluster_pondere)*100/load_all
     load <- c(load_all, load_cluster_pondere, load_diff, load_rel)
-    # Création du vecteur OP. COST 
+    # Creating vector OP. COST 
     opcost_all <- mean(antaresDataList_areas$`OP. COST`)
     opcost_cluster <- antaresDataList_areas[mcYear %in% clusterList$`Selected years`,]$`OP. COST`
     opcost_cluster_pondere <- sum(opcost_cluster * clusterList$Weighting)/max(antaresDataList_areas$mcYear)
     opcost_diff <- opcost_all - opcost_cluster_pondere
     opcost_rel <- (opcost_all - opcost_cluster_pondere)*100/opcost_all
     opcost <- c(opcost_all, opcost_cluster_pondere, opcost_diff, opcost_rel)
-    # Creation du vectebur LOLD
+    # Creating vector LOLD
     lold_all <- mean(antaresDataList_areas$`LOLD`)
     lold_cluster <- antaresDataList_areas[mcYear %in% clusterList$`Selected years`,]$`LOLD`
     lold_cluster_pondere <- sum(lold_cluster * clusterList$Weighting)/max(antaresDataList_areas$mcYear)
     lold_diff <- lold_all - lold_cluster_pondere
     lold_rel <- (lold_all - lold_cluster_pondere)*100/lold_all
     lold <- c(lold_all, lold_cluster_pondere, lold_diff, lold_rel)
-    # Creation du vecteur UNSP. ENRG
+    # Creating vector UNSP. ENRG
     unsp_all <- mean(antaresDataList_areas$`UNSP. ENRG`)
     unsp_cluster <- antaresDataList_areas[mcYear %in% clusterList$`Selected years`,]$`UNSP. ENRG`
     unsp_cluster_pondere <- sum(unsp_cluster * clusterList$Weighting)/max(antaresDataList_areas$mcYear)
     unsp_diff <- unsp_all - unsp_cluster_pondere
     unsp_rel <- (unsp_all - unsp_cluster_pondere)*100/unsp_all
     unsp <- c(unsp_all, unsp_cluster_pondere, unsp_diff, unsp_rel)
-    # Création du data.table
+    # Creating final data.table
     costTable <- data.table("NAME" = name, "ANNUAL LOAD (W)" = load, "OP. COST (euros)" = opcost, "LOLD (hours)" = lold, "UNSP. ENRG (MWh)" = unsp)
     return(costTable)
   }
