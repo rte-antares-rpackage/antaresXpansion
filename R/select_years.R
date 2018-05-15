@@ -235,16 +235,16 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   
   
   
-  ##### TRAITEMENT DES DONNEES SUR LA ZONE PRINCIPALE #####
+  ##### DATA PROCESSING ON THE MAIN AREAS #####
     
-  # Lecture de l'étude Antares et création des jeux de données sur la zone principale
+  # Reading Antares data on the main areas
   cat("Processing data from the main areas :", mainAreas, ":\n")
   data_etude_main <- readAntares(areas = mainAreas, clusters = mainAreas,  mcYears = MCYears, thermalAvailabilities = subtractNuclearAvailabilityMain, select = c("LOAD", "OP. COST","LOLD", "UNSP. ENRG", "ROW BAL.", "PSP", "MISC. NDG", "H. ROR", "WIND", "SOLAR"))
   
   # Extracting the column of real load data (before subtracting renawables) in order to compare values after the clustering
   data_load_main <- extractLoad(data_etude_main$areas)
   
-  # Ajout de la consommation nette définie comme NETLOAD = LOAD - PRODUCTION FATALE - DISPO NUCLEAIRE
+  # Defining the net load
   if (subtractUnavoidableEnergyMain == TRUE) {
     data_etude_main$areas <- addNetLoadnoMustRun(data_etude_main$areas)
   }
@@ -252,16 +252,16 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     data_etude_main <- subtractNucAvailability(data_etude_main, mainAreas)
   } 
   
-  # Création d'une matrice de consommation, classée par ordre décroissant pour pouvoir étudier la monotone, selon les années MC
-  matrix_conso_main <- loadMonotonousMatrix(data_etude_main$areas)
+  # Creation the load matrix on the main areas
+  matrix_conso_main <- loadDurationMatrix(data_etude_main$areas)
   
-  # Création de la monotone globale des 1000 années MC (ré-échantillonée)
-  complete_conso_main <- completeLoadMonotonous(matrix_conso_main)
+  # Creation of the reference load matrix on the main areas
+  complete_conso_main <- completeLoadDuration(matrix_conso_main)
   
-  # Création du vecteur de distance entre toutes les monotones et la monotone de référence (= montonone globale ré-échantillonée)
+  # Creation the distance vector between every load duration curve and the reference one on the main areas
   l3_dist_main <- l3DistanceRef(matrix_conso_main, complete_conso_main)
   
-  # Création du vecteur de distance entre toutes les monotones et la monotone de référence sur la pointe
+  # Creation the distance vector between every load duration curve and the reference one on the peak period on the main areas
   l3_peak_dist_main <- l3PeakDistanceRef(matrix_conso_main, complete_conso_main)
   
  
@@ -269,15 +269,15 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   
   
   
-  ##### TRAITEMENT DES DONNEES SUR LA ZONE SECONDAIRE #####
+  ##### DATA PROCESSING ON THE EXTRA AREAS #####
 
   if (is.null(extraAreas) == FALSE) {
     
-    # Lecture de l'étude Antares et création des jeux de données sur la zone principale
+    # Reading Antares data on the extra areas
     cat("\nProcessing data from the extra areas :", extraAreas, ":\n")
     data_etude_extra <- readAntares(areas = extraAreas, mcYears = MCYears, thermalAvailabilities = subtractNuclearAvailabilityExtra, select = c("LOAD", "OP. COST","LOLD", "UNSP. ENRG", "ROW BAL.", "PSP", "MISC. NDG", "H. ROR", "WIND", "SOLAR"))
     
-    # Ajout de la consommation nette définie comme NETLOAD = LOAD - PRODUCTION FATALE - DISPO NUCLEAIRE
+    # Defining the net load
     if (subtractUnavoidableEnergyExtra == TRUE) {
       data_etude_extra <- addNetLoadnoMustRun(data_etude_extra)
     }
@@ -285,16 +285,16 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
       data_etude_extra <- subtractNucAvailability(data_etude_extra, extraAreas)
     }
     
-    # Création d'une matrice de consommation, classée par ordre décroissant pour pouvoir étudier la monotone, selon les années MC
-    matrix_conso_extra <- loadMonotonousMatrix(data_etude_extra)
+    # Creation the load matrix on the extra areas
+    matrix_conso_extra <- loadDurationMatrix(data_etude_extra)
     
-    # Création de la monotone globale des 1000 années MC (ré-échantillonée)
-    complete_conso_extra <- completeLoadMonotonous(matrix_conso_extra)
+    # Creation of the reference load matrix on the extra areas
+    complete_conso_extra <- completeLoadDuration(matrix_conso_extra)
     
-    # Création du vecteur de distance entre toutes les monotones et la monotone de référence (= montonone globale ré-échantillonée)
+    # Creation the distance vector between every load duration curve and the reference one on the extra areas
     l3_dist_extra <- l3DistanceRef(matrix_conso_extra, complete_conso_extra)
     
-    # Création du vecteur de distance entre toutes les monotones et la monotone de référence sur la pointe
+    # Creation the distance vector between every load duration curve and the reference one on the peak period on the extra areas
     l3_peak_dist_extra <- l3PeakDistanceRef(matrix_conso_extra, complete_conso_extra)
   }  
     
