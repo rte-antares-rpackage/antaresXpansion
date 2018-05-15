@@ -19,17 +19,17 @@
 #'   Index of the Monte-Carlo years to import. 
 #'   If \code{"all"}, every MC years are read, else the specified Monte-Carlo simulations are imported. 
 #' @param weightMain
-#'   Numeric giving the weighting of the load monotonous for the main areas into the clustering algorithm choices.
+#'   Numeric (between 0 and 1) giving the weighting of the load monotonous for the main areas into the clustering algorithm choices.
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param weightPeakMean
-#'   Numeric giving the weighting of the peak period (20 most crucial hours) for the main areas into the clustering algorithm choices. 
+#'   Numeric (between 0 and 1) giving the weighting of the peak period (20 most crucial hours) for the main areas into the clustering algorithm choices. 
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param weightExtra
-#'   Numeric giving the weighting of the load monotonous for the additional areas into the clustering algorithm choices.
+#'   Numeric (between 0 and 1) giving the weighting of the load monotonous for the additional areas into the clustering algorithm choices.
 #'   It is usually lower than \code{WeightExtra}. 
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param weightPeakExtra
-#'   Numeric giving the weighting of the peak period (20 most crucial hours) for the additional areas into the clustering algorithm choices. 
+#'   Numeric (between 0 and 1) giving the weighting of the peak period (20 most crucial hours) for the additional areas into the clustering algorithm choices. 
 #'   It is usually lower than \code{WeightPeakMain}. 
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param subtractUnavoidableEnergyMain
@@ -92,14 +92,6 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   
   ##### CREATION DES FONCTIONS #####
   
-  # Function allowing to extract values of total annual load (before subtracting renewables) to analyse it after the clustering
-  extractLoad <- function(antaresDataList_areas) {
-    antares_load <- antaresDataList_areas[,.(mcYear, LOAD)]
-    antares_load <- group_by(antares_load, mcYear)
-    antares_load <- summarise(antares_load, TOTLOAD = sum(LOAD))
-    return(antares_load)
-  }
-  
   # Fonction permettant de définir la Consommation Nette = Consommation-Production fatale (sans mustRun)
   addNetLoadnoMustRun <- function(antaresDataList_areas) {
     antaresDataList_areas$LOAD <- (antaresDataList_areas$LOAD - antaresDataList_areas$`ROW BAL.` - antaresDataList_areas$PSP - antaresDataList_areas$`MISC. NDG` - antaresDataList_areas$`H. ROR` - antaresDataList_areas$WIND - antaresDataList_areas$SOLAR)
@@ -122,6 +114,25 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     }
     return(antaresDataList)
   }
+  
+  # Function that gives the mean and the variance of nuclear availability as two clustering indicators for every Monte-Carlo year
+  NucAvailability <- function(antaresDataList, areas) {
+    # Identification des clusters traitant de la disponiblité nucléaire dans les pays concernés
+    liste_clusters <- readClusterDesc()
+    liste_clusters <- filter(liste_clusters, area %in% areas & group == "nuclear")
+    # Adaptation du data.table "clusters" au format du data.table "areas"
+    # On filtre tout d'abord pour ne garder que le nucléaire concerné, puis on groupe les données selon les timeId et les années MC et enfin on somme les différents clusters de nucléaire du ou des pays
+    antaresDataList$clusters <- filter(antaresDataList$clusters, cluster %in% liste_clusters$cluster)
+    antaresDataList$clusters <- group_by(antaresDataList$clusters, area, timeId, mcYear)
+    antaresDataList$clusters <- summarise(antaresDataList$clusters, nuclearAvailability = sum(thermalAvailability))
+    # Initialisation du tableau contenant la moyenne et la variance de la disponiblit� nucl�aire sur chaque ann�e
+    info_nucAvailability <- matrix(data = NA, ncol = 2, nrow = max(antaresDataList$clusters$mcYear))
+    for (MC_year in 1 : max(antaresDataList$clusters$mcYear)) {
+      info_nucAvailability[MC_year, 1] <- mean(antaresDataList$clusters[antaresDataList$clusters$mcYear == MC_year, ]$nuclearAvailability)
+      info_nucAvailability[MC_year, 2] <- var(antaresDataList$clusters[antaresDataList$clusters$mcYear == MC_year, ]$nuclearAvailability)
+    }
+    return(info_nucAvailability)
+  } 
   
   # Fonction permettant de créer une matrice classant les consommations par valeurs décroissantes selon les années MC (pour pouvoir étudier les monotones)
   loadMonotonousMatrix <- function(antaresDataList_areas) {
@@ -182,8 +193,8 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   }
   
   # Fonction permettant l'agrégation des indicateurs (normalisés) pour l'algorithme de clustering
-  aggregateIndicators <- function(dist_reference_main, dist_reference_peak_main, dist_reference_extra = NULL, dist_reference_peak_extra = NULL) {
-    cluster_indicators <- matrix(c(dist_reference_main, dist_reference_peak_main, dist_reference_extra, dist_reference_peak_extra), nrow = length(dist_reference_main), ncol = 4)
+  aggregateIndicators <- function(dist_reference_main, dist_reference_peak_main, dist_reference_extra = rep(0, length(dist_reference_main)), dist_reference_peak_extra = rep(0, length(dist_reference_main)), nuc_info_main = matrix(0, length(dist_reference_main), 2)) {
+    cluster_indicators <- matrix(c(dist_reference_main, dist_reference_peak_main, dist_reference_extra, dist_reference_peak_extra, nuc_info_main), nrow = length(dist_reference_main), ncol = 6)
     cluster_indicators <- as.data.frame(scale(cluster_indicators))
     cluster_indicators[,1] <- cluster_indicators[,1] * weightMain
     cluster_indicators[,2] <- cluster_indicators[,2] * weightPeakMain
@@ -202,18 +213,11 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   }
   
   # Fonction permettant la creation d'un tableau de comparaison de valeurs cles : LOLD, OP. COST, UNSP ENRG
-  costAnalysis <- function(antaresDataList_areas, antares_load, clusterList) {
+  costAnalysis <- function(antaresDataList_areas, clusterList) {
     # Conversion des données initiales en donnees annuelles
     antaresDataList_areas <- changeTimeStep(antaresDataList_areas, "annual")
     # Création du vecteur nom
     name <- c("MEAN OF ALL MC YEARS", "WEIGHTED MEAN OF CLUSTERS", "DIFFERENCE", "RELATIVE DIFFERENCE (in %)")
-    # Création du vecteur ANNUAL LOAD
-    load_all <- mean(antares_load$`TOTLOAD`)
-    load_cluster <- antares_load[antares_load$mcYear %in% clusterList$`Selected years`,]$`TOTLOAD`
-    load_cluster_pondere <- sum(load_cluster * clusterList$Weighting)/max(antares_load$mcYear)
-    load_diff <- load_all - load_cluster_pondere
-    load_rel <- (load_all - load_cluster_pondere)*100/load_all
-    load <- c(load_all, load_cluster_pondere, load_diff, load_rel)
     # Création du vecteur OP. COST 
     opcost_all <- mean(antaresDataList_areas$`OP. COST`)
     opcost_cluster <- antaresDataList_areas[mcYear %in% clusterList$`Selected years`,]$`OP. COST`
@@ -236,7 +240,7 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     unsp_rel <- (unsp_all - unsp_cluster_pondere)*100/unsp_all
     unsp <- c(unsp_all, unsp_cluster_pondere, unsp_diff, unsp_rel)
     # Création du data.table
-    costTable <- data.table("NAME" = name, "ANNUAL NET LOAD (W)" = load,"OP. COST (euros)" = opcost, "LOLD (hours)" = lold, "UNSP. ENRG (MWh)" = unsp)
+    costTable <- data.table("NAME" = name, "OP. COST (euros)" = opcost, "LOLD (hours)" = lold, "UNSP. ENRG (MWh)" = unsp)
     return(costTable)
   }
   
@@ -249,9 +253,6 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   # Lecture de l'étude Antares et création des jeux de données sur la zone principale
   cat("Processing data from the main areas :", mainAreas, ":\n")
   data_etude_main <- readAntares(areas = mainAreas, clusters = mainAreas,  mcYears = MCYears, thermalAvailabilities = subtractNuclearAvailabilityMain, select = c("LOAD", "OP. COST","LOLD", "UNSP. ENRG", "ROW BAL.", "PSP", "MISC. NDG", "H. ROR", "WIND", "SOLAR"))
-  
-  # Extracting the column of real load data (before subtracting renawables) in order to compare values after the clustering
-  data_load_main <- extractLoad(data_etude_main$areas)
   
   # Ajout de la consommation nette définie comme NETLOAD = LOAD - PRODUCTION FATALE - DISPO NUCLEAIRE
   if (subtractUnavoidableEnergyMain == TRUE) {
@@ -272,8 +273,12 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   
   # Création du vecteur de distance entre toutes les monotones et la monotone de référence sur la pointe
   l3_peak_dist_main <- l3PeakDistanceRef(matrix_conso_main, complete_conso_main)
-
   
+  
+  
+  if (subtractNuclearAvailabilityMain == FALSE) {
+    complete_nuc_main <- completeLoadMonotonous
+  }
   
   
   
@@ -384,12 +389,14 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   ##### ANALYSE DES RESULTATS PAR LES COUTS #####
   if (displayTable == TRUE) {
     # Création d'un tableau de valeurs et de comparaison sur l'operating cost et le loss of load duration entre la moyenne des 1000 années et la moyenne pondérée des clusters
-    data_comparison_main <- costAnalysis(data_etude_main$areas, data_load_main, info_clusters)
+    data_comparison_main <- costAnalysis(data_etude_main$areas, info_clusters)
     #data_comparison_extra <- costAnalysis(data_etude_extra, info_clusters)
     
     # Impression des tableaux
     cat("\n Cost analysis on the main areas :", mainAreas, ":\n")
     print(data_comparison_main)
+    #cat("\nCost analysis on the extra areas :", extraAreas, ":\n")
+    #print(data_comparison_extra)
     cat("\n")
   }
   
