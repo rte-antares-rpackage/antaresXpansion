@@ -78,17 +78,15 @@
 
 select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCYears = "all", weightMain = 0.5, weightPeakMain = 0.5, weightExtra = 0, weightPeakExtra = 0, subtractUnavoidableEnergyMain = TRUE, subtractUnavoidableEnergyExtra = TRUE, subtractNuclearAvailabilityMain = TRUE, subtractNuclearAvailabilityExtra = FALSE, displayCurves = TRUE, displayTable = TRUE, opts = antaresRead::simOptions())
 {
-  ##### INITIALISATION #####
+  ##### INITIALIZATION #####
   
-  # Definition du tirage aleatoire
+  # Definition of the random draw
   set.seed(1)
 
   
   
   
-  
-  
-  ##### CREATION DES FONCTIONS #####
+  ##### CREATION OF FUNCTIONS #####
   
   # Function allowing to extract values of total annual load (before subtracting renewables) to analyse it after the clustering
   extractLoad <- function(antaresDataList_areas) {
@@ -98,15 +96,15 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     return(antares_load)
   }
   
-  # Fonction permettant de définir la Consommation Nette = Consommation-Production fatale (sans mustRun)
+  # Function that defines Net load = Load - UndispatchableEnergy (without mustRun)
   addNetLoadnoMustRun <- function(antaresDataList_areas) {
     antaresDataList_areas$LOAD <- (antaresDataList_areas$LOAD - antaresDataList_areas$`ROW BAL.` - antaresDataList_areas$PSP - antaresDataList_areas$`MISC. NDG` - antaresDataList_areas$`H. ROR` - antaresDataList_areas$WIND - antaresDataList_areas$SOLAR)
     return(antaresDataList_areas)
   }
   
-  # Fonction permettant de retirer la disponibilité nucléaire à la consommation nette
+  # Function subtracting the nuclear availability from the load
   subtractNucAvailability <- function(antaresDataList, areas) {
-    # Identification des clusters traitant de la disponiblité nucléaire dans les pays concernés
+    # Identifying clusters dealing with nuclear availability with the right areas
     liste_clusters <- readClusterDesc()
     liste_clusters <- filter(liste_clusters, area %in% areas & group == "nuclear")
     # Adaptation du data.table "clusters" au format du data.table "areas"
@@ -417,7 +415,3 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   return(info_clusters)
   
 }
-  
-  
-  
-  
