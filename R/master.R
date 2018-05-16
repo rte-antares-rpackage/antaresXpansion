@@ -43,6 +43,7 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   in_out_files$yearly_cuts <- "in_yearlycuts.txt"
   in_out_files$weekly_cuts <- "in_weeklycuts.txt"
   in_out_files$options <- "in_options.txt"
+  in_out_files$solver <- "in_solver.txt"
   in_out_files$sol_master <- "out_solutionmaster.txt"
   in_out_files$underestimator <- "out_underestimator.txt"
   in_out_files$log <- "out_log.txt"
@@ -100,11 +101,9 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   }
   write(script, file = paste0(tmp_folder, "/", in_out_files$candidates))
   
-  # 4 - in_options.txt (has been shifted to function solve)
-  #if(exp_options$master == "relaxed")
-  #{
-  #  write("option relax_integrality 1;", file = paste0(tmp_folder, "/", in_out_files$options))
-  #}
+  
+  # 4 - in_solver.txt
+  write(exp_options$solver, file = paste0(tmp_folder, "/", in_out_files$solver))
 }
 
 
@@ -162,7 +161,6 @@ solve_master <- function(opts = antaresRead::simOptions(), relax_integrality = F
       cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & "', ampl_path ,'" "', tmp_folder, '/master_run.ampl" ')
     }
     a <- shell(cmd, wait = TRUE, intern = TRUE)
-    
   } else 
   {
     # Linux version
