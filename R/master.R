@@ -175,4 +175,10 @@ solve_master <- function(opts = antaresRead::simOptions(), relax_integrality = F
     }
     a <- system(cmd, wait = TRUE, intern = TRUE)
   }
+
+    # check if AMPL returned an error
+  if(any(grepl("error", tolower(a)) | grepl("cannot", tolower(a))))
+  {
+     stop("master problem returned the following error: ", a)
+  }
 }
