@@ -157,7 +157,9 @@ read_options <- function(file, opts = antaresRead::simOptions())
       weight_file <- paste0(paste(opts$studyPath,"/user/expansion/", sep=""), option_value)
       assert_that(file.exists(weight_file))
       yearly_weights <- scan(weight_file, quiet = TRUE)
-      
+      assertthat::assert_that(all(yearly_weights >= 0))
+      assertthat::assert_that(sum(yearly_weights) > 0)
+
       if(length(yearly_weights) == length(antaresEditObject::getPlaylist(opts)))
       {
         # same number of weights than number of MC years in PLAYLIST
