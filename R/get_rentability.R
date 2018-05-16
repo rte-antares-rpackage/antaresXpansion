@@ -109,9 +109,10 @@ get_expected_rentability <- function(output_antares, current_it, candidates, n_w
     }
     
     # second, get aggregated rentability for those links
+    # carreful : not sure the following line works in case of a partial iteration
+    
     get_aggr_rentability <- function(c)
     {
-      # carreful : not sure the following line works in case of a partial iteration
       if((c$has_link_profile)&(!c$has_link_profile_indirect))
       { 
         # if link_profile is constant during the 8760 hours, we prefer extract annual values from Antares (better rounding)
@@ -172,7 +173,7 @@ get_expected_rentability <- function(output_antares, current_it, candidates, n_w
             }
           }  
           
-          ###### # Indirect :          
+          ####### Indirect :          
           if(length(unique(c$link_profile_indirect))==1 &&  sum(subset(output_link_h_s_i, mcYear == y)$sens_indirect) == 8736)
           {
             tmp_rentability_indirect <-  as.numeric(subset(output_link_y_s_i, link == c$link & mcYear == y)$"MARG. COST"*unique(c$link_profile_indirect))
@@ -204,6 +205,7 @@ get_expected_rentability <- function(output_antares, current_it, candidates, n_w
         return(sum(as.numeric(subset(output_link_s, link == c$link)$"MARG. COST")) - c$cost * n_w / 52)
       }
     }
+    
     average_rentability <- sapply(candidates, FUN = get_aggr_rentability)
     return(average_rentability)
   }

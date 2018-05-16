@@ -44,6 +44,7 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   in_out_files$weekly_cuts <- "in_weeklycuts.txt"
   in_out_files$options <- "in_options.txt"
   in_out_files$solver <- "in_solver.txt"
+  in_out_files$y_weights <- "in_yweights.txt"
   in_out_files$sol_master <- "out_solutionmaster.txt"
   in_out_files$underestimator <- "out_underestimator.txt"
   in_out_files$log <- "out_log.txt"
@@ -104,6 +105,17 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   
   # 4 - in_solver.txt
   write(exp_options$solver, file = paste0(tmp_folder, "/", in_out_files$solver))
+  
+  # 5 - in_yweights.txt
+  
+  if(all(is.na(exp_options$y_weights)))
+  {
+    weights_y <- rep(1, length(mc))/length(mc)
+  }
+  else{weights_y <- exp_options$y_weights}
+  script <- sapply(1:length(mc), FUN = function(n){paste0(mc[n], " ", weights_y[n])})
+  write(paste0(script, collapse = "\n"), file = paste0(tmp_folder, "/", in_out_files$y_weights))
+  
 }
 
 

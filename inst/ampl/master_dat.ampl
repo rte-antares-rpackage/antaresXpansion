@@ -41,3 +41,4 @@ param lambda_weekly := include in_weeklyrentability.txt ;
 # options 
 
 param prm_solver := include in_solver.txt;
+param prob := include in_yweights.txt;
