@@ -62,7 +62,6 @@ run_simulation <- function(name, mode = "economy", path_solver, wait = TRUE, sho
     cmd <- '"%s" "%s" -n "%s" --%s'
     cmd <- sprintf(cmd, path_solver, opts$studyPath, name, mode)
   }
-    
   system(cmd, ignore.stdout = TRUE, wait = wait,  show.output.on.console = show_output_on_console)
 }
 

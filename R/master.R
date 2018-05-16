@@ -147,14 +147,34 @@ solve_master <- function(opts = antaresRead::simOptions(), relax_integrality = F
   assertthat::assert_that(file.exists(paste0(tmp_folder, "/master_mod.ampl")))
   assertthat::assert_that(file.exists(paste0(tmp_folder, "/master_dat.ampl")))
   
-  if(is.null(ampl_path))
+  
+  # launch master_run.ampl
+  if(tolower(.Platform$OS.type) == "windows") 
   {
-    cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & ampl "', tmp_folder, '/master_run.ampl" ')
-  }
-  else
+    # Windows version
+    if(is.null(ampl_path))
+    {
+      cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & ampl "', tmp_folder, '/master_run.ampl" ')
+    }
+    else
+    {
+      assertthat::assert_that(file.exists(ampl_path))
+      cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & "', ampl_path ,'" "', tmp_folder, '/master_run.ampl" ')
+    }
+    a <- shell(cmd, wait = TRUE, intern = TRUE)
+    
+  } else 
   {
-    assertthat::assert_that(file.exists(ampl_path))
-    cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & "', ampl_path ,'" "', tmp_folder, '/master_run.ampl" ')
+    # Linux version
+    if(is.null(ampl_path))
+    {
+      cmd <- paste0('cd "', tmp_folder, '" & ampl "', tmp_folder, '/master_run.ampl" ')
+    }
+    else
+    {
+      assertthat::assert_that(file.exists(ampl_path))
+      cmd <- paste0('cd "', tmp_folder, '" & "', ampl_path ,'" "', tmp_folder, '/master_run.ampl" ')
+    }
+    a <- system(cmd, wait = TRUE, intern = TRUE)
   }
-  a <- shell(cmd, wait = TRUE, intern = TRUE)
 }
