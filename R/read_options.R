@@ -16,6 +16,7 @@
 #' 
 #' @importFrom assertthat assert_that
 #' @importFrom antaresRead simOptions
+#' @importFrom antaresEditObject getPlaylist
 #' @export
 #' 
 #' 
@@ -39,6 +40,7 @@ read_options <- function(file, opts = antaresRead::simOptions())
   options$week_selection <- FALSE
   options$relaxed_optimality_gap <- "0.01%"
   options$solver <- "cbc"
+  options$y_weights <- NA
   
   # if the file is empty, the default values are kept 
   if(length(param_data) == 0){return(options)}
@@ -150,10 +152,41 @@ read_options <- function(file, opts = antaresRead::simOptions())
     {
       options$solver <- option_value
     }
+    else if (option_name == "yearly-weights")
+    {
+      weight_file <- paste0(paste(opts$studyPath,"/user/expansion/", sep=""), option_value)
+      assert_that(file.exists(weight_file))
+      yearly_weights <- scan(weight_file, quiet = TRUE)
+      
+      if(length(yearly_weights) == length(antaresEditObject::getPlaylist(opts)))
+      {
+        # same number of weights than number of MC years in PLAYLIST
+        options$y_weights <- yearly_weights / sum(yearly_weights)
+        names(options$y_weights) <- antaresEditObject::getPlaylist(opts)
+      }
+      else if(length(yearly_weights) == opts$parameters$general$nbyears)
+      {
+        #same number of weights than number of MC years
+        options$y_weights <- yearly_weights[antaresEditObject::getPlaylist(opts)]
+        options$y_weights <- options$y_weights/sum(options$y_weights)
+        names(options$y_weights) <- antaresEditObject::getPlaylist(opts)
+      }
+      else
+      {
+        stop("Number of yearly weights does not correspond to number of MC years in the Antares study")
+      }
+    }
     else
     {
       warning(paste0("Unknown option : ", option_name))
     }
   }
+  
+  # check consistency of options
+  if(any(!is.na(options$y_weights)) & options$cut_type == "average")
+  {
+    stop('options "yearly-weights" and "cut-type = average" are not compatible')
+  }
+
   return(options)
 }
