@@ -70,7 +70,20 @@ get_op_costs <- function(output_antares, current_it, exp_options)
       # in that case, the costs must be read in the criterion (.txt) files
       # they correspond to the cost returned by the optimization problems while the ov.cost in output of ANTARES
       # is post-treated with some small corrections for more consistency between the weeks
-      op_cost <- sum(antaresRead::readOptimCriteria(opts = output_antares)$"criterion1") / length(current_it$mc_years)
+      if(all(is.na(exp_options$y_weights)))
+      {
+        # if Monte-Carlo years are equally weighted
+        op_cost <- sum(antaresRead::readOptimCriteria(opts = output_antares)$"criterion1") / length(current_it$mc_years)
+      }
+      else
+      { 
+        # if Monte-Carlo years are not equally weighted
+        crit <- antaresRead::readOptimCriteria(opts = output_antares)
+        op_cost_y <- sapply(output_antares$mcYears, FUN = function(n){ sum(crit[mcYear ==n ]$"criterion1")})
+        
+        # works only in case of full iteration
+        op_cost <- sum(op_cost_y * exp_options$y_weights)
+      }
     }
     else
     {
