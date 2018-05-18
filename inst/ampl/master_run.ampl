@@ -17,6 +17,9 @@ option solver (prm_solver);    # set solver
 # solver master problem
 solve >> out_log.txt;
 
+# correct Invested_capacity, slight negative values are possible due to constraint tolerances
+let {z in INV_CANDIDATE} Invested_capacity[z] := max(0, Invested_capacity[z]);
+
 
 # write results (in the same folder)
 
