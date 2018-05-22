@@ -184,12 +184,12 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   }
   
   # Function plotting load duration curves
-  plotMonotonous <- function(title, matrix_conso, matrix_conso_clusters, complete_conso, complete_conso_clusters, x_lim = NULL, y_lim = NULL) {
+  plotLoadDuration <- function(title, matrix_conso, matrix_conso_clusters, complete_conso, complete_conso_clusters, x_lim = NULL, y_lim = NULL) {
     matplot(matrix_conso, type = "l", lty = 3, xlab = "Operating time (hours)", ylab = "Net load (W)", col = "grey", xlim = x_lim, ylim = y_lim, main = title)
     matlines(matrix_conso_clusters, col = 3:(3+ncol(matrix_conso_clusters)), lty = 2, lwd = 2)
     matlines(complete_conso, col = "black", lwd = 2)
     matlines(complete_conso_clusters, col = "red", lwd = 2)
-    legend("topright", legend = c("All load monotonous", "Reference monotonous", "Weighted mean monotonous of the clusters", paste("Cluster : MC year ", info_clusters$`Selected years`, "- Weighting : ", info_clusters$Weighting*100/ncol(matrix_conso), "%")), col = c("grey", "black", "red", 3:(3+ncol(matrix_conso_clusters))), pch = 1)
+    legend("topright", legend = c("All load duration curves", "General load duration curve", "Weighted general load duration curve of the clusters", paste("Cluster : MC year ", info_clusters$`Selected years`, "- Weighting : ", info_clusters$Weighting*100/ncol(matrix_conso), "%")), col = c("grey", "black", "red", 3:(3+ncol(matrix_conso_clusters))), pch = 1)
   }
   
   # Function creating a table that compares some key values : ANNUAL LOAD, LOLD, OP. COST, UNSP ENRG
@@ -329,32 +329,32 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
     matrix_conso_clusters_main <- matrix_conso_main[,info_clusters$`Selected years`]
     
     # Creation of the general load duration matrix of the selected years after clustering (re-sampled) on the main areas
-    complete_conso_clusters_main <- completeLoadMonotonous(matrix_conso_main[, rep(info_clusters$`Selected years`, info_clusters$Weighting)])
+    complete_conso_clusters_main <- completeLoadDuration(matrix_conso_main[, rep(info_clusters$`Selected years`, info_clusters$Weighting)])
     
     # Displaying curves of the main areas
-    plotMonotonous(title = paste(c("Load monotonous on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main)
+    plotLoadDuration(title = paste(c("Load monotonous on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main)
     
     # Displaying curves on the peak period of the main areas
-    plotMonotonous(title = paste(c("Load peak on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim=c(0,60), y_lim=c(mean(matrix_conso_main),max(matrix_conso_main)*1.05))
+    plotLoadDuration(title = paste(c("Load peak on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim=c(0,60), y_lim=c(mean(matrix_conso_main),max(matrix_conso_main)*1.05))
     
     # Displaying curves on the trough period of the main areas
-    plotMonotonous(title = paste(c("Load troughs on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim = c(8680,8740), y_lim = c(min(matrix_conso_main)*1.05,mean(matrix_conso_main)))
+    plotLoadDuration(title = paste(c("Load troughs on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim = c(8680,8740), y_lim = c(min(matrix_conso_main)*1.05,mean(matrix_conso_main)))
     
     if(is.null(extraAreas) == FALSE) {
       # Creation of the load duration matrix of the selected years after clustering on the main areas
       matrix_conso_clusters_extra <- matrix_conso_extra[,info_clusters$`Selected years`]
       
       # Creation of the general load duration matrix of the selected years after clustering (re-sampled) on the extra areas
-      complete_conso_clusters_extra <- completeLoadMonotonous(matrix_conso_extra[, rep(info_clusters$`Selected years`, info_clusters$Weighting)])
+      complete_conso_clusters_extra <- completeLoadDuration(matrix_conso_extra[, rep(info_clusters$`Selected years`, info_clusters$Weighting)])
       
       # Displaying curves of the main areas
-      plotMonotonous(title = paste(c("Load monotonous on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra)
+      plotLoadDuration(title = paste(c("Load monotonous on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra)
       
       # Displaying curves on the peak period of the main areas
-       plotMonotonous(title = paste(c("Load peak on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(0,60), y_lim = c(mean(matrix_conso_extra),max(matrix_conso_extra)*1.05))
+      plotLoadDuration(title = paste(c("Load peak on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(0,60), y_lim = c(mean(matrix_conso_extra),max(matrix_conso_extra)*1.05))
       
       # Displaying curves on the trough period of the main areas
-      plotMonotonous(title = paste(c("Load troughs on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(8680,8740), y_lim = c(min(matrix_conso_extra)*1.05,mean(matrix_conso_extra)))
+      plotLoadDuration(title = paste(c("Load troughs on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(8680,8740), y_lim = c(min(matrix_conso_extra)*1.05,mean(matrix_conso_extra)))
     }
   }
   
@@ -380,7 +380,7 @@ select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCY
   
   
   
-  ##### FIN DE FONCTION #####
+  ##### END OF FUNCTION #####
   return(info_clusters)
   
 }
