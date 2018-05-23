@@ -11,7 +11,7 @@
 #' @param extraAreas
 #'   Vector containing the names of the additional areas on which the clustering algorithm will be based.
 #'   Usually it contains areas that need to be taken into account in the algorithm but in a smaller scale than the ones in \code{mainAreas}.
-#'   If \code{mainAreas} = \code{"fr"}, \code{extraAreas} must not contain \code{"fr"} again to be relevant enough.
+#'   If \code{mainAreas} = \code{"fr"}, \code{extraAreas} must not contain \code{"fr"} again to be relevant enough. By default, the 10 most important areas in Europe (except France) are imported.
 #'   If \code{NULL}, no extra area is imported.
 #' @param selection
 #'   Numeric representing the amount of Monte-Carlo years to get after the function.
@@ -61,14 +61,13 @@
 #' setSimulationPath()
 #' 
 #' # Find 5 Monte-Carlo year clusters for the simulation
-#' # Study France as the main area and europe as the secondary area
+#' # Study France as the main area and 3 europeans countries as the secondary area
 #' # Base algorithm on :
-#' # 40% for the load duration curve in France
+#' # 50% for the load duration curve in France
 #' # 40% for the peak period in France
-#' # 20% for the load duration curve in all europe
+#' # 10% for the load duration curve in all europe
 #' # 0% for the peak period in all europe
-#' europe <- c("at", "be", "ch", "de", "es", "gb", "ie", "it", "lu_be", "lu_de", "ni", "nl", "pt")
-#' select_years(mainAreas = "fr", extraAreas = europe, weightMain = 0.4, weightPeakMain = 0.4, weightExtra = 0.2)
+#' select_years(mainAreas = "fr", extraAreas = c("es", "gb", "it"), weightMain = 0.5, weightPeakMain = 0.4, weightExtra = 0.1)
 #' 
 #' @import data.table
 #' @importFrom dplyr filter group_by summarise arrange
@@ -76,7 +75,7 @@
 #' @importFrom antaresRead simOptions readClusterDesc
 #' @export
 
-select_years <- function(mainAreas = "fr", extraAreas = NULL, selection = 5, MCYears = "all", weightMain = 0.5, weightPeakMain = 0.5, weightExtra = 0, weightPeakExtra = 0, subtractUndispatchableEnergyMain = TRUE, subtractUndispatchableEnergyExtra = TRUE, subtractNuclearAvailabilityMain = TRUE, subtractNuclearAvailabilityExtra = FALSE, displayCurves = TRUE, displayTable = TRUE, opts = antaresRead::simOptions())
+select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","es","gb","ie","it","nl","pt"), selection = 5, MCYears = "all", weightMain = 0.4, weightPeakMain = 0.4, weightExtra = 0.2, weightPeakExtra = 0, subtractUndispatchableEnergyMain = TRUE, subtractUndispatchableEnergyExtra = TRUE, subtractNuclearAvailabilityMain = TRUE, subtractNuclearAvailabilityExtra = FALSE, displayCurves = TRUE, displayTable = TRUE, opts = antaresRead::simOptions())
 {
   ##### INITIALIZATION #####
   
