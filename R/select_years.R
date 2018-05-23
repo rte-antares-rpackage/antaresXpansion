@@ -331,7 +331,7 @@ select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","e
     complete_conso_clusters_main <- completeLoadDuration(matrix_conso_main[, rep(info_clusters$`Selected years`, info_clusters$Weighting)])
     
     # Displaying curves of the main areas
-    plotLoadDuration(title = paste(c("Load monotonous on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main)
+    plotLoadDuration(title = paste(c("Load duration curve on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main)
     
     # Displaying curves on the peak period of the main areas
     plotLoadDuration(title = paste(c("Load peak on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim=c(0,60), y_lim=c(mean(matrix_conso_main),max(matrix_conso_main)*1.05))
@@ -347,7 +347,7 @@ select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","e
       complete_conso_clusters_extra <- completeLoadDuration(matrix_conso_extra[, rep(info_clusters$`Selected years`, info_clusters$Weighting)])
       
       # Displaying curves of the main areas
-      plotLoadDuration(title = paste(c("Load monotonous on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra)
+      plotLoadDuration(title = paste(c("Load duration curve on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra)
       
       # Displaying curves on the peak period of the main areas
       plotLoadDuration(title = paste(c("Load peak on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(0,60), y_lim = c(mean(matrix_conso_extra),max(matrix_conso_extra)*1.05))
