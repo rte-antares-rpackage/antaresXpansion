@@ -6,8 +6,9 @@
 \usage{
 select_years(mainAreas = "fr", extraAreas = c("at", "be", "ch", "de", "es",
   "gb", "ie", "it", "nl", "pt"), selection = 5, MCYears = "all",
-  weightMain = 0.4, weightPeakMain = 0.4, weightExtra = 0.2,
-  weightPeakExtra = 0, subtractUndispatchableEnergyMain = TRUE,
+  weightMain = 0.3, weightPeakMain = 0.3, weightUnspEnrgMain = 0.3,
+  weightExtra = 0.1, weightPeakExtra = 0,
+  subtractUndispatchableEnergyMain = TRUE,
   subtractUndispatchableEnergyExtra = TRUE,
   subtractNuclearAvailabilityMain = TRUE,
   subtractNuclearAvailabilityExtra = FALSE, displayCurves = TRUE,
@@ -30,11 +31,17 @@ If \code{"all"}, every MC years are read, else the specified Monte-Carlo simulat
 \item{weightMain}{Numeric giving the weighting of the load monotonous for the main areas into the clustering algorithm choices.
 If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.}
 
+\item{weightPeakMain}{Numeric giving the weighting of the peak period (for the 20 most crucial hours on the load duration curves) for the main areas into the clustering algorithm choices. 
+If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.}
+
+\item{weightUnspEnrgMain}{Numeric giving the weighting of the total unsupplied energy for the main areas into the clustering algorithm choices. 
+If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.}
+
 \item{weightExtra}{Numeric giving the weighting of the load monotonous for the additional areas into the clustering algorithm choices.
 It is usually lower than \code{WeightExtra}. 
 If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.}
 
-\item{weightPeakExtra}{Numeric giving the weighting of the peak period (20 most crucial hours) for the additional areas into the clustering algorithm choices. 
+\item{weightPeakExtra}{Numeric giving the weighting of the peak period (for the 20 most crucial hours on the load duration curves) for the additional areas into the clustering algorithm choices. 
 It is usually lower than \code{WeightPeakMain}. 
 If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.}
 
@@ -51,9 +58,6 @@ If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm
 \item{displayTable}{If \code{TRUE}, the function displays a cost analysis (LOAD, OP. COST, LOLD, UNSP. ENRG)}
 
 \item{opts}{List of simulation parameters returned by the function \code{antaresRead::setSimulationPath}}
-
-\item{weightPeakMean}{Numeric giving the weighting of the peak period (20 most crucial hours) for the main areas into the clustering algorithm choices. 
-If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.}
 }
 \value{
 If \code{displayCurves} and \code{displayTable} are both \code{FALSE}, only identities and weightings of the selected Monte-Carlo years are displayed.
@@ -76,10 +80,11 @@ setSimulationPath()
 # Find 5 Monte-Carlo year clusters for the simulation
 # Study France as the main area and 3 europeans countries as the secondary area
 # Base algorithm on :
-# 50\% for the load duration curve in France
-# 40\% for the peak period in France
+# 30\% for the load duration curve in France
+# 30\% for the peak period in France
+# 30\% for the total unsupplied energy in France
 # 10\% for the load duration curve in all europe
 # 0\% for the peak period in all europe
-select_years(mainAreas = "fr", extraAreas = c("es", "gb", "it"), weightMain = 0.5, weightPeakMain = 0.4, weightExtra = 0.1)
+select_years(mainAreas = "fr", extraAreas = c("es", "gb", "it"), weightMain = 0.3, weightPeakMain = 0.3, weightUnspEnrgMain = 0.3, weightExtra = 0.1)
 
 }

@@ -21,15 +21,18 @@
 #' @param weightMain
 #'   Numeric giving the weighting of the load monotonous for the main areas into the clustering algorithm choices.
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
-#' @param weightPeakMean
-#'   Numeric giving the weighting of the peak period (20 most crucial hours) for the main areas into the clustering algorithm choices. 
+#' @param weightPeakMain
+#'   Numeric giving the weighting of the peak period (for the 20 most crucial hours on the load duration curves) for the main areas into the clustering algorithm choices. 
+#'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
+#' @param weightUnspEnrgMain
+#'   Numeric giving the weighting of the total unsupplied energy for the main areas into the clustering algorithm choices. 
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param weightExtra
 #'   Numeric giving the weighting of the load monotonous for the additional areas into the clustering algorithm choices.
 #'   It is usually lower than \code{WeightExtra}. 
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param weightPeakExtra
-#'   Numeric giving the weighting of the peak period (20 most crucial hours) for the additional areas into the clustering algorithm choices. 
+#'   Numeric giving the weighting of the peak period (for the 20 most crucial hours on the load duration curves) for the additional areas into the clustering algorithm choices. 
 #'   It is usually lower than \code{WeightPeakMain}. 
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param subtractUndispatchableEnergyMain
@@ -63,11 +66,12 @@
 #' # Find 5 Monte-Carlo year clusters for the simulation
 #' # Study France as the main area and 3 europeans countries as the secondary area
 #' # Base algorithm on :
-#' # 50% for the load duration curve in France
-#' # 40% for the peak period in France
+#' # 30% for the load duration curve in France
+#' # 30% for the peak period in France
+#' # 30% for the total unsupplied energy in France
 #' # 10% for the load duration curve in all europe
 #' # 0% for the peak period in all europe
-#' select_years(mainAreas = "fr", extraAreas = c("es", "gb", "it"), weightMain = 0.5, weightPeakMain = 0.4, weightExtra = 0.1)
+#' select_years(mainAreas = "fr", extraAreas = c("es", "gb", "it"), weightMain = 0.3, weightPeakMain = 0.3, weightUnspEnrgMain = 0.3, weightExtra = 0.1)
 #' 
 #' @import data.table
 #' @importFrom dplyr filter group_by summarise arrange
@@ -75,7 +79,7 @@
 #' @importFrom antaresRead simOptions readClusterDesc
 #' @export
 
-select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","es","gb","ie","it","nl","pt"), selection = 5, MCYears = "all", weightMain = 0.4, weightPeakMain = 0.4, weightExtra = 0.2, weightPeakExtra = 0, subtractUndispatchableEnergyMain = TRUE, subtractUndispatchableEnergyExtra = TRUE, subtractNuclearAvailabilityMain = TRUE, subtractNuclearAvailabilityExtra = FALSE, displayCurves = TRUE, displayTable = TRUE, opts = antaresRead::simOptions())
+select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","es","gb","ie","it","nl","pt"), selection = 5, MCYears = "all", weightMain = 0.3, weightPeakMain = 0.3, weightUnspEnrgMain = 0.3, weightExtra = 0.1, weightPeakExtra = 0, subtractUndispatchableEnergyMain = TRUE, subtractUndispatchableEnergyExtra = TRUE, subtractNuclearAvailabilityMain = TRUE, subtractNuclearAvailabilityExtra = FALSE, displayCurves = TRUE, displayTable = TRUE, opts = antaresRead::simOptions())
 {
   ##### INITIALIZATION #####
   
@@ -176,8 +180,8 @@ select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","e
     cluster_indicators <- matrix(c(dist_reference_main, dist_reference_peak_main, unsp_vector$`UNSP. ENRG`, dist_reference_extra, dist_reference_peak_extra), nrow = length(dist_reference_main), ncol = 5)
     cluster_indicators <- as.data.frame(scale(cluster_indicators))
     cluster_indicators[,1] <- cluster_indicators[,1] * weightMain
-    cluster_indicators[,2] <- cluster_indicators[,2] * weightPeakMain/3
-    cluster_indicators[,3] <- cluster_indicators[,3] * weightPeakMain*2/3
+    cluster_indicators[,2] <- cluster_indicators[,2] * weightPeakMain
+    cluster_indicators[,3] <- cluster_indicators[,3] * weightUnspEnrgMain
     cluster_indicators[,4] <- cluster_indicators[,4] * weightExtra
     cluster_indicators[,5] <- cluster_indicators[,5] * weightPeakExtra
     return(cluster_indicators)
