@@ -172,13 +172,14 @@ select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","e
   }
   
   # Function aggregating indicators (scaled) for the clustering algorithm
-  aggregateIndicators <- function(dist_reference_main, dist_reference_peak_main, dist_reference_extra = NULL, dist_reference_peak_extra = NULL) {
-    cluster_indicators <- matrix(c(dist_reference_main, dist_reference_peak_main, dist_reference_extra, dist_reference_peak_extra), nrow = length(dist_reference_main), ncol = 4)
+  aggregateIndicators <- function(dist_reference_main, dist_reference_peak_main, unsp_vector, dist_reference_extra = NULL, dist_reference_peak_extra = NULL) {
+    cluster_indicators <- matrix(c(dist_reference_main, dist_reference_peak_main, unsp_vector$`UNSP. ENRG`, dist_reference_extra, dist_reference_peak_extra), nrow = length(dist_reference_main), ncol = 5)
     cluster_indicators <- as.data.frame(scale(cluster_indicators))
     cluster_indicators[,1] <- cluster_indicators[,1] * weightMain
-    cluster_indicators[,2] <- cluster_indicators[,2] * weightPeakMain
-    cluster_indicators[,3] <- cluster_indicators[,3] * weightExtra
-    cluster_indicators[,4] <- cluster_indicators[,4] * weightPeakExtra
+    cluster_indicators[,2] <- cluster_indicators[,2] * weightPeakMain/3
+    cluster_indicators[,3] <- cluster_indicators[,3] * weightPeakMain*2/3
+    cluster_indicators[,4] <- cluster_indicators[,4] * weightExtra
+    cluster_indicators[,5] <- cluster_indicators[,5] * weightPeakExtra
     return(cluster_indicators)
   }
   
@@ -230,7 +231,12 @@ select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","e
     return(costTable)
   }
   
-  
+  # Function creating the vector containing the total unsupplied energy for every MC year
+  unsp_total <- function(antaresDataList_areas){
+    unsp_vector <- group_by(antaresDataList_areas, mcYear)
+    unsp_vector <- summarise(unsp_vector, `UNSP. ENRG` = sum(`UNSP. ENRG`))
+    return(unsp_vector)
+  }
   
   
   
@@ -251,18 +257,20 @@ select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","e
     data_etude_main <- subtractNucAvailability(data_etude_main, mainAreas)
   } 
   
-  # Creation the load matrix on the main areas
+  # Creating the load matrix on the main areas
   matrix_conso_main <- loadDurationMatrix(data_etude_main$areas)
   
-  # Creation of the reference load matrix on the main areas
+  # Creating the reference load matrix on the main areas
   complete_conso_main <- completeLoadDuration(matrix_conso_main)
   
-  # Creation the distance vector between every load duration curve and the reference one on the main areas
+  # Creating the distance vector between every load duration curve and the reference one on the main areas
   l3_dist_main <- l3DistanceRef(matrix_conso_main, complete_conso_main)
   
-  # Creation the distance vector between every load duration curve and the reference one on the peak period on the main areas
+  # Creating the distance vector between every load duration curve and the reference one on the peak period on the main areas
   l3_peak_dist_main <- l3PeakDistanceRef(matrix_conso_main, complete_conso_main)
   
+  # Creating the vector containing the total unsupplied energy for every MC year
+  unsp_main <- unsp_total(data_etude_main$areas)
  
   
   
@@ -284,16 +292,16 @@ select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","e
       data_etude_extra <- subtractNucAvailability(data_etude_extra, extraAreas)
     }
     
-    # Creation the load matrix on the extra areas
+    # Creating the load matrix on the extra areas
     matrix_conso_extra <- loadDurationMatrix(data_etude_extra)
     
-    # Creation of the reference load matrix on the extra areas
+    # Creating the reference load matrix on the extra areas
     complete_conso_extra <- completeLoadDuration(matrix_conso_extra)
     
-    # Creation the distance vector between every load duration curve and the reference one on the extra areas
+    # Creating the distance vector between every load duration curve and the reference one on the extra areas
     l3_dist_extra <- l3DistanceRef(matrix_conso_extra, complete_conso_extra)
     
-    # Creation the distance vector between every load duration curve and the reference one on the peak period on the extra areas
+    # Creating the distance vector between every load duration curve and the reference one on the peak period on the extra areas
     l3_peak_dist_extra <- l3PeakDistanceRef(matrix_conso_extra, complete_conso_extra)
   }  
     
@@ -307,9 +315,9 @@ select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","e
   
   # Creation a scaled data.frame containing every indicators (/!\ mind the order of the indicators)
   if (is.null(extraAreas) == FALSE) {
-    cluster_indicators <- aggregateIndicators(l3_dist_main, l3_peak_dist_main, l3_dist_extra, l3_peak_dist_extra)
+    cluster_indicators <- aggregateIndicators(l3_dist_main, l3_peak_dist_main, unsp_main, l3_dist_extra, l3_peak_dist_extra)
   } else {
-    cluster_indicators <- aggregateIndicators(l3_dist_main, l3_peak_dist_main)
+    cluster_indicators <- aggregateIndicators(l3_dist_main, l3_peak_dist_main, unsp_main)
   }
    
   # K-medoids algorithm
