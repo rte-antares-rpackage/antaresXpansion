@@ -19,7 +19,7 @@
 #'   Index of the Monte-Carlo years to import. 
 #'   If \code{"all"}, every MC years are read, else the specified Monte-Carlo simulations are imported. 
 #' @param weightMain
-#'   Numeric giving the weighting of the load monotonous for the main areas into the clustering algorithm choices.
+#'   Numeric giving the weighting of the load duration curve for the main areas into the clustering algorithm choices.
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param weightPeakMain
 #'   Numeric giving the weighting of the peak period (for the 20 most crucial hours on the load duration curves) for the main areas into the clustering algorithm choices. 
@@ -28,7 +28,7 @@
 #'   Numeric giving the weighting of the total unsupplied energy for the main areas into the clustering algorithm choices. 
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param weightExtra
-#'   Numeric giving the weighting of the load monotonous for the additional areas into the clustering algorithm choices.
+#'   Numeric giving the weighting of the load duration curve for the additional areas into the clustering algorithm choices.
 #'   It is usually lower than \code{WeightExtra}. 
 #'   If \code{0}, no importance is given to this criteria. If \code{1}, the algorithm will be based only on this criteria.
 #' @param weightPeakExtra
@@ -44,7 +44,7 @@
 #' @param subtractNuclearAvailabilityExtra
 #'   If \code{TRUE}, nuclear availability is subtracted from LOAD of the additional areas.   
 #' @param displayCurves
-#'   If \code{TRUE}, the function displays a load monotonous curve analysis
+#'   If \code{TRUE}, the function displays a load duration curve analysis
 #' @param displayTable
 #'   If \code{TRUE}, the function displays a cost analysis (LOAD, OP. COST, LOLD, UNSP. ENRG)   
 #' @param opts
