@@ -64,7 +64,7 @@
 #' setSimulationPath()
 #' 
 #' # Find 5 Monte-Carlo year clusters for the simulation
-#' # Study France as the main area and 3 europeans countries as the secondary area
+#' # Study France as the main area and 3 European countries as the secondary area
 #' # Base algorithm on :
 #' # 30% for the load duration curve in France
 #' # 30% for the peak period in France
