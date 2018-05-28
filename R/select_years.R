@@ -328,6 +328,10 @@ select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","e
   kmed_data <- pam(cluster_indicators, selection)
   info_clusters <- data.table("Selected years" = kmed_data$id.med, "Weighting" = kmed_data$clusinfo[,"size"])
   info_clusters <- arrange(info_clusters, `Selected years`)
+   
+  # Random selection of MC years
+  # info_clusters <- data.table("Selected years" = sample(1:max(data_etude_main$areas$mcYear), selection), "Weighting" = rep(max(data_etude_main$areas$mcYear)/selection, selection))
+
   
   
   
@@ -338,7 +342,7 @@ select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","e
   if (displayCurves == TRUE) {
     # Creation of the load duration matrix of the selected years after clustering on the main areas
     matrix_conso_clusters_main <- matrix_conso_main[,info_clusters$`Selected years`]
-    
+
     # Creation of the general load duration matrix of the selected years after clustering (re-sampled) on the main areas
     complete_conso_clusters_main <- completeLoadDuration(matrix_conso_main[, rep(info_clusters$`Selected years`, info_clusters$Weighting)])
     
@@ -350,6 +354,10 @@ select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","e
     
     # Displaying curves on the trough period of the main areas
     plotLoadDuration(title = paste(c("Load troughs on main areas :", mainAreas), collapse = " "), matrix_conso_main, matrix_conso_clusters_main, complete_conso_main, complete_conso_clusters_main, x_lim = c(8680,8740), y_lim = c(min(matrix_conso_main)*1.05,mean(matrix_conso_main)))
+    
+    # Difference between the reference load duration curves and the general one of the clusters
+    # print("Ecart L2 entre la monotone de r?f?rence et la monotone globale r?-?chantillon?e sur la zone FRANCE :")
+    # print(sum((complete_conso_main-complete_conso_clusters_main)^2))
     
     if(is.null(extraAreas) == FALSE) {
       # Creation of the load duration matrix of the selected years after clustering on the main areas
@@ -366,6 +374,10 @@ select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","e
       
       # Displaying curves on the trough period of the main areas
       plotLoadDuration(title = paste(c("Load troughs on extra areas :", extraAreas), collapse = " "), matrix_conso_extra, matrix_conso_clusters_extra, complete_conso_extra, complete_conso_clusters_extra, x_lim = c(8680,8740), y_lim = c(min(matrix_conso_extra)*1.05,mean(matrix_conso_extra)))
+      
+      # Difference between the reference load duration curves and the general one of the clusters
+    #   print("Ecart L2 entre la monotone de r?f?rence et la monotone globale r?-?chantillon?e sur la zone EUROPE :")
+    #   print(sum((complete_conso_extra-complete_conso_clusters_extra)^2))
     }
   }
   
