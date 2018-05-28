@@ -80,7 +80,7 @@ param c0_weekly{WEEKLY_CUT} ;   					# weekly total costs
 param lambda_weekly{WEEKLY_CUT, INV_CANDIDATE} ;    # rentability (weekly values)
 
 # other
-param prob{h in HORIZON, y in YEAR[h]} := 1/card(YEAR[h]) ; 	# probability of occurence of each MC year
+param prob{HORIZON, YEAR} ; 	# probability of occurence of each MC year
 
 #------------------
 #--- VARIABLES ----
