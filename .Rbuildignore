@@ -5,3 +5,5 @@ test_case
 ^\.travis\.yml$
 ^appveyor\.yml$
 ^codecov\.yml$
+^test_case$
+^test case$
