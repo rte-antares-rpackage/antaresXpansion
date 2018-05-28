@@ -26,6 +26,11 @@ read_options <- function(file, opts = antaresRead::simOptions())
   assertthat::assert_that(file.exists(file))
   #assertthat::assert_that(file.info(option_file_name)$size !=0)
   
+  # change working directory
+  current_wd <- getwd()
+  on.exit(setwd(current_wd))
+  setwd(dirname(file))
+  
   # read file
   param_data <- scan(file, what=character(), sep="/", quiet = TRUE)
   
@@ -178,7 +183,7 @@ read_options <- function(file, opts = antaresRead::simOptions())
     }
     else if (option_name == "yearly-weights")
     {
-      weight_file <- paste0(paste(opts$studyPath,"/user/expansion/", sep=""), option_value)
+      weight_file <- option_value
       assert_that(file.exists(weight_file))
       yearly_weights <- scan(weight_file, quiet = TRUE)
       assertthat::assert_that(all(yearly_weights >= 0))
