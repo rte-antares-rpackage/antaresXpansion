@@ -44,12 +44,15 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
   on.exit(lapply(studies$opts, FUN = function(x){restore_general_settings(opts = x$opts)})) 
   
   # read expansion planning options and investment candidates
+  detailled_options <- list()
+    
   for(s in studies)
   {
     exp_options <- read_options(file = paste0(directory_path,"/settings.ini"), opts = s$opts)
     candidates <- read_candidates(file = paste0(directory_path,"/candidates.ini"), studies = studies, opts = s$opts)
+    detailled_options[[as.character(s$year)]] <- exp_options
   }
-  
+  exp_options$detailled <- detailled_options
   n_candidates <- length(candidates)
   assertthat::assert_that(n_candidates > 0)
   candidates <- get_apparent_cost(candidates, exp_options, studies)
@@ -186,7 +189,7 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     
     for (s in studies){
       # compute system operationnal and investment costs 
-      op_cost <- get_op_costs(s$output_antares, current_it, exp_options) / (1 + exp_options$discount_rate)^(as.numeric(s$year) - exp_options$ref_year)
+      op_cost <- get_op_costs(s$output_antares, current_it, exp_options$detailled[[as.character(s$year)]]) / (1 + exp_options$discount_rate)^(as.numeric(s$year) - exp_options$ref_year)
       if(current_it$n > 1) inv_cost <- subset(benders_cost, horizon == s$year)$investment_costs
       else inv_cost <- Inf
       

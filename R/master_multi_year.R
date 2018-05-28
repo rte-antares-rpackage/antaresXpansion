@@ -155,13 +155,16 @@ initiate_master_multi_year <- function(candidates, exp_options , studies, tmp_fo
   write(exp_options$solver, file = paste0(tmp_folder, "/", in_out_files$solver))
   
   # 9 - in_yweights.txt
-  
-  if(all(is.na(exp_options$y_weights)))
+  script <- ""
+  for(s in studies)
   {
-    weights_y <- rep(1, length(mc))/length(mc)
+    if(all(is.na(exp_options$detailled[[as.character(s$year)]]$y_weight)))
+    {
+      weights_y <- rep(1, length(mc))/length(mc)
+    }
+    else{weights_y <- exp_options$detailled[[as.character(s$year)]]$y_weight}
+    script <- c(script, sapply(1:length(mc), FUN = function(n){paste0(s$year, " ", mc[n], " ", weights_y[n])}))
   }
-  else{weights_y <- exp_options$y_weights}
-  script <- sapply(1:length(mc), FUN = function(n){paste0(mc[n], " ", weights_y[n])})
   write(paste0(script, collapse = "\n"), file = paste0(tmp_folder, "/", in_out_files$y_weights))
   
 

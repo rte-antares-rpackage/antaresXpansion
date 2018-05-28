@@ -183,7 +183,7 @@ read_options <- function(file, opts = antaresRead::simOptions())
     }
     else if (option_name == "yearly-weights")
     {
-      weight_file <- option_value
+      weight_file <- paste0(paste(opts$studyPath,"/user/expansion/", sep=""), option_value)
       assert_that(file.exists(weight_file))
       yearly_weights <- scan(weight_file, quiet = TRUE)
       assertthat::assert_that(all(yearly_weights >= 0))
