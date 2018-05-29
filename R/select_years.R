@@ -332,7 +332,8 @@ select_years <- function(mainAreas = "fr", extraAreas = c("at","be","ch","de","e
   # Random selection of MC years
   # info_clusters <- data.table("Selected years" = sample(1:max(data_etude_main$areas$mcYear), selection), "Weighting" = rep(max(data_etude_main$areas$mcYear)/selection, selection))
 
-  
+  # Selection of the first MC years
+  # info_clusters <- data.table("Selected years" = 1:selection, "Weighting" = rep(max(data_etude_main$areas$mcYear)/selection, selection))
   
   
   
