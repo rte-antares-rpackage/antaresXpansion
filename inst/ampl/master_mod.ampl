@@ -35,9 +35,9 @@ set WEEKLY_CUT within {ITERATION, YEAR, WEEK} ;
 
 
 
-#-------------
-#--- SETS ----
-#-------------
+#----------------
+#--- OPTIONS ----
+#----------------
 
 param prm_solver symbolic;  # solver
 

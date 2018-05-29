@@ -41,6 +41,12 @@ set YEARLY_CUT within {ITERATION, HORIZON, ALL_YEAR} ;
 set WEEKLY_CUT within {ITERATION, HORIZON, ALL_YEAR, ALL_WEEK} ;
 
 
+#----------------
+#--- OPTIONS ----
+#----------------
+
+param prm_solver symbolic;  # solver
+
 
 #-------------------
 #--- PARAMETERS ----
@@ -80,7 +86,8 @@ param c0_weekly{WEEKLY_CUT} ;   					# weekly total costs
 param lambda_weekly{WEEKLY_CUT, INV_CANDIDATE} ;    # rentability (weekly values)
 
 # other
-param prob{HORIZON, YEAR} ; 	# probability of occurence of each MC year
+param prob{h in HORIZON, YEAR[h]} ; 	# probability of occurence of each MC year
+
 
 #------------------
 #--- VARIABLES ----

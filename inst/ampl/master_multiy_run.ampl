@@ -13,7 +13,7 @@ data  master_multiy_dat.ampl;     # load data
 # include options
 include in_options.txt;
 
-option solver cbc;    # set solver (should this be an input data which could be set differently ?)
+option solver (prm_solver);    # set solver
 
 
  # solver master problem

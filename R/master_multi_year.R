@@ -158,6 +158,7 @@ initiate_master_multi_year <- function(candidates, exp_options , studies, tmp_fo
   script <- ""
   for(s in studies)
   {
+    mc <- s$mc_years
     if(all(is.na(exp_options$detailled[[as.character(s$year)]]$y_weight)))
     {
       weights_y <- rep(1, length(mc))/length(mc)
