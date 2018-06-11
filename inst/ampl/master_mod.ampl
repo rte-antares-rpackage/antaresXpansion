@@ -22,7 +22,7 @@ set YEAR ;
 set WEEK ;
 
 #set of benders iterations
-set ITERATION ;
+set ITERATION ordered;
 
 # set of average bender cuts
 set AVG_CUT within {ITERATION} ;
@@ -31,8 +31,7 @@ set AVG_CUT within {ITERATION} ;
 set YEARLY_CUT within {ITERATION, YEAR} ;
 
 # set of weekly bender cuts
-set WEEKLY_CUT within {ITERATION, YEAR, WEEK} ;
-
+set WEEKLY_CUT_ALL within {ITERATION, YEAR, WEEK} ;
 
 
 #-------------
@@ -63,11 +62,29 @@ param c0_yearly{YEARLY_CUT} ;    					# yearly total costs
 param lambda_yearly{YEARLY_CUT, INV_CANDIDATE} ;    #  rentability (yearly values)
 
 #weekly cut
-param c0_weekly{WEEKLY_CUT} ;   					# weekly total costs
-param lambda_weekly{WEEKLY_CUT, INV_CANDIDATE} ;    # rentability (weekly values)
+param c0_weekly{WEEKLY_CUT_ALL} ;   					# weekly total costs
+param lambda_weekly{WEEKLY_CUT_ALL, INV_CANDIDATE} ;    # rentability (weekly values)
 
 # other
 param prob{YEAR}; 	# probability of occurence of each MC year
+
+
+
+#-------------------------------------
+#--- SETS of CUTS WITHOUT DOUBLON ----
+#-------------------------------------
+
+param tol := 1e-3;  # tolerance to identify doublons
+
+param cut_in_zero{(c,y,w) in WEEKLY_CUT_ALL} := c0_weekly[c,y,w] - sum{z in INV_CANDIDATE} (lambda_weekly[c,y,w,z] * (0 - z0[c,z]));
+
+param difference{c1 in ITERATION, c2 in ITERATION, y in YEAR, w in WEEK} := sum{z in INV_CANDIDATE} (lambda_weekly[c1,y,w,z] - lambda_weekly[c2,y,w,z])^2;
+param isdoublon{(c1,y,w) in WEEKLY_CUT_ALL} := if ((min{(c2, y, w) in WEEKLY_CUT_ALL} difference[c1, c2, y, w]) < tol) then 1 else 0;
+param deleteit1{(c1,y,w) in WEEKLY_CUT_ALL} := if ((isdoublon[c1,y,w]) == 1 and ((max{(c2, y, w) in WEEKLY_CUT_ALL : difference[c1, c2, y, w] < tol} cut_in_zero[c2,y,w]) > cut_in_zero[c1, y, w])) then 1 else 0;
+param deleteit2{(c1,y,w) in WEEKLY_CUT_ALL} := if ((isdoublon[c1,y,w]) == 1 and (deleteit1[c1,y,w] == 0) and (card{(c2,y,w) in WEEKLY_CUT_ALL : (ord(c2, ITERATION) > ord(c1, ITERATION)) and (deleteit1[c2,y,w] == 0) and (difference[c1, c2, y, w] < tol)} >= 1)) then 1 else 0;
+
+set WEEKLY_CUT := setof{(c, y, w) in WEEKLY_CUT_ALL : deleteit1[c,y,w] == 0 and deleteit2[c,y,w] ==0} (c, y, w);
+
 
 #------------------
 #--- VARIABLES ----

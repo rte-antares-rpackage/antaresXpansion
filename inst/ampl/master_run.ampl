@@ -14,6 +14,7 @@ data  master_dat.ampl;     # load data
 include in_options.txt;
 option solver (prm_solver);    # set solver
 
+
 # solver master problem
 solve >> out_log.txt;
 

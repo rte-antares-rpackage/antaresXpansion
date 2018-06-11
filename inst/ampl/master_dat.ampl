@@ -29,7 +29,7 @@ param : INV_CANDIDATE : c_inv  unit_size max_unit relaxed := include in_candidat
 #bender cuts 
 param : AVG_CUT : c0_avg := include in_avgcuts.txt ;
 param : YEARLY_CUT : c0_yearly := include in_yearlycuts.txt ;
-param : WEEKLY_CUT : c0_weekly := include in_weeklycuts.txt ;
+param : WEEKLY_CUT_ALL : c0_weekly := include in_weeklycuts.txt ;
 
 
 
