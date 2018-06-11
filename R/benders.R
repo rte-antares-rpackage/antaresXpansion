@@ -107,6 +107,16 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     recovered_it <- scan(paste0(tmp_folder, "/in_iterations.txt"), what=character(), sep="/", quiet = TRUE)
     current_it$n <- as.numeric(substr(tail(recovered_it, n=1), start = 3, stop = 100)) + 1
     current_it$id <- paste0("it",current_it$n)
+    
+    new_capacity <- data.frame(
+      it = rep(current_it$n, n_candidates),
+      year = rep(horizon,n_candidates),
+      candidate = x$invested_capacities$candidate,
+      value = x$invested_capacities$value
+    )
+    
+    x$invested_capacities <- rbind(x$invested_capacities, new_capacity)
+    
   }
   
   # prepare cuts tables
