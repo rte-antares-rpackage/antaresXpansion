@@ -12,11 +12,13 @@ data  master_dat.ampl;     # load data
 
 # include options
 include in_options.txt;
+option solver (prm_solver);    # set solver
 
-option solver cbc;    # set solver (should this be an input data which could be set differently ?)
-
- # solver master problem
+# solver master problem
 solve >> out_log.txt;
+
+# correct Invested_capacity, slight negative values are possible due to constraint tolerances
+let {z in INV_CANDIDATE} Invested_capacity[z] := max(0, Invested_capacity[z]);
 
 
 # write results (in the same folder)

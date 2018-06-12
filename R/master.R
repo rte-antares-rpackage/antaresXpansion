@@ -43,6 +43,8 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   in_out_files$yearly_cuts <- "in_yearlycuts.txt"
   in_out_files$weekly_cuts <- "in_weeklycuts.txt"
   in_out_files$options <- "in_options.txt"
+  in_out_files$solver <- "in_solver.txt"
+  in_out_files$y_weights <- "in_yweights.txt"
   in_out_files$sol_master <- "out_solutionmaster.txt"
   in_out_files$underestimator <- "out_underestimator.txt"
   in_out_files$log <- "out_log.txt"
@@ -100,11 +102,20 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   }
   write(script, file = paste0(tmp_folder, "/", in_out_files$candidates))
   
-  # 4 - in_options.txt (has been shifted to function solve)
-  #if(exp_options$master == "relaxed")
-  #{
-  #  write("option relax_integrality 1;", file = paste0(tmp_folder, "/", in_out_files$options))
-  #}
+  
+  # 4 - in_solver.txt
+  write(exp_options$solver, file = paste0(tmp_folder, "/", in_out_files$solver))
+  
+  # 5 - in_yweights.txt
+  
+  if(all(is.na(exp_options$y_weights)))
+  {
+    weights_y <- rep(1, length(mc))/length(mc)
+  }
+  else{weights_y <- exp_options$y_weights}
+  script <- sapply(1:length(mc), FUN = function(n){paste0(mc[n], " ", weights_y[n])})
+  write(paste0(script, collapse = "\n"), file = paste0(tmp_folder, "/", in_out_files$y_weights))
+  
 }
 
 
@@ -147,14 +158,39 @@ solve_master <- function(opts = antaresRead::simOptions(), relax_integrality = F
   assertthat::assert_that(file.exists(paste0(tmp_folder, "/master_mod.ampl")))
   assertthat::assert_that(file.exists(paste0(tmp_folder, "/master_dat.ampl")))
   
-  if(is.null(ampl_path))
+  
+  # launch master_run.ampl
+  if(tolower(.Platform$OS.type) == "windows") 
   {
-    cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & ampl "', tmp_folder, '/master_run.ampl" ')
-  }
-  else
+    # Windows version
+    if(is.null(ampl_path))
+    {
+      cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & ampl "', tmp_folder, '/master_run.ampl" ')
+    }
+    else
+    {
+      assertthat::assert_that(file.exists(ampl_path))
+      cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & "', ampl_path ,'" "', tmp_folder, '/master_run.ampl" ')
+    }
+    a <- shell(cmd, wait = TRUE, intern = TRUE)
+  } else 
   {
-    assertthat::assert_that(file.exists(ampl_path))
-    cmd <- paste0('', substr(tmp_folder, 1, 2), ' & cd "', tmp_folder, '" & "', ampl_path ,'" "', tmp_folder, '/master_run.ampl" ')
+    # Linux version
+    if(is.null(ampl_path))
+    {
+      cmd <- paste0('cd "', tmp_folder, '" & ampl "', tmp_folder, '/master_run.ampl" ')
+    }
+    else
+    {
+      assertthat::assert_that(file.exists(ampl_path))
+      cmd <- paste0('cd "', tmp_folder, '" & "', ampl_path ,'" "', tmp_folder, '/master_run.ampl" ')
+    }
+    a <- system(cmd, wait = TRUE, intern = TRUE)
   }
-  a <- shell(cmd, wait = TRUE, intern = TRUE)
+
+    # check if AMPL returned an error
+  if(any(grepl("error", tolower(a)) | grepl("cannot", tolower(a))))
+  {
+     stop("master problem returned the following error: ", a)
+  }
 }

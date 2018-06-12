@@ -43,6 +43,7 @@ get_expected_rentability <- function(output_antares, current_it, candidates, n_w
     # second, get aggregated rentability for those links
 
     average_rentability <- sapply(candidates, FUN = get_aggr_rentability, output, current_it, n_w)
+
     return(average_rentability)
   }
     
