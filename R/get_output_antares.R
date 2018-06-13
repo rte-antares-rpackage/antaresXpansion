@@ -20,13 +20,13 @@
 
 extract_output <- function(output_antares, current_it, candidates, capa_zero, cut_type = "average")
 {  
-  output_link_s     <- data.table(NULL)
-  output_link_h_s   <- data.table(NULL)
-  output_link_w_s   <- data.table(NULL)
-  output_link_y_s   <- data.table(NULL)
-  output_link_h_s_i <- data.table(NULL)
-  output_link_w_s_i <- data.table(NULL)
-  output_link_y_s_i <- data.table(NULL)
+  output_link_s     <- data.table(NULL) # mcYear "annual" with_no_profile
+  output_link_h_s   <- data.table(NULL) # mcYear "hourly" with_profile_unique
+  output_link_w_s   <- data.table(NULL) # mcYear "weekly" with_profile_unique
+  output_link_y_s   <- data.table(NULL) # mcYear "annual" with_profile_unique
+  output_link_h_s_i <- data.table(NULL) # year-by-year "hourly" with_profile_indirect
+  output_link_w_s_i <- data.table(NULL) # year-by-year "weekly" with_profile_indirect 
+  output_link_y_s_i <- data.table(NULL) # year-by-year "annual" with_profile_indirect
 
 
   # hourly results (for candidates with link profile only)

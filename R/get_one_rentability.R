@@ -258,7 +258,7 @@ get_aggr_rentability_weekly <- function(c,output, output_link_w, current_it, n_w
     }
     else
     {
-      tmp_rentability_w <- sum(as.numeric(subset(output$output_link_h_s_i, link == c$link & timeId >= first_h & timeId <= last_h & mcYear == y)$"MARG. COST")*c$link_profile[first_h:last_h])
+      tmp_rentability_w <- sum(as.numeric(subset(output$output_link_h_s, link == c$link & timeId >= first_h & timeId <= last_h & mcYear == y)$"MARG. COST")*c$link_profile[first_h:last_h])
     }
     
     return(tmp_rentability_w - c$cost /52)
