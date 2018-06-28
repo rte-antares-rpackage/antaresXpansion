@@ -56,19 +56,20 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   
   
   # initiate a few parameters
-  current_it <- 1
+  current_it <- 0
   antaresEditObject::updateGeneralSettings(filtering = "true", year.by.year = "true", opts = opts)
   filter_output_areas(areas = antaresRead::getAreas(opts = opts), filter = c("annual"), type = c("year-by-year","synthesis"), opts = opts)
   filter_output_links(links = antaresRead::getLinks(opts = opts), filter = c("annual"), type = c("synthesis"), opts = opts)
+  unique_key <- paste(sample(c(0:9, letters), size = 3, replace = TRUE),collapse = "") # unique key used in output names
 
-  # ---- 1. Check that the cluster already exists : ----
+    # ---- 1. Check that the cluster already exists : ----
   
   list_cluster <- antaresRead::readClusterDesc()
   list_cluster <- list_cluster[area == area ]
   clustername <- paste(area, cluster_name, sep = "_")
   cluster_existence <- clustername %in% list_cluster$cluster
   if(display){cat("------ INITIALIZATION ------\n", sep="")}
-  cat("The cluster already exits : ", cluster_existence," (thermal series must be ready-made !) \n", sep="")
+  cat("The cluster already exists : ", cluster_existence," (thermal series must be ready-made !) \n", sep="")
   if (cluster_existence)
   {
     # On vérifie que le cluster est à Enabled = FALSE :
@@ -81,8 +82,8 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   }
    # ---- 1. Simulate with Antares once at the beginning : ---- 
 
-  cat("If the cluster already exists, the parameter will be initialized to ENABLED = FALSE at the beginning.\n")
-  simulation_name <- paste0("get-margins", "-", "0")
+  cat("If the cluster already exists, the parameter will be initialized to enabled = false at the beginning.\n")
+  simulation_name <- paste0("get-margins-", unique_key, "-it", current_it, "$")
   if(display){  cat("   ANTARES simulation running ... ", sep="")}
   run_simulation(simulation_name, mode = "economy",
                  path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts)
@@ -100,7 +101,7 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   # No zero with log !
   if (new_LOLE==0){new_LOLE  <- 0.001}
   new_LOLE_init <- new_LOLE
-  
+  current_it <- 1
   if(new_LOLE >= LOLE-tolerance & new_LOLE <= LOLE + tolerance )
   {
     cat("The range is already satisfied. \n")
@@ -168,9 +169,9 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
           add_prefix = TRUE,
           nominalcapacity = 100,
           enabled = TRUE,
-          `marginal-cost` = 35.760000,
+          `marginal-cost` = 135.760000,
           `spread-cost` = 0.400000,
-          `market-bid-cost` = 35.760000,
+          `market-bid-cost` = 135.760000,
           time_series = param_data)
       }
     }
@@ -217,7 +218,7 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
     antaresEditObject::updateGeneralSettings(filtering = "true", year.by.year = "true", opts = opts)
     filter_output_areas(areas = antaresRead::getAreas(opts = opts), filter = c("annual"), type = c("year-by-year","synthesis"), opts = opts)
     filter_output_links(links = antaresRead::getLinks(opts = opts), filter = c("annual"), type = c("synthesis"), opts = opts)
-    simulation_name <- paste0("get-margins", "-", current_it)
+    simulation_name <- paste0("get-margins-", unique_key, "-it", current_it, "$")
     if(display){  cat("   ANTARES simulation running ... ", sep="")}
     run_simulation(simulation_name, mode = "economy",
                    path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts)
@@ -252,7 +253,7 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
             has_converged <- TRUE
             cat("Convergence with Pcomp = -", new_value, " MW \n")
           }
-          else
+          else #
           {
             cat("      Rowbalance was to big with the abacus. ")
             new_value <-  new_value/2
@@ -298,14 +299,14 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
 
     new_value <- -1 * new_value
 
-    current_it<-current_it+1
+
     
     
     
      #---- 9. Clean ANTARES output ----
-     #if(clean) { clean_output_benders(best_solution, unique_key, opts)}
+     if(clean) { clean_output_benders(current_it, unique_key, output_name = "get-margins-", opts)}
      
-
+    current_it<-current_it+1
   
   
   

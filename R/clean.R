@@ -36,6 +36,8 @@ delete_antares_output <- function(simulation_name, opts = antaresRead::simOption
 #'   (the output related to this iteration will not be removed)
 #' @param unique_key
 #'   unique string to identify the output of the current expansion problem
+#' @param output_name 
+#'   string to identify the output of the current expansion problem ("expansion-benders-") or get_margin problem ("get-margins-")
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
@@ -46,7 +48,7 @@ delete_antares_output <- function(simulation_name, opts = antaresRead::simOption
 #' @importFrom assertthat assert_that
 #' @noRd
 #' 
-clean_output_benders <- function(best_solution, unique_key, opts = antaresRead::simOptions())
+clean_output_benders <- function(best_solution, unique_key, output_name = "expansion-benders-", opts = antaresRead::simOptions())
 {
   # check existence of output path
   output_path <- paste0(opts$studyPath, "/output/")
@@ -59,7 +61,7 @@ clean_output_benders <- function(best_solution, unique_key, opts = antaresRead::
   list_simu <- list.dirs(output_path, recursive = FALSE, full.names = FALSE)
   
   # check that the best solution has been kept
-  best_sol_name <- paste0("expansion-benders-", unique_key, "-it", best_solution, "$")
+  best_sol_name <- paste0(output_name, unique_key, "-it", best_solution, "$")
   assertthat::assert_that(length(grep(best_sol_name, list_simu)) > 0)
   
   
@@ -67,7 +69,7 @@ clean_output_benders <- function(best_solution, unique_key, opts = antaresRead::
   #   - with the same unique key
   #   - except the best solution
   
-  id_to_remove <- grepl(paste0("expansion-benders-", unique_key, "-it"), list_simu)
+  id_to_remove <- grepl(paste0(output_name, unique_key, "-it"), list_simu)
   id_to_keep <-  grepl(best_sol_name, list_simu)
   list_simu_to_remove <- list_simu[id_to_remove & !id_to_keep]
   
