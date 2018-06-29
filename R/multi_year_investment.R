@@ -254,19 +254,19 @@ multi_year_investment <- function(path_solver, directory_path = getwd(), display
     # this problem
     
     # # if option "integer" has been chosen, should the integrality be added ?
-    # if(exp_options$master == "integer" && !first_iteration && relax_integrality)
-    # {
-    #    if(convergence_relaxed(best_sol = min(x$costs$overall_costs, na.rm = TRUE), best_under_estimator, exp_options))
-    #    {
-    #      relax_integrality <- FALSE
-    #      # reintialize ov.cost and op.costs (which are not admissible because computed with relaxed investments decisions)
-    #      x$costs$operation_costs <- rep(NA, nrow(x$costs))
-    #      x$costs$overall_costs <- rep(NA, nrow(x$costs))
-    #     current_it$need_full <- TRUE
-    #     
-    #     if (display){cat("--- ADDITION of INTEGER variables into investment decisions --- \n")}
-    #   }
-    # }
+    if(exp_options$master == "integer" && !first_iteration && relax_integrality)
+    {
+      if(convergence_relaxed(best_sol = min(x$costs$overall_costs, na.rm = TRUE), best_under_estimator, exp_options))
+      {
+        relax_integrality <- FALSE
+        # reintialize ov.cost and op.costs (which are not admissible because computed with relaxed investments decisions)
+        x$costs$operation_costs <- rep(NA, nrow(x$costs))
+        x$costs$overall_costs <- rep(NA, nrow(x$costs))
+        current_it$need_full <- TRUE
+         
+       if (display){cat("--- ADDITION of INTEGER variables into investment decisions --- \n")}
+      }
+    }
     
     # run AMPL with system command
     if(display){  cat("   Solve master problem ... ", sep="")}
