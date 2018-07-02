@@ -74,6 +74,7 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
     }
   }
   else {initial_row_balance <- rep(0,8760)}
+  list_margin <- data.frame(row.names = c("it", "LOLE", "margin"))
   
   
   # set margin 
@@ -85,6 +86,7 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
 
   cat("If the cluster already exists, the parameter will be initialized to enabled = false at the beginning.\n")
   simulation_name <- paste0("get-margins-", unique_key, "-it", current_it, "$")
+  cat("      With margin = 0 MW \n", sep="")
   if(display){  cat("   ANTARES simulation running ... ", sep="")}
   run_simulation(simulation_name, mode = "economy",
                  path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts)
@@ -98,7 +100,12 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   
   # ---- 2. Define first LOLE : ----   
   new_LOLE <- mean(output_LOLE$LOLD)
-  cat("      Initial LOLE : ", new_LOLE ,"\n", sep="")
+  cat("      Initial LOLE : ", new_LOLE ,".\n", sep="")
+
+  list_margin <- rbind(list_margin,
+                       data.frame(it = current_it,
+                                  LOLE = new_LOLE,
+                                  margin = 0))
   # No zero with log !
   if (new_LOLE==0){new_LOLE  <- 0.001}
   new_LOLE_init <- new_LOLE
@@ -114,9 +121,8 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
    # ---- 3. Evaluate the fisrt margin with the abacus : ----   
   else
   {
-    #new_value <- abaque(new_LOLE)
     margin <- abaque(new_LOLE)
-    cat("      First margin evaluated with the abacus : ", margin," MW.\n", sep="")
+    cat("\n      First margin evaluated with the abacus : ", margin," MW.\n", sep="")
     margin <- floor(margin/100)*100
 
     
@@ -137,7 +143,8 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
     filter_output_areas(areas = antaresRead::getAreas(opts = opts), filter = c("annual"), type = c("year-by-year","synthesis"), opts = opts)
     filter_output_links(links = antaresRead::getLinks(opts = opts), filter = c("annual"), type = c("synthesis"), opts = opts)
     simulation_name <- paste0("get-margins-", unique_key, "-it", current_it, "$")
-    if(display){  cat("   ANTARES simulation running ... ", sep="")}
+    cat("      With margin = ", margin," MW \n", sep="")
+     if(display){  cat("   ANTARES simulation running ... ", sep="")}
     run_simulation(simulation_name, mode = "economy",
                    path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts)
     if(display){  cat("[done] \n", sep="")}
@@ -149,36 +156,48 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
 
     new_LOLE <- mean(output_LOLE$LOLD)
     cat("      New LOLE : " ,new_LOLE , " \n", sep="" )
+    list_margin <- rbind(list_margin,
+                         data.frame(it = current_it,
+                                    LOLE = new_LOLE,
+                                    margin = margin))
     
-    if(abs(new_LOLE - LOLE)>1.0){ step <- 800}
+    if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>1.0){ step <- 800}
     else{
-      if(abs(new_LOLE - LOLE)>0.75){step <- 400}
+      if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>0.75){step <- 400}
       else{
-        if(abs(new_LOLE - LOLE)>0.5){step <- 200}
+        if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>0.5){step <- 200}
         else{step <- 100}
       }
     }
-    cat(" Diff = ", abs(new_LOLE - LOLE)," -> step =  ",step,"MW \n",  sep="")    
-    
+    old_margin <- margin
     # ----------- Update : Lack of production ----------- 
     if (new_LOLE > LOLE+tolerance)
     { 
-      margin <- margin + sign(margin)*step
-      cat(" New Pcomp = ", margin," MW \n",  sep="")
-    }
+      margin <- old_margin - step
+      # If we had already had this margin previously
+      if (margin %in% list_margin$LOLE) {
+        step <- step/2
+        margin <- old_margin - step
       
+      }
+    }
   
-    # Lack of consumption
+    # ----------- Update : Lack of consumption
     else if (new_LOLE < LOLE - tolerance)
     {
-      margin <- margin - sign(margin)*step
-      cat(" New Pcomp = ", margin," MW \n",  sep="")
+      margin <- old_margin + step
+      # If we had already had this margin previously
+      if (margin %in% list_margin$LOLE) {
+        step <- step/2
+        margin <- old_margin + step
+      }
     }
     else
     { 
-      cat("\n --- CONVERGENCE with Pcomp = ", new_value, " MW \n", sep = "")
+      cat("\n --- CONVERGENCE with Pcomp = ", margin, " MW \n", sep = "")
       has_converged <- TRUE        
     }
+    
 
     #---- 9. Clean ANTARES output ----
     if(clean) { clean_output_benders(current_it, unique_key, output_name = "get-margins-", opts)}
@@ -186,8 +205,9 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
     current_it<-current_it+1
   
   
-   }
-    
+  }
+    cat("\n Summary :  \n")
+    print(list_margin)    
   }
 }
 
