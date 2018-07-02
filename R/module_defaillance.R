@@ -56,40 +56,31 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   
   
   # initiate a few parameters
+  if(display){cat("------ INITIALIZATION ------\n", sep="")}
   current_it <- 0
   antaresEditObject::updateGeneralSettings(filtering = "true", year.by.year = "true", opts = opts)
   filter_output_areas(areas = antaresRead::getAreas(opts = opts), filter = c("annual"), type = c("year-by-year","synthesis"), opts = opts)
   filter_output_links(links = antaresRead::getLinks(opts = opts), filter = c("annual"), type = c("synthesis"), opts = opts)
   unique_key <- paste(sample(c(0:9, letters), size = 3, replace = TRUE),collapse = "") # unique key used in output names
+  rowbalance_file_name <- paste0(opts$inputPath, "/misc-gen/miscgen-", area, ".txt", sep = "")
+  assertthat::assert_that(file.exists(rowbalance_file_name))
+  if (file.info(rowbalance_file_name)$size != 0)
+  {
+    param_data <- read.table(rowbalance_file_name)
+    initial_row_balance <- param_data[, 8]  
+    if (abs(sum(initial_row_balance)) > 0) 
+    {
+      cat("Initial row balance of the area ", area," is not null ! \n", sep="") 
+    }
+  }
+  else {initial_row_balance <- rep(0,8760)}
+  
+  
+  # set margin 
+  set_margins_in_antares(margin = 0, area, cluster_name, row_balance_init = initial_row_balance, opts = antaresRead::simOptions())
 
   
-  
-    # ---- 1. Check that the cluster already exists : ----
-  
-  # list_cluster <- antaresRead::readClusterDesc()
-  # list_cluster <- list_cluster[area == area ]
-  # clustername <- paste(area, cluster_name, sep = "_")
-  # cluster_existence <- clustername %in% list_cluster$cluster
-  # if(display){cat("------ INITIALIZATION ------\n", sep="")}
-  # cat("The cluster already exists : ", cluster_existence," (thermal series must be ready-made !) \n", sep="")
-  # if (cluster_existence)
-  # {
-  #   # On vérifie que le cluster est à Enabled = FALSE :
-  #   path_clusters_ini <- file.path(opts$inputPath, "thermal", "clusters", area, "list.ini")
-  #   previous_params <- antaresEditObject::readIniFile(file = path_clusters_ini)
-  #   params_cluster <- list(enabled = "false")
-  #   ind_cluster <- which(tolower(names(previous_params)) %in% tolower(clustername))[1]
-  #   previous_params[[ind_cluster]] <- utils::modifyList(x = previous_params[[ind_cluster]], val = params_cluster)
-  #   antaresEditObject::writeIni(listData = previous_params,pathIni = path_clusters_ini,overwrite = TRUE)  
-  # }
-
-  
-  initial_row_balance <- antaresRead::readInputTS(misc = area)$ROW_Balance
-  # AJOUTER warning if(any(initial_row_balance) != 0)
-  
-  
-  set_margins_in_antares(margin = 0, ...)
-  
+    
    # ---- 1. Simulate with Antares once at the beginning : ---- 
 
   cat("If the cluster already exists, the parameter will be initialized to enabled = false at the beginning.\n")
@@ -123,9 +114,10 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
    # ---- 3. Evaluate the fisrt margin with the abacus : ----   
   else
   {
-    new_value <- abaque(new_LOLE)
-    cat("      First margin evaluated with the abacus : ", new_value," MW.\n", sep="")
-    new_value_init <- new_value
+    #new_value <- abaque(new_LOLE)
+    margin <- abaque(new_LOLE)
+    cat("      First margin evaluated with the abacus : ", margin," MW.\n", sep="")
+    margin <- floor(margin/100)*100
 
     
     
@@ -136,94 +128,9 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   while(!has_converged)
   {
     if(display){cat("\n------ ITERATION ", current_it,"------\n", sep="")}
+
+    set_margins_in_antares(margin, area, cluster_name, row_balance_init = initial_row_balance, opts = antaresRead::simOptions()) 
     
-    # -----------  In case the margin is negative (lack of production) :----------- 
-    if (new_LOLE > LOLE+tolerance)
-    {
-      nb_unit <- floor( -1 *new_value/100)
-      new_value <-  nb_unit*100  # (positive)
-      if(current_it == 1){last_margin <-new_value }else{last_margin <-100}
-      
-
-      # # write the series of thermal availability :
-      # n_mc <- opts$parameters$general$nbyears
-      # param_data <- as.table(matrix(0, 8760, n_mc))
-      # param_data[, 1:n_mc] = new_value
-      # 
-
-    #   if (cluster_existence)
-    #   { 
-    #       # update serie with new values and write it
-    #       Pcomp_file_name <- paste0(opts$inputPath,"/thermal/series/" ,area,"/", clustername,"/","series.txt",sep="")
-    #       assertthat::assert_that(file.exists(Pcomp_file_name))
-    #       utils::write.table(param_data,Pcomp_file_name,sep = "\t",col.names = FALSE,row.names = FALSE)
-    # 
-    #       # On vérifie que le cluster est à Enabled = TRUE :
-    #       path_clusters_ini <- file.path(opts$inputPath, "thermal", "clusters", area, "list.ini")
-    #       previous_params <- antaresEditObject::readIniFile(file = path_clusters_ini)
-    #       # Bug Antares when we modifie the unitCount of the cluster :
-    #       params_cluster <- list(enabled = "true")
-    #       ind_cluster <- which(tolower(names(previous_params)) %in% tolower(clustername))[1]
-    #       previous_params[[ind_cluster]] <- utils::modifyList(x = previous_params[[ind_cluster]], val = params_cluster)
-    #       antaresEditObject::writeIni(listData = previous_params,pathIni = path_clusters_ini,overwrite = TRUE)
-    #     
-    #   }
-    # 
-    #   else
-    #   {
-    #     # create the cluster 
-    #     antaresEditObject::createCluster(
-    #       area = area, 
-    #       cluster_name = cluster_name,
-    #       group = "gas",
-    #       unitcount = as.integer(1),
-    #       add_prefix = TRUE,
-    #       nominalcapacity = 100,
-    #       enabled = TRUE,
-    #       `marginal-cost` = 135.760000,
-    #       `spread-cost` = 0.400000,
-    #       `market-bid-cost` = 135.760000,
-    #       time_series = param_data)
-    #   }
-    }
-
-    # -----------  In case the margin is positive (lack of consumption) :----------- 
-    else
-    { 
-      new_value <- floor(new_value/100)*100 
-      new_value <- -1*new_value # (negative)
-      if(current_it == 1){last_margin <-new_value }else{last_margin <-100}
-      
-      # #load file with miscellanous generation of the area
-      # rowbalance_file_name <- paste0(opts$inputPath,"/misc-gen/miscgen-",area,".txt",sep="")
-      # 
-      # # check that this file exists
-      # assertthat::assert_that(file.exists(rowbalance_file_name))
-      # 
-      # if (file.info(rowbalance_file_name)$size != 0)
-      # {
-      #   # read file
-      #   param_data <- read.table(rowbalance_file_name)
-      #   
-      #   # update column with new value and write it 
-      #   if(current_it == 1){rowbalance_init <-param_data[,8]}
-      #   
-      #   param_data[,8] = rowbalance_init + new_value
-      #   utils::write.table(param_data, rowbalance_file_name, sep="\t", col.names = FALSE, row.names = FALSE)
-      # }
-      # else if (file.info(rowbalance_file_name)$size ==0)
-      # {
-      #   # The file exists but is empty : i.e. all column contains default value
-      #   # file is built from scratch
-      #   
-      #   param_data <- as.table(matrix(0,8760,8))
-      # 
-      #   # update column with new value and write it 
-      #   param_data[,8] = new_value
-      #   utils::write.table(param_data, link_file_name, sep="\t", col.names = FALSE, row.names = FALSE)
-      # }      
-      # 
-    }
 
     # ----------- Simulate ----------- 
     antaresEditObject::updateGeneralSettings(filtering = "true", year.by.year = "true", opts = opts)
@@ -240,67 +147,32 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
                                                timeStep = "annual", opts = output_antares, showProgress = FALSE,
                                                select = c("LOLD"))
 
-
     new_LOLE <- mean(output_LOLE$LOLD)
     cat("      New LOLE : " ,new_LOLE , " \n", sep="" )
-
+    
+    if(abs(new_LOLE - LOLE)>1.0){ step <- 800}
+    else{
+      if(abs(new_LOLE - LOLE)>0.75){step <- 400}
+      else{
+        if(abs(new_LOLE - LOLE)>0.5){step <- 200}
+        else{step <- 100}
+      }
+    }
+    cat(" Diff = ", abs(new_LOLE - LOLE)," -> step =  ",step,"MW \n",  sep="")    
     
     # ----------- Update : Lack of production ----------- 
     if (new_LOLE > LOLE+tolerance)
     { 
-      # Initially in lack of production
-      if(new_value_init<0)
-      {
-        new_value <-  new_value + 100
-        cat("      New Pcomp = ", new_value, " MW \n", sep="")
-        nb_unit   <-  nb_unit + 1
-      }
-      # Previously in lack of consumption
-      else
-      {   
-          if(last_margin ==100)
-          {
-            cat("Units of 100MW are too big to adapt to the range. ")
-            has_converged <- TRUE
-            cat("Convergence with Pcomp = -", new_value, " MW \n")
-          }
-          else #
-          {
-            cat("      Rowbalance was to big with the abacus. ")
-            new_value <-  new_value/2
-            cat(" New Pcomp = ",new_value," MW \n",  sep="")
-            new_LOLE <- new_LOLE_init
-          }
-       }
+      margin <- margin + sign(margin)*step
+      cat(" New Pcomp = ", margin," MW \n",  sep="")
     }
+      
+  
     # Lack of consumption
     else if (new_LOLE < LOLE - tolerance)
     {
-      # # Initially in lack of consumption
-      if(new_value_init > 0) #initially positive
-      {
-        new_value <-  new_value - 100 #negative
-        cat("      New Pcomp = ",new_value, " MW  \n",  sep="")
-      }      
-      # Previously in lack of production
-      else
-      {
-        if(last_margin ==100)
-        {
-          cat("Units of 100MW are too big to adapt to the range. ")
-          has_converged <- TRUE
-          cat("Convergence with Pcomp = ",new_value," MW \n",  sep="")
-        }
-        else
-        {
-          cat("      Pcomp was to big with the abacus.")
-          new_value <- floor( new_value/2/100)*100         
-          cat(" New Pcomp = ",new_value, " MW \n", sep="")
-          nb_unit <- floor(new_value/100)
-          new_LOLE <- new_LOLE_init
-        }         
-        
-      }
+      margin <- margin - sign(margin)*step
+      cat(" New Pcomp = ", margin," MW \n",  sep="")
     }
     else
     { 
@@ -308,17 +180,10 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
       has_converged <- TRUE        
     }
 
-    new_value <- -1 * new_value
-
-
-    
-    
-    
-     #---- 9. Clean ANTARES output ----
-     if(clean) { clean_output_benders(current_it, unique_key, output_name = "get-margins-", opts)}
+    #---- 9. Clean ANTARES output ----
+    if(clean) { clean_output_benders(current_it, unique_key, output_name = "get-margins-", opts)}
      
     current_it<-current_it+1
-  
   
   
    }
@@ -333,7 +198,7 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
 #'   - if the margin is positive (implicitly, the generation fleet is over-sized and the LOLE 
 #'   is below the adequacy criteria), ROW BALANCE is removed from the given area. In that case,
 #'   ROW BALANCE = row_balance_init - margin.
-#'   - if the margin is negative (impliictly, the generation fleet is under-sized and the LOLE
+#'   - if the margin is negative (implicitly, the generation fleet is under-sized and the LOLE
 #'   is above the adequacy criteria), a cluster is enabled and its installed capacity is set to
 #'   the amount of the margin. The cluster is "perfect", i.e. without any outages or maintenance
 #'   stops.
