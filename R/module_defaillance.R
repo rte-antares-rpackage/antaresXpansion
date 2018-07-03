@@ -43,7 +43,7 @@
 #' 
 #' 
 #' 
-#' tolerance
+
 get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, display = TRUE, clean = TRUE, parallel = TRUE, opts = antaresRead::simOptions(), abaque = function(c){return(-3627*log(c)+3723.4)}, cluster_name = "gas_pcomp_peak" )
 {
   # ---- 0. initialize  ----
@@ -64,6 +64,7 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   unique_key <- paste(sample(c(0:9, letters), size = 3, replace = TRUE),collapse = "") # unique key used in output names
   rowbalance_file_name <- paste0(opts$inputPath, "/misc-gen/miscgen-", area, ".txt", sep = "")
   assertthat::assert_that(file.exists(rowbalance_file_name))
+  loop <- FALSE
   if (file.info(rowbalance_file_name)$size != 0)
   {
     param_data <- read.table(rowbalance_file_name)
@@ -74,7 +75,7 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
     }
   }
   else {initial_row_balance <- rep(0,8760)}
-  list_margin <- data.frame(row.names = c("it", "LOLE", "margin"))
+  list_margin <- data.frame(row.names = c("it", "margin", "LOLE"))
   
   
   # set margin 
@@ -104,8 +105,8 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
 
   list_margin <- rbind(list_margin,
                        data.frame(it = current_it,
-                                  LOLE = new_LOLE,
-                                  margin = 0))
+                                  margin = 0,
+                                  LOLE = new_LOLE))
   # No zero with log !
   if (new_LOLE==0){new_LOLE  <- 0.001}
   new_LOLE_init <- new_LOLE
@@ -158,8 +159,8 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
     cat("      New LOLE : " ,new_LOLE , " \n", sep="" )
     list_margin <- rbind(list_margin,
                          data.frame(it = current_it,
-                                    LOLE = new_LOLE,
-                                    margin = margin))
+                                    margin = margin,
+                                    LOLE = new_LOLE))
     
     if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>1.0){ step <- 800}
     else{
@@ -169,35 +170,65 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
         else{step <- 100}
       }
     }
-    old_margin <- margin
+    
+
     # ----------- Update : Lack of production ----------- 
     if (new_LOLE > LOLE+tolerance)
     { 
-      margin <- old_margin - step
+      margin <- margin  - step
       # If we had already had this margin previously
-      if (margin %in% list_margin$LOLE) {
-        step <- step/2
-        margin <- old_margin - step
-      
+      if (margin %in% list_margin$margin | loop == TRUE) {
+        loop <- TRUE
+        ind_inf <- which(list_margin$LOLE< LOLE - tolerance)
+        ind_inf <- ind_inf[which(abs(list_margin$LOLE[ind_inf] - LOLE + tolerance) == min(abs(list_margin$LOLE[ind_inf] - LOLE + tolerance)))]
+        ind_inf <- ind_inf[which.max(list_margin$margin[ind_inf])]
+        ind_sup <-  which(list_margin$LOLE> LOLE + tolerance)
+        ind_sup <- ind_sup[which(abs(list_margin$LOLE[ind_sup] - LOLE - tolerance) == min(abs(list_margin$LOLE[ind_sup] - LOLE - tolerance)))]
+        ind_sup <- ind_sup[which.min(list_margin$margin[ind_sup])]
+        if(abs(list_margin$margin[ind_inf]-list_margin$margin[ind_sup])==100)
+        {
+          cat("Units of 100MW are too big to adapt to the range. ")
+          has_converged <- TRUE
+          cat("Convergence with Pcomp = ",list_margin$margin[ind_inf]," MW or Pcomp = ",list_margin$margin[ind_sup], " MW \n",  sep="")
+        }
+        else{
+          margin <- floor((list_margin$margin[ind_inf]+list_margin$margin[ind_sup])/2/100)*100
+        }
+       
       }
+
     }
   
     # ----------- Update : Lack of consumption
     else if (new_LOLE < LOLE - tolerance)
     {
-      margin <- old_margin + step
+      margin <- margin  + step
       # If we had already had this margin previously
-      if (margin %in% list_margin$LOLE) {
-        step <- step/2
-        margin <- old_margin + step
-      }
+      if (margin %in% list_margin$margin | loop == TRUE) {
+        loop <- TRUE
+        # Get the nearest LOLE of the aimed range
+        ind_inf <- which(list_margin$LOLE< LOLE - tolerance)
+        ind_inf <- ind_inf[which(abs(list_margin$LOLE[ind_inf] - LOLE + tolerance) == min(abs(list_margin$LOLE[ind_inf] - LOLE + tolerance)))]
+        ind_inf <- ind_inf[which.max(list_margin$margin[ind_inf])]
+        ind_sup <-  which(list_margin$LOLE> LOLE + tolerance)
+        ind_sup <- ind_sup[which(abs(list_margin$LOLE[ind_sup] - LOLE - tolerance) == min(abs(list_margin$LOLE[ind_sup] - LOLE - tolerance)))]
+        ind_sup <- ind_sup[which.min(list_margin$margin[ind_sup])]
+        if(abs(list_margin$margin[ind_inf]-list_margin$margin[ind_sup])==100)
+        {
+          cat("Units of 100MW are too big to adapt to the range. ")
+          has_converged <- TRUE
+          cat("Convergence with Pcomp = ",list_margin$margin[ind_inf]," MW or Pcomp = ",list_margin$margin[ind_sup], " MW \n",  sep="")
+        }
+        else{
+          margin <- floor((list_margin$margin[ind_inf]+list_margin$margin[ind_sup])/2/100)*100
+        }
+      }       
     }
     else
     { 
       cat("\n --- CONVERGENCE with Pcomp = ", margin, " MW \n", sep = "")
       has_converged <- TRUE        
     }
-    
 
     #---- 9. Clean ANTARES output ----
     if(clean) { clean_output_benders(current_it, unique_key, output_name = "get-margins-", opts)}
