@@ -29,7 +29,8 @@
 #'   Name of the complementary cluster if the margin is negative (lack of production).
 #'   The cluster can already exist, otherwise it will be created.
 #'   If cluster_name = "gas_pcomp_peak" and area = "fr", the final name of the cluster will be "fr_gas_pcomp_peak".
-#'   
+#' @param   unit_size
+#'   Minimal size of units for Pcomp
 #'
 #' @return 
 #' 
@@ -44,7 +45,7 @@
 #' 
 #' 
 
-get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, display = TRUE, clean = TRUE, parallel = TRUE, opts = antaresRead::simOptions(), abaque = function(c){return(-3627*log(c)+3723.4)}, cluster_name = "gas_pcomp_peak" )
+get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, display = TRUE, clean = TRUE, parallel = TRUE, opts = antaresRead::simOptions(), abaque = function(c){return(-3627*log(c)+3723.4)}, cluster_name = "gas_pcomp_peak", unit_size = 100 )
 {
   # ---- 0. initialize  ----
   
@@ -124,7 +125,7 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   {
     margin <- abaque(new_LOLE)
     cat("\n      First margin evaluated with the abacus : ", margin," MW.\n", sep="")
-    margin <- floor(margin/100)*100
+    margin <- floor(margin/unit_size)*unit_size
 
     
     
@@ -162,12 +163,12 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
                                     margin = margin,
                                     LOLE = new_LOLE))
     
-    if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>1.0){ step <- 800}
+    if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>1.0){ step <- 8*unit_size}
     else{
-      if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>0.75){step <- 400}
+      if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>0.75){step <- 4*unit_size}
       else{
-        if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>0.5){step <- 200}
-        else{step <- 100}
+        if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>0.5){step <- 2*unit_size}
+        else{step <- unit_size}
       }
     }
     
@@ -179,20 +180,21 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
       # If we had already had this margin previously
       if (margin %in% list_margin$margin | loop == TRUE) {
         loop <- TRUE
+        # Get the nearest LOLE of the aimed range
         ind_inf <- which(list_margin$LOLE< LOLE - tolerance)
         ind_inf <- ind_inf[which(abs(list_margin$LOLE[ind_inf] - LOLE + tolerance) == min(abs(list_margin$LOLE[ind_inf] - LOLE + tolerance)))]
         ind_inf <- ind_inf[which.max(list_margin$margin[ind_inf])]
         ind_sup <-  which(list_margin$LOLE> LOLE + tolerance)
         ind_sup <- ind_sup[which(abs(list_margin$LOLE[ind_sup] - LOLE - tolerance) == min(abs(list_margin$LOLE[ind_sup] - LOLE - tolerance)))]
         ind_sup <- ind_sup[which.min(list_margin$margin[ind_sup])]
-        if(abs(list_margin$margin[ind_inf]-list_margin$margin[ind_sup])==100)
+        if(abs(list_margin$margin[ind_inf]-list_margin$margin[ind_sup])==unit_size)
         {
-          cat("Units of 100MW are too big to adapt to the range. ")
+          cat("\n Units of ",unit_size," MW are too big to adapt to the range. \n")
           has_converged <- TRUE
           cat("Convergence with Pcomp = ",list_margin$margin[ind_inf]," MW or Pcomp = ",list_margin$margin[ind_sup], " MW \n",  sep="")
         }
         else{
-          margin <- floor((list_margin$margin[ind_inf]+list_margin$margin[ind_sup])/2/100)*100
+          margin <- floor((list_margin$margin[ind_inf]+list_margin$margin[ind_sup])/2/unit_size)*unit_size
         }
        
       }
@@ -213,14 +215,14 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
         ind_sup <-  which(list_margin$LOLE> LOLE + tolerance)
         ind_sup <- ind_sup[which(abs(list_margin$LOLE[ind_sup] - LOLE - tolerance) == min(abs(list_margin$LOLE[ind_sup] - LOLE - tolerance)))]
         ind_sup <- ind_sup[which.min(list_margin$margin[ind_sup])]
-        if(abs(list_margin$margin[ind_inf]-list_margin$margin[ind_sup])==100)
+        if(abs(list_margin$margin[ind_inf]-list_margin$margin[ind_sup])==unit_size)
         {
-          cat("Units of 100MW are too big to adapt to the range. ")
+          cat("\n Units of ",unit_size, " MW are too big to adapt to the range. \n")
           has_converged <- TRUE
           cat("Convergence with Pcomp = ",list_margin$margin[ind_inf]," MW or Pcomp = ",list_margin$margin[ind_sup], " MW \n",  sep="")
         }
         else{
-          margin <- floor((list_margin$margin[ind_inf]+list_margin$margin[ind_sup])/2/100)*100
+          margin <- floor((list_margin$margin[ind_inf]+list_margin$margin[ind_sup])/2/unit_size)*unit_size
         }
       }       
     }
@@ -297,7 +299,7 @@ set_margins_in_antares <- function(margin, area, cluster_name, row_balance_init,
                                      group = "gas",
                                      unitcount = as.integer(1),
                                      add_prefix = TRUE,
-                                     nominalcapacity = 100,
+                                     nominalcapacity = unit_size,
                                      enabled = FALSE,
                                      `marginal-cost` = 300,
                                      `spread-cost` = 0,
