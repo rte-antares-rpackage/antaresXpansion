@@ -373,8 +373,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     
     # ---- 9. Clean ANTARES output ----
-    if(clean) { clean_output_benders(best_solution, unique_key, opts)}
-
+    if(clean) { clean_output_benders(best_solution = best_solution, unique_key = unique_key, opts = opts)}
   }
   
   
