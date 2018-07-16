@@ -57,7 +57,6 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   
   
   # initiate a few parameters
-  if(display){cat("------ INITIALIZATION ------\n", sep="")}
   current_it <- 0
   antaresEditObject::updateGeneralSettings(filtering = "true", year.by.year = "true", opts = opts)
   filter_output_areas(areas = antaresRead::getAreas(opts = opts), filter = c("annual"), type = c("year-by-year","synthesis"), opts = opts)
@@ -72,11 +71,13 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
     initial_row_balance <- param_data[, 8]  
     if (abs(sum(initial_row_balance)) > 0) 
     {
-      cat("Initial row balance of the area ", area," is not null ! \n", sep="") 
+      cat("Warning : initial row balance of the area ", area," is not null ! \n", sep="") 
     }
   }
   else {initial_row_balance <- rep(0,8760)}
   list_margin <- data.frame(row.names = c("it", "margin", "LOLE"))
+  
+  if(display){cat("------ Iteration 0 ------\n", sep="")}
   
   
   # set margin 
@@ -86,9 +87,7 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
     
    # ---- 1. Simulate with Antares once at the beginning : ---- 
 
-  cat("If the cluster already exists, the parameter will be initialized to enabled = false at the beginning.\n")
   simulation_name <- paste0("get-margins-", unique_key, "-it", current_it, "$")
-  cat("      With margin = 0 MW \n", sep="")
   if(display){  cat("   ANTARES simulation running ... ", sep="")}
   run_simulation(simulation_name, mode = "economy",
                  path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts)
@@ -102,7 +101,8 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   
   # ---- 2. Define first LOLE : ----   
   new_LOLE <- mean(output_LOLE$LOLD)
-  cat("      Initial LOLE : ", new_LOLE ,".\n", sep="")
+  if(display){ cat("   margin = 0 MW\n", sep="")}
+  if(display){ cat("   LOLD = ", new_LOLE ," h\n", sep="")}
 
   list_margin <- rbind(list_margin,
                        data.frame(it = current_it,
@@ -114,7 +114,7 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   current_it <- 1
   if(new_LOLE >= LOLE-tolerance & new_LOLE <= LOLE + tolerance )
   {
-    cat("The range is already satisfied. \n")
+    if(display){ cat("The area ", area, " is already balanced with margin = 0 MW \n")}
   }
   
  
@@ -124,8 +124,8 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   else
   {
     margin <- abaque(new_LOLE)
-    cat("\n      First margin evaluated with the abacus : ", margin," MW.\n", sep="")
     margin <- floor(margin/unit_size)*unit_size
+    if(display){ cat("   First margin evaluated with the abacus : ", margin," MW\n", sep="")}
 
     
     
@@ -135,8 +135,8 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   has_converged <- FALSE
   while(!has_converged)
   {
-    if(display){cat("\n------ ITERATION ", current_it,"------\n", sep="")}
-
+    if(display){cat("\n------ Iteration ", current_it, " ------\n", sep="")}
+    
     set_margins_in_antares(margin, area, cluster_name, row_balance_init = initial_row_balance, opts = antaresRead::simOptions()) 
     
 
@@ -145,7 +145,6 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
     filter_output_areas(areas = antaresRead::getAreas(opts = opts), filter = c("annual"), type = c("year-by-year","synthesis"), opts = opts)
     filter_output_links(links = antaresRead::getLinks(opts = opts), filter = c("annual"), type = c("synthesis"), opts = opts)
     simulation_name <- paste0("get-margins-", unique_key, "-it", current_it, "$")
-    cat("      With margin = ", margin," MW \n", sep="")
      if(display){  cat("   ANTARES simulation running ... ", sep="")}
     run_simulation(simulation_name, mode = "economy",
                    path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts)
@@ -157,7 +156,8 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
                                                select = c("LOLD"))
 
     new_LOLE <- mean(output_LOLE$LOLD)
-    cat("      New LOLE : " ,new_LOLE , " \n", sep="" )
+    if(display){ cat("   margin = " ,margin , " MW\n", sep="" )}
+    if(display){ cat("   LOLD = " ,new_LOLE , " h\n", sep="" )}
     list_margin <- rbind(list_margin,
                          data.frame(it = current_it,
                                     margin = margin,
@@ -189,9 +189,9 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
         ind_sup <- ind_sup[which.min(list_margin$margin[ind_sup])]
         if(abs(list_margin$margin[ind_inf]-list_margin$margin[ind_sup])==unit_size)
         {
-          cat("\n Units of ",unit_size," MW are too big to adapt to the range. \n")
+          if(display){ cat("\n Units of ",unit_size," MW are too big to adapt to the range. \n")}
           has_converged <- TRUE
-          cat("Convergence with Pcomp = ",list_margin$margin[ind_inf]," MW or Pcomp = ",list_margin$margin[ind_sup], " MW \n",  sep="")
+          if(display){ cat("Convergence with margin = ",list_margin$margin[ind_inf]," MW or margin = ",list_margin$margin[ind_sup], " MW \n",  sep="")}
         }
         else{
           margin <- floor((list_margin$margin[ind_inf]+list_margin$margin[ind_sup])/2/unit_size)*unit_size
@@ -217,9 +217,9 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
         ind_sup <- ind_sup[which.min(list_margin$margin[ind_sup])]
         if(abs(list_margin$margin[ind_inf]-list_margin$margin[ind_sup])==unit_size)
         {
-          cat("\n Units of ",unit_size, " MW are too big to adapt to the range. \n")
+          if(display){ cat("\n Units of ",unit_size, " MW are too big to adapt to the range. \n")}
           has_converged <- TRUE
-          cat("Convergence with Pcomp = ",list_margin$margin[ind_inf]," MW or Pcomp = ",list_margin$margin[ind_sup], " MW \n",  sep="")
+          if(display){ cat("Convergence with margin = ",list_margin$margin[ind_inf]," MW or margin = ",list_margin$margin[ind_sup], " MW \n",  sep="")}
         }
         else{
           margin <- floor((list_margin$margin[ind_inf]+list_margin$margin[ind_sup])/2/unit_size)*unit_size
@@ -228,7 +228,7 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
     }
     else
     { 
-      cat("\n --- CONVERGENCE with Pcomp = ", margin, " MW \n", sep = "")
+      if(display){ cat("\n --- Area ", area, " has been balanced with margin = ", margin, " MW \n", sep = "")}
       has_converged <- TRUE        
     }
 
@@ -239,8 +239,8 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   
   
   }
-    cat("\n Summary :  \n")
-    print(list_margin)    
+    if(display){ cat("\n Summary :  \n")}
+    if(display){ print(list_margin)    }
   }
 }
 
