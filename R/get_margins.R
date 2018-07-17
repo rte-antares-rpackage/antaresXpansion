@@ -97,7 +97,7 @@ get_margins <- function(area = "fr", cluster_name = "gas_pcomp_peak", LOLD = 3.0
   # initiate a few parameters
   current_it <- 0
   antaresEditObject::updateGeneralSettings(filtering = "true", year.by.year = "true", opts = opts)
-  filter_output_areas(areas = antaresRead::getAreas(opts = opts), filter = c("annual", "weekly", "hourly"), type = c("year-by-year","synthesis"), opts = opts)
+  filter_output_areas(areas = antaresRead::getAreas(opts = opts), filter = c("annual", "weekly"), type = c("year-by-year","synthesis"), opts = opts)
   filter_output_links(links = antaresRead::getLinks(opts = opts), filter = c("annual"), type = c("synthesis"), opts = opts)
   unique_key <- paste(sample(c(0:9, letters), size = 3, replace = TRUE),collapse = "") # unique key used in output names
   rowbalance_file_name <- paste0(opts$inputPath, "/misc-gen/miscgen-", area, ".txt", sep = "")
