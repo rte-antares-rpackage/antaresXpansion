@@ -50,16 +50,39 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   # ---- 0. initialize  ----
   
 
+  # reload study
+  opts <- setSimulationPath(opts$studyPath, simulation = 0)
+
   # save current settings of the ANTARES study into a temporary file
   save_general_settings(opts)
   # reset options of the ANTARES study to their initial values when the function ends
   on.exit(restore_general_settings(opts))
   
   
+  #    set week and initial day
+  #    we need to ensure the consistency between the weekly optimisation and the weekly
+  #    aggregation of the output
+  
+  month_name <- c("january", "december", "november", "october", "september", "august", "july", "june", "may", "april", "march", "february")
+  day_per_month <- c(0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 28)
+  
+  day_name <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+  if (opts$parameters$general$leapyear)
+  {
+    day_per_month[12] <- 29
+  }
+  month_id <- which(month_name == opts$parameters$general$"first-month-in-year")
+  assertthat::assert_that(length(month_id) == 1)
+  n_day <- (-sum(day_per_month[1:month_id]) + opts$parameters$general$simulation.start - 1) %% 7
+  
+  first_day_week <- day_name[((which(day_name == opts$parameters$general$january.1st) + n_day - 1) %% 7 ) +1]
+  antaresEditObject::updateGeneralSettings(first.weekday = first_day_week)
+  
+  
   # initiate a few parameters
   current_it <- 0
   antaresEditObject::updateGeneralSettings(filtering = "true", year.by.year = "true", opts = opts)
-  filter_output_areas(areas = antaresRead::getAreas(opts = opts), filter = c("annual"), type = c("year-by-year","synthesis"), opts = opts)
+  filter_output_areas(areas = antaresRead::getAreas(opts = opts), filter = c("annual", "weekly", "hourly"), type = c("year-by-year","synthesis"), opts = opts)
   filter_output_links(links = antaresRead::getLinks(opts = opts), filter = c("annual"), type = c("synthesis"), opts = opts)
   unique_key <- paste(sample(c(0:9, letters), size = 3, replace = TRUE),collapse = "") # unique key used in output names
   rowbalance_file_name <- paste0(opts$inputPath, "/misc-gen/miscgen-", area, ".txt", sep = "")
@@ -79,16 +102,21 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   
   if(display){cat("------ Iteration 0 ------\n", sep="")}
   
-  
+  # setplaylist and weeks
+  first_sim_week <- 1 + ceiling((opts$parameters$general$simulation.start - 1)/7)
+  n_w <- floor((opts$parameters$general$simulation.end - opts$parameters$general$simulation.start + 1)/7) # number of weeks 
+  weeks <- initial_weeks <- first_sim_week:(first_sim_week + n_w - 1) # identifier of weeks to simulate for all expansion planning optimisation
+  playlist <- initial_playlist <- getPlaylist(opts) # identifier of mc years to simulate for all expansion planning optimisation
+
   # set margin 
   set_margins_in_antares(margin = 0, area, cluster_name, row_balance_init = initial_row_balance, opts = antaresRead::simOptions())
 
-  
     
    # ---- 1. Simulate with Antares once at the beginning : ---- 
 
-  simulation_name <- paste0("get-margins-", unique_key, "-it", current_it, "$")
-  if(display){  cat("   ANTARES simulation running ... ", sep="")}
+  simulation_name <- paste0("get-margins-", unique_key, "-it", current_it, "-margin_0mw")
+  if(display){  cat("   ANTARES simulation running ", sep="")}
+  if(display){  cat("[",length(weeks)*length(playlist)," simulated weeks] ... ", sep = "")}
   run_simulation(simulation_name, mode = "economy",
                  path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts)
   if(display){  cat("[done] \n", sep="")}
@@ -108,6 +136,15 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
                        data.frame(it = current_it,
                                   margin = 0,
                                   LOLE = new_LOLE))
+  
+  # if LOLE is above the target, report years and weeks which acutally have unsupplied energy
+  if(new_LOLE > LOLE)
+  {
+    ooo <- get_years_and_weeks_with_LOLD(area = area, opts = output_antares)
+    playlist <- intersect(playlist, ooo$mc_years)
+    weeks <- intersect(weeks, ooo$weeks)
+  }
+  
   # No zero with log !
   if (new_LOLE==0){new_LOLE  <- 0.001}
   new_LOLE_init <- new_LOLE
@@ -139,13 +176,18 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
     
     set_margins_in_antares(margin, area, cluster_name, row_balance_init = initial_row_balance, opts = antaresRead::simOptions()) 
     
+    # ----------- change playlist and simulated weeks -------------
+    
+    set_simulation_period(weeks, opts)
+    antaresEditObject::setPlaylist(playlist, opts)
+    
 
     # ----------- Simulate ----------- 
     antaresEditObject::updateGeneralSettings(filtering = "true", year.by.year = "true", opts = opts)
-    filter_output_areas(areas = antaresRead::getAreas(opts = opts), filter = c("annual"), type = c("year-by-year","synthesis"), opts = opts)
-    filter_output_links(links = antaresRead::getLinks(opts = opts), filter = c("annual"), type = c("synthesis"), opts = opts)
-    simulation_name <- paste0("get-margins-", unique_key, "-it", current_it, "$")
-     if(display){  cat("   ANTARES simulation running ... ", sep="")}
+    simulation_name <- paste0("get-margins-", unique_key, "-it", current_it, "-margin_", margin, "mw")
+    if(display){  cat("   ANTARES simulation running ", sep="")}
+    if(display){  cat("[",length(weeks)*length(playlist)," simulated weeks] ... ", sep = "")}
+    
     run_simulation(simulation_name, mode = "economy",
                    path_solver, wait = TRUE, show_output_on_console = FALSE, parallel = parallel, opts)
     if(display){  cat("[done] \n", sep="")}
@@ -155,14 +197,15 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
                                                timeStep = "annual", opts = output_antares, showProgress = FALSE,
                                                select = c("LOLD"))
 
-    new_LOLE <- mean(output_LOLE$LOLD)
+    new_LOLE <- sum(output_LOLE$LOLD)/length(initial_playlist)
+    
     if(display){ cat("   margin = " ,margin , " MW\n", sep="" )}
     if(display){ cat("   LOLD = " ,new_LOLE , " h\n", sep="" )}
     list_margin <- rbind(list_margin,
                          data.frame(it = current_it,
                                     margin = margin,
                                     LOLE = new_LOLE))
-    
+  
     if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>1.0){ step <- 8*unit_size}
     else{
       if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>0.75){step <- 4*unit_size}
@@ -231,7 +274,15 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
       if(display){ cat("\n --- Area ", area, " has been balanced with margin = ", margin, " MW \n", sep = "")}
       has_converged <- TRUE        
     }
-
+    
+    # if LOLE is above the target, report years and weeks which acutally have unsupplied energy
+    if(new_LOLE > LOLE)
+    {
+      ooo <- get_years_and_weeks_with_LOLD(area, output_antares)
+      playlist <- intersect(playlist, ooo$mc_years)
+      weeks <- intersect(weeks, ooo$weeks)
+    }
+    
     #---- 9. Clean ANTARES output ----
     if(clean) { clean_output_benders(current_it, unique_key, output_name = "get-margins-", opts)}
      
@@ -399,6 +450,43 @@ update_row_balance <- function(row_balance, area, opts = antaresRead::simOptions
     param_data[,8] = row_balance
     utils::write.table(param_data, link_file_name, sep="\t", col.names = FALSE, row.names = FALSE)
   }      
+}
+
+
+
+#' Returns list of mc_years and weeks with LOLD
+#'
+#' @param area
+#'   area in which LOLD is analyzed
+#' @param opts
+#'   list of simulation parameters returned by the function
+#'   \code{antaresRead::setSimulationPath}
+#'
+#' @return 
+#' A list with two vectors, one with the MC years with LOLD and 
+#' on with the weeks with LOLD.
+#' 
+#' @noRd
+#' @importFrom antaresRead simOptions readAntares
+get_years_and_weeks_with_LOLD <- function(area, opts = antaresRead::simOptions())
+{
+   LOLD <- antaresRead::readAntares(areas = area, links = NULL, mcYears = "all", 
+                           timeStep = "weekly", opts = opts, showProgress = FALSE,
+                           select = c("LOLD"))
+  
+   # get mc-years and weeks with LOLD
+   mc_years <- unique(LOLD[LOLD > 0, mcYear])
+   weeks <- unique(LOLD[LOLD > 0, timeId])
+   
+   
+   # look for consecutive weeks
+   c_weeks <- min(weeks):max(weeks)
+   
+   # build output
+   out <- list()
+   out$mc_years <- mc_years
+   out$weeks <- c_weeks
+   return(out)
 }
 
 

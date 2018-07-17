@@ -61,7 +61,7 @@ clean_output_benders <- function(best_solution, unique_key, output_name = "expan
   list_simu <- list.dirs(output_path, recursive = FALSE, full.names = FALSE)
   
   # check that the best solution has been kept
-  best_sol_name <- paste0(output_name, unique_key, "-it", best_solution, "$")
+  best_sol_name <- paste0(output_name, unique_key, "-it", best_solution)
   assertthat::assert_that(length(grep(best_sol_name, list_simu)) > 0)
   
   
