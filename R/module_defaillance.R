@@ -1,16 +1,36 @@
-#' Launch LOLE module
+#' Compute generation margin in a given area on an Antares Study.
 #' 
-#'
+#'   - A positive generation margin means that the generation fleet of the area is over-sized 
+#'   and the LOLD (Loss Of Load Duration) is below the adequacy criteria (typically 3h/y). In that
+#'   case, the margin corresponds to the extra constant load that the generation fleet can still supply while
+#'   respecting strictly the adequacy criteria.
+#'   
+#'   - A negative generation margin means that the generation fleet is under-sized and the LOLD
+#'   is above the adequacy criteria. In that case, the margin corresponds to the extra "perfect" production
+#'   capacity required to meet the adequacy criteria. A "perfect" capacity is a capacity which is available
+#'   all the time (i.e. without maintenance/outages).
+#' 
 #' @param area
-#'   area 
-#' @param LOLE
-#'   LOLE 
+#'   Area in which the margin is computed
+#' @param cluster_name
+#'   Name of the complementary cluster if the margin is negative (lack of production).
+#'   The cluster can already exist, otherwise it will be created.
+#'   (example : If cluster_name = "gas_pcomp_peak" and area = "fr", the final name of the cluster will be "fr_gas_pcomp_peak")
+#' @param LOLD
+#'   Adequacy criteria of the area in terms of Loss of Load Duration (given in h/year) 
 #' @param tolerance
-#'   tolerance (example : if tolerance = 0.5 and LOLE = 3.0, the aimed range of LOLE is between 2h30 and 3h30 )
+#'    Algorithmic tolerance about the adequacy criteria. Used as stop criterion. 
+#'   (example : if tolerance = 0.5 and LOLD = 3.0, the aimed range of LOLD is between 2h30 and 3h30)
+#' @param unit_size
+#'   Minimal step of the generation margin. Given in MW.
+#' @param abaque
+#'   Function abaque : marge = f(LOLE)
+#' @param initial_margin
+#'   First margin tested in the function. Given in MW.
 #' @param path_solver
 #'   Character containing the Antares Solver path
 #' @param display
-#'   Logical. If \code{TRUE} the advancement of the defaillance module
+#'   Logical. If \code{TRUE} the advancement of the function
 #'   if displayed in the console
 #' @param clean
 #'   Logical. If \code{TRUE} the output of the ANTARES simulations run by the
@@ -23,14 +43,6 @@
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
-#' @param abaque
-#'   Function abaque : marge = f(LOLE)
-#' @param cluster_name
-#'   Name of the complementary cluster if the margin is negative (lack of production).
-#'   The cluster can already exist, otherwise it will be created.
-#'   If cluster_name = "gas_pcomp_peak" and area = "fr", the final name of the cluster will be "fr_gas_pcomp_peak".
-#' @param   unit_size
-#'   Minimal size of units for Pcomp
 #'
 #' @return 
 #' 
@@ -41,15 +53,14 @@
 #' @importFrom antaresEditObject setPlaylist getPlaylist createCluster writeIni 
 #' @export
 #' 
-#' 
-#' 
-#' 
 
-get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, display = TRUE, clean = TRUE, parallel = TRUE, opts = antaresRead::simOptions(), abaque = function(c){return(-3627*log(c)+3723.4)}, cluster_name = "gas_pcomp_peak", unit_size = 100 )
+get_margins <- function(area = "fr", cluster_name = "gas_pcomp_peak", LOLD = 3.00, tolerance = 0.01,  unit_size = 100,
+                        abaque = function(c){return(-3627*log(c)+3723.4)}, initial_margin = 0, path_solver, display = TRUE, clean = TRUE, 
+                        parallel = TRUE, opts = antaresRead::simOptions())
 {
   # ---- 0. initialize  ----
   
-
+  LOLE <- LOLD
   # reload study
   opts <- setSimulationPath(opts$studyPath, simulation = 0)
 
@@ -78,6 +89,10 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   first_day_week <- day_name[((which(day_name == opts$parameters$general$january.1st) + n_day - 1) %% 7 ) +1]
   antaresEditObject::updateGeneralSettings(first.weekday = first_day_week)
   
+  # adjust abacus
+  abaque_t <- abaque
+  a_0 <- uniroot(abaque_t, interval = c(0.01, 10))$root 
+  abaque <- function(x){abaque_t(x * a_0 / LOLE)}
   
   # initiate a few parameters
   current_it <- 0
@@ -109,12 +124,12 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   playlist <- initial_playlist <- getPlaylist(opts) # identifier of mc years to simulate for all expansion planning optimisation
 
   # set margin 
-  set_margins_in_antares(margin = 0, area, cluster_name, row_balance_init = initial_row_balance, opts = antaresRead::simOptions())
+  set_margins_in_antares(margin = initial_margin, area, cluster_name, row_balance_init = initial_row_balance, opts = antaresRead::simOptions())
 
     
    # ---- 1. Simulate with Antares once at the beginning : ---- 
 
-  simulation_name <- paste0("get-margins-", unique_key, "-it", current_it, "-margin_0mw")
+  simulation_name <- paste0("get-margins-", unique_key, "-it", current_it, "-margin_", initial_margin,"mw")
   if(display){  cat("   ANTARES simulation running ", sep="")}
   if(display){  cat("[",length(weeks)*length(playlist)," simulated weeks] ... ", sep = "")}
   run_simulation(simulation_name, mode = "economy",
@@ -129,12 +144,12 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   
   # ---- 2. Define first LOLE : ----   
   new_LOLE <- mean(output_LOLE$LOLD)
-  if(display){ cat("   margin = 0 MW\n", sep="")}
+  if(display){ cat("   margin = ", initial_margin, " MW\n", sep="")}
   if(display){ cat("   LOLD = ", new_LOLE ," h\n", sep="")}
 
   list_margin <- rbind(list_margin,
                        data.frame(it = current_it,
-                                  margin = 0,
+                                  margin = initial_margin,
                                   LOLE = new_LOLE))
   
   # if LOLE is above the target, report years and weeks which acutally have unsupplied energy
@@ -146,12 +161,11 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   }
   
   # No zero with log !
-  if (new_LOLE==0){new_LOLE  <- 0.001}
   new_LOLE_init <- new_LOLE
   current_it <- 1
   if(new_LOLE >= LOLE-tolerance & new_LOLE <= LOLE + tolerance )
   {
-    if(display){ cat("The area ", area, " is already balanced with margin = 0 MW \n")}
+    if(display){ cat("The area ", area, " is already balanced with margin = ", initial_margin,"  MW \n")}
   }
   
  
@@ -160,7 +174,10 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
    # ---- 3. Evaluate the fisrt margin with the abacus : ----   
   else
   {
-    margin <- abaque(new_LOLE)
+    if (new_LOLE==0){margin  <- 10000}
+    else if (new_LOLE > LOLE) {margin <- abaque(new_LOLE)}
+    else if (new_LOLE < LOLE) {margin <- margin * 1.15}
+    margin <- initial_margin + margin
     margin <- floor(margin/unit_size)*unit_size
     if(display){ cat("   First margin evaluated with the abacus : ", margin," MW\n", sep="")}
 
@@ -206,40 +223,49 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
                                     margin = margin,
                                     LOLE = new_LOLE))
   
-    if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>1.0){ step <- 8*unit_size}
-    else{
-      if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>0.75){step <- 4*unit_size}
-      else{
-        if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>0.5){step <- 2*unit_size}
-        else{step <- unit_size}
-      }
-    }
+    # ---- update step ----
     
+    # if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>1.0){ step <- 8*unit_size}
+    # else{
+    #   if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>0.75){step <- 4*unit_size}
+    #   else{
+    #     if(min(abs(new_LOLE - LOLE + tolerance), abs(new_LOLE - LOLE - tolerance))>0.5){step <- 2*unit_size}
+    #     else{step <- unit_size}
+    #   }
+    # }
+    
+    if (new_LOLE==0){step <- 10000}
+    else {step <- abaque(new_LOLE)}
+    if(step > 0 && new_LOLE > LOLE){step <- -step}
+    if(step < 0 && new_LOLE < LOLE){step <- -step}
+    if(abs(step) < unit_size) {step <- sign(step)*unit_size}
+    else { step <- round(step/unit_size)*unit_size  }      
 
+    
     # ----------- Update : Lack of production ----------- 
     if (new_LOLE > LOLE+tolerance)
     { 
-      margin <- margin  - step
+      margin <- margin  + step
       # If we had already had this margin previously
-      if (margin %in% list_margin$margin | loop == TRUE) {
+      if(!is.null(list_margin$margin[list_margin$margin < margin - step]))
+      {
+      if (any(margin <= list_margin$margin[list_margin$margin < margin - step])) {
         loop <- TRUE
         # Get the nearest LOLE of the aimed range
         ind_inf <- which(list_margin$LOLE< LOLE - tolerance)
-        ind_inf <- ind_inf[which(abs(list_margin$LOLE[ind_inf] - LOLE + tolerance) == min(abs(list_margin$LOLE[ind_inf] - LOLE + tolerance)))]
         ind_inf <- ind_inf[which.max(list_margin$margin[ind_inf])]
         ind_sup <-  which(list_margin$LOLE> LOLE + tolerance)
-        ind_sup <- ind_sup[which(abs(list_margin$LOLE[ind_sup] - LOLE - tolerance) == min(abs(list_margin$LOLE[ind_sup] - LOLE - tolerance)))]
         ind_sup <- ind_sup[which.min(list_margin$margin[ind_sup])]
         if(abs(list_margin$margin[ind_inf]-list_margin$margin[ind_sup])==unit_size)
         {
-          if(display){ cat("\n Units of ",unit_size," MW are too big to adapt to the range. \n")}
+          if(display){ cat("\n Units of ",unit_size," MW are too big to adapt to the tolerance \n")}
           has_converged <- TRUE
           if(display){ cat("Convergence with margin = ",list_margin$margin[ind_inf]," MW or margin = ",list_margin$margin[ind_sup], " MW \n",  sep="")}
         }
         else{
           margin <- floor((list_margin$margin[ind_inf]+list_margin$margin[ind_sup])/2/unit_size)*unit_size
         }
-       
+      }
       }
 
     }
@@ -249,23 +275,24 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
     {
       margin <- margin  + step
       # If we had already had this margin previously
-      if (margin %in% list_margin$margin | loop == TRUE) {
-        loop <- TRUE
+      if(!is.null(list_margin$margin[list_margin$margin > margin - step]))
+      {
+        if (any(margin >= list_margin$margin[list_margin$margin > margin - step])) {
+          loop <- TRUE
         # Get the nearest LOLE of the aimed range
         ind_inf <- which(list_margin$LOLE< LOLE - tolerance)
-        ind_inf <- ind_inf[which(abs(list_margin$LOLE[ind_inf] - LOLE + tolerance) == min(abs(list_margin$LOLE[ind_inf] - LOLE + tolerance)))]
         ind_inf <- ind_inf[which.max(list_margin$margin[ind_inf])]
         ind_sup <-  which(list_margin$LOLE> LOLE + tolerance)
-        ind_sup <- ind_sup[which(abs(list_margin$LOLE[ind_sup] - LOLE - tolerance) == min(abs(list_margin$LOLE[ind_sup] - LOLE - tolerance)))]
         ind_sup <- ind_sup[which.min(list_margin$margin[ind_sup])]
         if(abs(list_margin$margin[ind_inf]-list_margin$margin[ind_sup])==unit_size)
         {
-          if(display){ cat("\n Units of ",unit_size, " MW are too big to adapt to the range. \n")}
+          if(display){ cat("\n Units of ",unit_size, " MW are too big to adapt to the tolerance \n")}
           has_converged <- TRUE
           if(display){ cat("Convergence with margin = ",list_margin$margin[ind_inf]," MW or margin = ",list_margin$margin[ind_sup], " MW \n",  sep="")}
         }
         else{
           margin <- floor((list_margin$margin[ind_inf]+list_margin$margin[ind_sup])/2/unit_size)*unit_size
+        }
         }
       }       
     }
@@ -291,7 +318,7 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
   
   }
     if(display){ cat("\n Summary :  \n")}
-    if(display){ print(list_margin)    }
+    if(display){ print(list_margin)}
   }
 }
 
@@ -329,7 +356,7 @@ get_margins <- function(area = "fr", LOLE = 3.00, tolerance = 0.5, path_solver, 
 #' @importFrom antaresRead readClusterDesc simOptions
 #' @importFrom antaresEditObject createCluster readIniFile writeIni
 #' @importFrom utils modifyList read.table write.table
-#' @importFrom asserthat assert_that
+#' @importFrom assertthat assert_that
 #' 
 #' 
 #' 
@@ -421,7 +448,7 @@ set_margins_in_antares <- function(margin, area, cluster_name, row_balance_init,
 #' @importFrom antaresRead simOptions
 #' @importFrom antaresEditObject createCluster readIniFile writeIni
 #' @importFrom utils read.table write.table
-#' @importFrom asserthat assert_that
+#' @importFrom assertthat assert_that
 update_row_balance <- function(row_balance, area, opts = antaresRead::simOptions())
 {
 
