@@ -13,6 +13,8 @@ data  master_dat.ampl;     # load data
 # set options
 option solver (option_v["solver"]);    # set solver
 option relax_integrality  (option_v["relaxed"]);  # relaxed master problem ?
+option presolve  (option_v["presolve"]);  # relaxed master problem ?
+
 
 # set solver options
 if (option_v["solver"]) == "amplxpress" then 
