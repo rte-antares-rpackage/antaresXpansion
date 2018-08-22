@@ -292,6 +292,10 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
         x$costs$overall_costs <- rep(NA, nrow(x$costs))
         current_it$need_full <- TRUE
         
+        # reinitialize ubcost and capacity bounds files (out of date)
+        write(c(), file = paste0(tmp_folder, "/in_out_capacitybounds.txt"), append = FALSE )
+        write(c(), file = paste0(tmp_folder, "/in_ubcosts.txt"), append = FALSE )
+        
         if (display){cat("--- ADDITION of INTEGER variables into investment decisions --- \n")}
       }
     }

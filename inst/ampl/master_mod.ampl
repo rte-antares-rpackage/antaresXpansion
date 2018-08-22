@@ -59,7 +59,7 @@ param max_unit{INV_CANDIDATE};	 	# max number of units which can be invested
 param relaxed{INV_CANDIDATE} symbolic ;	  # (true or false) is the investment made continuously, or with steps ?
 param restrained_ub{INV_CANDIDATE} default Infinity; # uper bound on invested capacity
 param restrained_lb{INV_CANDIDATE} default 0 ; # lower bound on invested capacity
-
+param tol_bounds := 1e-3 ;   # to avoid infeasibility
 param z0{ITERATION, INV_CANDIDATE}  ;# invested capacity of each candidates for the given iteratoin
 
 
@@ -135,7 +135,7 @@ minimize bound_capacity_min {z in INV_CANDIDATE} : Invested_capacity[z];
 maximize bound_capacity_max {z in INV_CANDIDATE} : Invested_capacity[z];
 
 # ub on objective function
-subject to ub {if option_v["ub_constraint"]}:  sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) <= ub_cost;
+subject to ub {if (option_v["ub_constraint"] or option_v["solve_bounds"])}:  sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) <= ub_cost + 1;
 
 
 # description of invested capacity :
@@ -143,7 +143,7 @@ subject to bounds_on_invested_capacity_relaxed{z in INV_CANDIDATE : relaxed[z] =
 subject to bounds_on_invested_capacity_integer{z in INV_CANDIDATE : relaxed[z] != "true"} : N_invested[z] <= max_unit[z];
 subject to integer_constraint{z in INV_CANDIDATE : relaxed[z] != "true"} : Invested_capacity[z] = unit_size[z] * N_invested[z];		 
 
-subject to restrained_bounds_on_capacity {z in INV_CANDIDATE} : restrained_lb[z] <= Invested_capacity[z] <= restrained_ub[z]; 
+subject to restrained_bounds_on_capacity {z in INV_CANDIDATE} : restrained_lb[z] - tol_bounds<= Invested_capacity[z] <= restrained_ub[z] + tol_bounds; 
 
 # bender's cut :
 subject to cut_avg{c in AVG_CUT} : sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) >=   c0_avg[c] - sum{z in INV_CANDIDATE}(lambda_avg[c,z] * (Invested_capacity[z] - z0[c,z])) ;

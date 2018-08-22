@@ -27,8 +27,10 @@ if (option_v["solve_bounds"]) then
    for{z in INV_CANDIDATE}
    {
    		solve bound_capacity_min[z] >> out_log.txt;
+   		if solve_result = "infeasible" then break;
    		let restrained_lb[z] := bound_capacity_min[z];
    		solve bound_capacity_max[z] >> out_log.txt;
+   		if solve_result = "infeasible" then break;
    		let restrained_ub[z] := bound_capacity_max[z];
    } 
 }
@@ -38,6 +40,14 @@ if (option_v["solve_bounds"]) then
 if (option_v["solve_master"]) then
 {
 	solve master >> out_log.txt;
+	# relaxed ub constraint if problem is infeasible
+	if solve_result = "infeasible" then 
+	{
+		drop ub;
+		solve master >> out_log.txt;
+		if solve_result = "infeasible" then printf "error infeasible problem";
+	}
+	
 	# correct Invested_capacity, slight negative values are possible due to constraint tolerances
 	let {z in INV_CANDIDATE} Invested_capacity[z] := max(0, Invested_capacity[z]);
 	
