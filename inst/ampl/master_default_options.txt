@@ -1,4 +1,5 @@
 solver cbc
 solve_master 1 
 relaxed 0
+ub_constraint 1
 solve_bounds 0

@@ -77,8 +77,8 @@ param c0_weekly{WEEKLY_CUT_ALL} ;   					# weekly total costs
 param lambda_weekly{WEEKLY_CUT_ALL, INV_CANDIDATE} ;    # rentability (weekly values)
 
 # other
-param prob{YEAR}; 	# probability of occurence of each MC year
-
+param prob{YEAR}; 					# probability of occurence of each MC year
+param ub_cost default Infinity;     # ub on objective function (total of all costs)
 
 
 #-------------------------------------
@@ -134,6 +134,8 @@ minimize master : sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) ;
 minimize bound_capacity_min {z in INV_CANDIDATE} : Invested_capacity[z];
 maximize bound_capacity_max {z in INV_CANDIDATE} : Invested_capacity[z];
 
+# ub on objective function
+subject to ub {if option_v["ub_constraint"]}:  sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) <= ub_cost;
 
 
 # description of invested capacity :

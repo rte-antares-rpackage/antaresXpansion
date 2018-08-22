@@ -53,6 +53,8 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   in_out_files$dual_weeklycut <- "out_dualweeklycut.txt"
   in_out_files$theta <- "out_theta.txt"
   in_out_files$capacity_bounds <- "in_out_capacitybounds.txt"
+  in_out_files$uper_bound_costs <-"in_ubcosts.txt"
+  
   
   # check if temporary folder exists, if not create it
   tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
