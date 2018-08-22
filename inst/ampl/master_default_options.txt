@@ -1,2 +1,4 @@
 solver cbc
+solve_master 1 
 relaxed 0
+solve_bounds 0
