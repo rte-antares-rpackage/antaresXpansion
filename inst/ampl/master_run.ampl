@@ -10,9 +10,14 @@ reset;
 model master_mod.ampl;    # load model
 data  master_dat.ampl;     # load data
 
-# include options
-include in_options.txt;
-option solver (prm_solver);    # set solver
+# set options
+option solver (option_v["solver"]);    # set solver
+option relax_integrality  (option_v["relaxed"]);  # relaxed master problem ?
+
+# set solver options
+if (option_v["solver"]) == "amplxpress" then 
+	option xpress_options "mipabsstop=0 miprelstop= 0";
+ 
 
 
 # solver master problem

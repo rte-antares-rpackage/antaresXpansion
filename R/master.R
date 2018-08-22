@@ -28,6 +28,7 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   run_file <- "ampl/master_run.ampl"
   mod_file <- "ampl/master_mod.ampl"
   dat_file <- "ampl/master_dat.ampl"
+  opt_file <- "ampl/master_default_options.txt"
   
   # master input/output files (interface with AMPL is ensured with .txt files)
   in_out_files <- list()
@@ -43,7 +44,6 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   in_out_files$yearly_cuts <- "in_yearlycuts.txt"
   in_out_files$weekly_cuts <- "in_weeklycuts.txt"
   in_out_files$options <- "in_options.txt"
-  in_out_files$solver <- "in_solver.txt"
   in_out_files$y_weights <- "in_yweights.txt"
   in_out_files$sol_master <- "out_solutionmaster.txt"
   in_out_files$underestimator <- "out_underestimator.txt"
@@ -64,15 +64,18 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   run_file <- system.file(run_file, package = "antaresXpansion")
   mod_file <- system.file(mod_file, package = "antaresXpansion")
   dat_file <- system.file(dat_file, package = "antaresXpansion")
+  opt_file <- system.file(opt_file, package = "antaresXpansion")
   
   assertthat::assert_that(file.copy(from = run_file, to = tmp_folder, overwrite = TRUE))
   assertthat::assert_that(file.copy(from = mod_file, to = tmp_folder, overwrite = TRUE))
   assertthat::assert_that(file.copy(from = dat_file, to = tmp_folder, overwrite = TRUE))
+  assertthat::assert_that(file.copy(from = opt_file, to = tmp_folder, overwrite = TRUE))
   
   # create empty in_out files
   lapply(in_out_files, FUN = function(x, folder){file.create(paste0(folder, "/", x))}, folder = tmp_folder)
   
   # fill files which will be similar for every iteration of the benders decomposition
+  
   # 1 - in_nmc.txt
   mc <- antaresEditObject::getPlaylist(opts)
   write(paste0(mc, collapse = " "), file = paste0(tmp_folder, "/", in_out_files$mc))
@@ -104,10 +107,9 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   
   
   # 4 - in_solver.txt
-  write(exp_options$solver, file = paste0(tmp_folder, "/", in_out_files$solver))
+  change_option_master(option_name = "solver", option_value = exp_options$solver, opts = opts)
   
   # 5 - in_yweights.txt
-  
   if(all(is.na(exp_options$y_weights)))
   {
     weights_y <- rep(1, length(mc))/length(mc)
@@ -118,6 +120,55 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   
 }
 
+
+#' modify master option
+#' 
+#' \code{change_option_master} modify the options of the 
+#' master problem
+#' 
+#' @param option_name
+#'    vector of option names
+#' @param option_value
+#'    vector of option values
+#' @param opts
+#'   list of simulation parameters returned by the function
+#'   \code{antaresRead::setSimulationPath}
+#'   
+#' @return This function does not return anything.
+#' 
+#' @importFrom antaresRead simOptions
+#' @importFrom assertthat assert_that
+#' @noRd
+change_option_master <- function(option_name, option_value, opts = antaresRead::simOptions())
+{
+  
+  option_file_path <- paste0(opts$studyPath,"/user/expansion/temp/in_options.txt")
+
+  assertthat::assert_that(length(option_name) == length(option_value))
+  assertthat::assert_that(file.exists(option_file_path))
+  
+  # read option file
+  if(file.size(option_file_path) == 0) options <- data.frame(name = c(), value = c())
+  else options <- read.table(option_file_path, header = FALSE, col.names = c("name", "value"), colClasses = "character")
+  
+  # for each new option
+  for(n in 1:length(option_name))
+  {
+    # if option was already present in the option file, update it
+    if(any(option_name[n] == options$name))
+    {
+      options$value[options$name == option_name[n]] <- option_value[n]
+    }
+    # if option was not present in the option file, add it
+    else
+    {
+      options <- rbind(options, data.frame(name = option_name[n], value = option_value[n]))
+    }
+  }
+  # write new options
+  write.table(options, file = option_file_path, append = FALSE, sep = " ", col.names = FALSE, row.names = FALSE, quote = FALSE)
+  
+}
 
 #' Solver master problem
 #' 
@@ -144,14 +195,8 @@ solve_master <- function(opts = antaresRead::simOptions(), relax_integrality = F
 {
   tmp_folder <- paste(opts$studyPath,"/user/expansion/temp",sep="")
   
-  if(relax_integrality)
-  {
-    write("option relax_integrality 1;", file = paste0(tmp_folder, "/in_options.txt"))
-  }
-  else
-  {
-    write("option relax_integrality 0;", file = paste0(tmp_folder, "/in_options.txt"))
-  }
+  if(relax_integrality) change_option_master(option_name = "relaxed", option_value = 1, opts = opts)
+  else change_option_master(option_name = "relaxed", option_value = 0, opts = opts)
 
   
   assertthat::assert_that(file.exists(paste0(tmp_folder, "/master_run.ampl")))

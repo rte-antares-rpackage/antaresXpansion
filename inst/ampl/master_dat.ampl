@@ -40,5 +40,8 @@ param lambda_weekly := include in_weeklyrentability.txt ;
 
 # options 
 
-param prm_solver := include in_solver.txt;
+
 param prob := include in_yweights.txt;
+
+param : OPTION : option_default_value := include master_default_options.txt;
+param : OPTION_REDIFINED : option_new_value = include in_options.txt;

@@ -12,6 +12,10 @@
 #--- SETS ----
 #-------------
 
+# set of options
+set OPTION;  # set of all options
+set OPTION_REDIFINED; # set of all changed options
+
 # set of investment candidates
 set INV_CANDIDATE ;
 
@@ -34,11 +38,14 @@ set YEARLY_CUT_ALL within {ITERATION, YEAR} ;
 set WEEKLY_CUT_ALL within {ITERATION, YEAR, WEEK} ;
 
 
-#-------------
-#--- SETS ----
-#-------------
+#----------------
+#--- OPTIONS ----
+#----------------
 
-param prm_solver symbolic;  # solver
+param option_default_value {OPTION} symbolic; 
+param option_new_value {OPTION_REDIFINED} symbolic; 
+param option_v {o in OPTION} := if (o in OPTION_REDIFINED) then option_new_value[o] else option_default_value[o] symbolic;
+
 
 
 #-------------------
