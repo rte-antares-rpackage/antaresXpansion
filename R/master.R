@@ -54,6 +54,7 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   in_out_files$theta <- "out_theta.txt"
   in_out_files$capacity_bounds <- "in_out_capacitybounds.txt"
   in_out_files$uper_bound_costs <-"in_ubcosts.txt"
+  in_out_files$time_in_ampl <-"out_ampltime.txt"
   
   
   # check if temporary folder exists, if not create it
@@ -108,10 +109,10 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   }
   write(script, file = paste0(tmp_folder, "/", in_out_files$candidates))
   
+  # 4 - out_ampltime.txt
+  write("it;total_time;time_in_ampl;time_in_solver", file = paste0(tmp_folder, "/", in_out_files$time_in_ampl))
   
-  # 4 - in_solver.txt
-  change_option_master(option_name = "solver", option_value = exp_options$solver, opts = opts)
-  
+
   # 5 - in_yweights.txt
   if(all(is.na(exp_options$y_weights)))
   {
@@ -120,6 +121,9 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   else{weights_y <- exp_options$y_weights}
   script <- sapply(1:length(mc), FUN = function(n){paste0(mc[n], " ", weights_y[n])})
   write(paste0(script, collapse = "\n"), file = paste0(tmp_folder, "/", in_out_files$y_weights))
+  
+  # 6 - initiate options
+  change_option_master(option_name = "solver", option_value = exp_options$solver, opts = opts)
   
 }
 

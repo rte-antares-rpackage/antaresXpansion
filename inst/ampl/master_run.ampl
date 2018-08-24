@@ -76,6 +76,10 @@ if (option_v["solve_bounds"]) then
 	}
 } 
 
+if (option_v["write_time"]) then
+{
+	printf "%s;%f;%f;%f\n", card(ITERATION), _ampl_time + _total_solve_time  , _ampl_time  , _total_solve_time >> out_ampltime.txt;  
+}
 
 # write theta
 
