@@ -214,7 +214,11 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
     }
     
     #  do not add the candidate the to the list if its max possible capacity equals 0
-    if(candidate$max_invest == 0){next}
+    if(candidate$max_invest == 0){
+      update_link(candidate$link, "direct_capacity", 0 , opts)
+      update_link(candidate$link, "indirect_capacity", 0, opts)
+      next
+    }
       
     
     # check that candidate is valid 
