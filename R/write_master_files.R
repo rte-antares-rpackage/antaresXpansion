@@ -231,10 +231,13 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
     }
     write(script_rentability, file = paste0(folder, "/in_weeklyrentability.txt"), append = TRUE )
     write(script_cost, file = paste0(folder, "/in_weeklycuts.txt"), append = TRUE )
-    
-    #5. write ubcost file
-    ub <- min(x$costs$overall_costs, na.rm = TRUE)
-    if(is.infinite(ub)) ub <- c()
-    write(ub, file = paste0(folder, "/in_ubcosts.txt"), append = FALSE )
   }
+  
+  
+  
+  #5. write ubcost file
+  
+  ub <- min(x$costs$overall_costs, na.rm = TRUE)
+  if(is.infinite(ub)) ub <- c()
+  write(ub, file = paste0(folder, "/in_ubcosts.txt"), append = FALSE )
 }
