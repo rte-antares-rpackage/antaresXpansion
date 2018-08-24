@@ -39,8 +39,9 @@ read_options <- function(file, opts = antaresRead::simOptions())
   options$cut_type <- "yearly"
   options$week_selection <- FALSE
   options$relaxed_optimality_gap <- "0.01%"
-  options$solver <- "cbc"
+  #options$solver <- "cbc"   
   options$y_weights <- NA
+  options$ampl <- list()
   
   # if the file is empty, the default values are kept 
   if(length(param_data) == 0){return(options)}
@@ -148,9 +149,11 @@ read_options <- function(file, opts = antaresRead::simOptions())
         options$relaxed_optimality_gap <- option_value
       }
     }
-    else if (option_name == "solver")
+    else if (option_name == "solver")  # old option
     {
-      options$solver <- option_value
+      options$ampl$solver <- option_value
+      warning("Since v0.10 of antaresXpansion package, 'solver' option has been renamed 'ampl.solver'")
+      
     }
     else if (option_name == "yearly-weights")
     {
@@ -178,6 +181,11 @@ read_options <- function(file, opts = antaresRead::simOptions())
         stop("Number of yearly weights does not correspond to number of MC years in the Antares study")
       }
     }
+    else if (grepl(pattern = "^ampl\\.", option_name))  # old option
+    {
+      restricted_option_name <- gsub(pattern = "^ampl\\.", replacement = "", x =  option_name)
+      options$ampl[[restricted_option_name]] <- option_value
+    }
     else
     {
       warning(paste0("Unknown option : ", option_name))
@@ -189,6 +197,5 @@ read_options <- function(file, opts = antaresRead::simOptions())
   {
     stop('options "yearly-weights" and "cut-type = average" are not compatible')
   }
-
   return(options)
 }

@@ -123,7 +123,14 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   write(paste0(script, collapse = "\n"), file = paste0(tmp_folder, "/", in_out_files$y_weights))
   
   # 6 - initiate options
-  change_option_master(option_name = "solver", option_value = exp_options$solver, opts = opts)
+  if(length(exp_options$ampl) > 0)
+  {
+    v_opt <- sapply(exp_options$ampl, FUN = function(x){x})
+    change_option_master(option_name = names(v_opt), option_value = v_opt, opts = opts)
+  }
+  
+  
+  #change_option_master(option_name = "solver", option_value = exp_options$solver, opts = opts)
   
 }
 
