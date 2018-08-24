@@ -22,7 +22,7 @@ if (option_v["solver"]) == "amplxpress" then
  
 
 # compute restricted bounds on Invested capacities
-if (option_v["solve_bounds"]) then
+if (option_v["solve_bounds"] or (card(ITERATION) mod option_v["solve_bounds_frequency"] == 0)) then
 {
    for{z in INV_CANDIDATE}
    {
@@ -67,7 +67,7 @@ if (option_v["solve_master"]) then
 	printf "%f\n", master >> out_underestimator.txt;
 }
 
-if (option_v["solve_bounds"]) then
+if (option_v["solve_bounds"] or (card(ITERATION) mod option_v["solve_bounds_frequency"] == 0)) then
 {
 	printf "" > in_out_capacitybounds.txt;
 	for {z in INV_CANDIDATE}

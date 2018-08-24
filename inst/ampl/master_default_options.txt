@@ -5,3 +5,4 @@ ub_constraint 1
 solve_bounds 0
 presolve 0
 write_time 1
+solve_bounds_frequency 1000000
