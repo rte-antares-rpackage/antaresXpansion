@@ -176,7 +176,7 @@ get_margins <- function(area = "fr", cluster_name = "gas_pcomp_peak", LOLD = 3.0
   {
     if (new_LOLE==0){margin  <- 10000}
     else if (new_LOLE > LOLE) {margin <- abaque(new_LOLE)}
-    else if (new_LOLE < LOLE) {margin <- margin * 1.15}
+    else if (new_LOLE < LOLE) {margin <- abaque(new_LOLE) * 1.15}
     margin <- initial_margin + margin
     margin <- floor(margin/unit_size)*unit_size
     if(display){ cat("   First margin evaluated with the abacus : ", margin," MW\n", sep="")}
