@@ -54,7 +54,7 @@
 #' @export
 #' 
 
-get_margins <- function(area = "fr", cluster_name = "gas_pcomp_peak", LOLD = 3.00, tolerance = 0.01,  unit_size = 100,
+get_margins <- function(area = "fr", cluster_name = "gas_pcomp_peak", LOLD = 3.00, tolerance = 0.1,  unit_size = 100,
                         abaque = function(c){return(-3627*log(c)+3723.4)}, initial_margin = 0, path_solver, display = TRUE, clean = TRUE, 
                         parallel = TRUE, opts = antaresRead::simOptions())
 {
