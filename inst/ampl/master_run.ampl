@@ -22,8 +22,9 @@ if (option_v["solver"]) == "amplxpress" then
  
 
 # compute restricted bounds on Invested capacities
-if (option_v["solve_bounds"] or (card(ITERATION) mod option_v["solve_bounds_frequency"] == 0)) then
+if (num0(option_v["solve_bounds"]) == 1 or (card(ITERATION) mod num0(option_v["solve_bounds_frequency"]) == 0)) then
 {
+   let epsilon := num0(option_v["epsilon"]);
    for{z in INV_CANDIDATE}
    {
    		solve bound_capacity_min[z] >> out_log.txt;
@@ -37,9 +38,10 @@ if (option_v["solve_bounds"] or (card(ITERATION) mod option_v["solve_bounds_freq
 
 
 # solver master problem
-if (option_v["solve_master"]) then
+if (num0(option_v["solve_master"]) == 1) then
 {
 	solve master >> out_log.txt;
+
 	# relaxed ub constraint if problem is infeasible
 	if solve_result = "infeasible" then 
 	{
@@ -47,7 +49,6 @@ if (option_v["solve_master"]) then
 		solve master >> out_log.txt;
 		if solve_result = "infeasible" then printf "error infeasible problem";
 	}
-	
 	# correct Invested_capacity, slight negative values are possible due to constraint tolerances
 	let {z in INV_CANDIDATE} Invested_capacity[z] := max(0, Invested_capacity[z]);
 	
@@ -56,30 +57,23 @@ if (option_v["solve_master"]) then
 
 
 # write results (in the same folder)
-if (option_v["solve_master"]) then
+if (num0(option_v["solve_master"]) == 1) then
 {
 	printf "" > out_solutionmaster.txt;
-	for {z in INV_CANDIDATE}
-	{
-		printf "%s;%f\n", z, Invested_capacity[z] >> out_solutionmaster.txt;
-	}
-
+  printf{z in INV_CANDIDATE} "%s;%f\n", z, Invested_capacity[z] >> out_solutionmaster.txt;
 	printf "%f\n", master >> out_underestimator.txt;
 }
 
-if (option_v["solve_bounds"] or (card(ITERATION) mod option_v["solve_bounds_frequency"] == 0)) then
+if (num0(option_v["solve_bounds"]) == 1 or (card(ITERATION) mod num0(option_v["solve_bounds_frequency"]) == 0)) then
 {
 	printf "" > in_out_capacitybounds.txt;
-	for {z in INV_CANDIDATE}
-	{
-		printf "%s %f %f\n", z, restrained_lb[z], restrained_ub[z] >> in_out_capacitybounds.txt;
-	}
+  printf{z in INV_CANDIDATE} "%s %f %f\n", z, restrained_lb[z], restrained_ub[z] >> in_out_capacitybounds.txt;
 } 
 
-if (option_v["write_time"]) then
+if (num0(option_v["write_time"]) == 1) then
 {
 	printf "%s;%f;%f;%f\n", card(ITERATION), _ampl_time + _total_solve_time  , _ampl_time  , _total_solve_time >> out_ampltime.txt;  
-}
+};
 
 # write theta
 

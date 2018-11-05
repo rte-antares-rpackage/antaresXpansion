@@ -79,7 +79,7 @@ param lambda_weekly{WEEKLY_CUT_ALL, INV_CANDIDATE} ;    # rentability (weekly va
 # other
 param prob{YEAR}; 					# probability of occurence of each MC year
 param ub_cost default Infinity;     # ub on objective function (total of all costs)
-
+param epsilon default 10000;     # the sensibility of the optimal solution
 
 #-------------------------------------
 #--- SETS of CUTS WITHOUT DOUBLON ----
@@ -136,7 +136,7 @@ maximize bound_capacity_max {z in INV_CANDIDATE} : Invested_capacity[z];
 
 # ub on objective function
 subject to ub {if (option_v["ub_constraint"] or option_v["solve_bounds"] or (card(ITERATION) mod option_v["solve_bounds_frequency"] == 0))}: 
- sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) <= ub_cost + 1;
+ sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) <= ub_cost + epsilon + 1;
 
 
 # description of invested capacity :

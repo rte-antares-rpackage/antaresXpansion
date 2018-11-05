@@ -44,6 +44,7 @@ param lambda_weekly := include in_weeklyrentability.txt ;
 # uper bound on total costs
 param ub_cost := include in_ubcosts.txt;
 
+
 # options 
 param prob := include in_yweights.txt;
 

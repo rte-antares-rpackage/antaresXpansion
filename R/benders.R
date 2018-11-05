@@ -314,7 +314,10 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     {
       cat("--- lower bound on ov.cost = ", best_under_estimator/1000000 ," Me --- best solution (it", best_solution, ") = ", subset(x$costs, it == best_solution)$overall_costs/1000000   ,"Me \n")
     }
- 
+    
+    #    - sensitivity
+    #sensitivity <-  read.table(paste0(tmp_folder,"/in_out_capacitybounds.txt"), sep =" ", col.names = c("candidate", "restrained_lb", "restrained_ub"))
+  
     
     # ---- 7. Check convergence ---- 
     
@@ -391,6 +394,13 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   }
   
   
+  list_simu <- list.dirs(paste0(opts$studyPath, "/output/"), recursive = FALSE, full.names = FALSE)
+  
+
+  best_sol_name <- paste0("expansion-benders-", unique_key, "-it", best_solution)
+  id_to_keep <-  grepl(best_sol_name, list_simu)
+  best_simu <- list_simu[id_to_keep]
+  opts$simPath <- best_simu
   
   # add information in the output file
   x$expansion_options <- read_options(file = paste(opts$studyPath,"/user/expansion/settings.ini",sep=""), opts)
