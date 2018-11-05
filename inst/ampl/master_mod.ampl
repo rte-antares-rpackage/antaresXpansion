@@ -136,7 +136,7 @@ maximize bound_capacity_max {z in INV_CANDIDATE} : Invested_capacity[z];
 
 # ub on objective function
 subject to ub {if (option_v["ub_constraint"] or option_v["solve_bounds"] or (card(ITERATION) mod option_v["solve_bounds_frequency"] == 0))}: 
- sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) <= ub_cost + epsilon + 1;
+sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) <= ub_cost + epsilon + 1;
 
 
 # description of invested capacity :

@@ -38,6 +38,9 @@ get_sensitivity <- function(epsilon = 1000000, opts = antaresRead::simOptions())
   cat(" - Number of iterations : ",length(benders_out$iterations), "\n", sep="")
   best_it <- strsplit(as.character(Split[[1]][length(Split[[1]])]),as.character("-it"))
   best_it <- as.numeric(best_it[[1]][length(best_it[[1]])])
+  ubcost_init <- unlist(read.table(paste0(tmp_folder,"/in_ubcosts.txt"), header = FALSE))
+  max_underestimator <- max(unname(unlist(read.table(paste0(tmp_folder,"/out_underestimator.txt"), header = FALSE))))
+  cat(" - Optimality gap : ", ubcost_init - max_underestimator, " euros \n" , sep="")
   cat(" - Best solution : \n", sep="")
   print(benders_out$invested_capacities[which(benders_out$invested_capacities$it == best_it),])
 
@@ -55,9 +58,6 @@ get_sensitivity <- function(epsilon = 1000000, opts = antaresRead::simOptions())
 
   
   # ---- 5. Check if optimality gap is negative :  ----  
-  ubcost_init <- unlist(read.table(paste0(tmp_folder,"/in_ubcosts.txt"), header = FALSE))
-  max_underestimator <- max(unname(unlist(read.table(paste0(tmp_folder,"/out_underestimator.txt"), header = FALSE))))
-  cat(" Optimality gap  : ", ubcost_init - max_underestimator, " € \n" , sep="")
   if(ubcost_init - max_underestimator < 0 ){
     write(max_underestimator, file = paste0(tmp_folder, "/in_ubcosts.txt"), append = FALSE )
   }
@@ -70,6 +70,6 @@ get_sensitivity <- function(epsilon = 1000000, opts = antaresRead::simOptions())
   write(ubcost_init, file = paste0(tmp_folder, "/in_ubcosts.txt"), append = FALSE )
 
   # ---- 7. Return results :  ----  
-  cat(" \n Sensitivity analysis for epsilon = ",epsilon," € : \n", sep="")    
+  cat(" \n Sensitivity analysis for epsilon = ",epsilon," euros : \n", sep="")    
   return(sensitivity)
 }
