@@ -178,7 +178,7 @@ solve_master <- function(opts = antaresRead::simOptions(), relax_integrality = F
     # Linux version
     if(is.null(ampl_path))
     {
-      cmd <- paste0('cd "', tmp_folder, '" & ampl "', tmp_folder, '/master_run.ampl" ')
+      cmd <- paste0('cd ', tmp_folder, ' && ampl ', tmp_folder, '/master_run.ampl ')
     }
     else
     {
