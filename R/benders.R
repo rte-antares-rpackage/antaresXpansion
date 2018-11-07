@@ -394,19 +394,12 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   }
   
   
-  list_simu <- list.dirs(paste0(opts$studyPath, "/output/"), recursive = FALSE, full.names = FALSE)
-  
-
-  best_sol_name <- paste0("expansion-benders-", unique_key, "-it", best_solution)
-  id_to_keep <-  grepl(best_sol_name, list_simu)
-  best_simu <- list_simu[id_to_keep]
-  opts$simPath <- best_simu
-  
   # add information in the output file
   x$expansion_options <- read_options(file = paste(opts$studyPath,"/user/expansion/settings.ini",sep=""), opts)
   x$study_options <- opts
   x$candidates <- read_candidates(file = paste(opts$studyPath,"/user/expansion/candidates.ini",sep=""), opts)
-
+  x$best_iteration <- best_solution
+  
 
   # set link capacities to their optimal value
   for(c in candidates)
