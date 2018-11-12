@@ -36,7 +36,8 @@ get_sensitivity <- function(epsilon = 1000000, opts = antaresRead::simOptions())
   date_rds <- file.mtime(path = paste0(tmp_folder, "/data_for_report.RDS"))
   cat(" - Date of simulation : ", as.character(date_rds), "\n", sep="")
   cat(" - Number of iterations : ",length(benders_out$iterations), "\n", sep="")
-  best_it <- benders_out$best_iteration
+  best_it <- benders_out$costs[which(benders_out$costs$overall_costs == min(benders_out$costs$overall_costs, na.rm = TRUE)),"it"]
+  best_it <- best_it[1]
   ubcost_init <- unlist(read.table(paste0(tmp_folder,"/in_ubcosts.txt"), header = FALSE))
   max_underestimator <- max(unname(unlist(read.table(paste0(tmp_folder,"/out_underestimator.txt"), header = FALSE))))
   cat(" - Optimality gap : ", ubcost_init - max_underestimator, " euros \n" , sep="")
