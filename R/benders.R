@@ -91,7 +91,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   x$rentability <- data.frame(row.names = sapply(candidates, FUN = function(c){c$name}))
   x$iterations <- list()
   x$digest <- list()
-
+  x$sensitivity <- list()
+  
   # create iteration structure
   current_it <- list()
   current_it$n <- 1  # iteration number
@@ -310,14 +311,17 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     #    - investment solution
     benders_sol <-  read.table(paste0(tmp_folder,"/out_solutionmaster.txt"), sep =";", col.names = c("candidate", "value"))
+    
+    #    - sensitivity
+    new_sensitivity <- read_sensitivity(tmp_folder, candidates, current_it$n)
+    x$sensitivity <- rbind(x$sensitivity, new_sensitivity)
+    
+    #    - display
     if(display)
     {
       cat("--- lower bound on ov.cost = ", best_under_estimator/1000000 ," Me --- best solution (it", best_solution, ") = ", subset(x$costs, it == best_solution)$overall_costs/1000000   ,"Me \n")
     }
     
-    #    - sensitivity
-    #sensitivity <-  read.table(paste0(tmp_folder,"/in_out_capacitybounds.txt"), sep =" ", col.names = c("candidate", "restrained_lb", "restrained_ub"))
-  
     
     # ---- 7. Check convergence ---- 
     

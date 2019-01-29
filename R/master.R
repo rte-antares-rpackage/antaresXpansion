@@ -253,3 +253,45 @@ solve_master <- function(opts = antaresRead::simOptions(), relax_integrality = F
      stop("master problem returned the following error: ", a)
   }
 }
+
+
+
+#' Read sensitivity
+#' 
+#' \code{read_sensitivity} returns the lower and upper bounds of
+#' the installed capacity of each candidates. If lower/upper bounds
+#' are recalculated during the 'ampl phase' of the benders decomposition,
+#' they carry the information on the convergence of the installed capacities.
+#' 
+#' @param tmp_folder
+#'   temporary diectory in which are located the AMPL input and output files
+#' @param n_candidates
+#'   Integer. number of candidates in the study
+#' @param it_n
+#'   Integer. Iteration identifier
+#'   
+#' @return a data.table of three columns : candidate name, lower bound, upper bound
+#' 
+#' @importFrom assertthat assert_that
+#' @importFrom data.table fread setcolorder data.table
+#' @noRd
+#' 
+read_sensitivity <- function(tmp_folder, candidates, it_n)
+{
+  assertthat::assert_that(file.exists(paste0(tmp_folder,"/in_out_capacitybounds.txt")))
+  
+  if(file.size(paste0(tmp_folder,"/in_out_capacitybounds.txt")) > 0)
+  {  
+    new_sensitivity <-  data.table::fread(paste0(tmp_folder,"/in_out_capacitybounds.txt"), sep =" ", col.names = c("candidate", "lb", "ub"))
+  }
+  else
+  {
+    new_sensitivity <- data.table::data.table(candidate = sapply(candidates, FUN = function(c){c$name}),
+                                              lb = rep(0, length(candidates)),
+                                              ub = sapply(candidates, FUN = function(c){c$max_invest}))
+                                                   
+  }
+  new_sensitivity$it <- rep(it_n, length(candidates))
+  data.table::setcolorder(new_sensitivity, c("it", "candidate", "lb", "ub"))
+  return(new_sensitivity)
+}
