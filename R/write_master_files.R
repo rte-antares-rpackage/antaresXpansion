@@ -238,7 +238,8 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
   #5. write ubcost file
   
   ub <- min(x$costs$overall_costs, na.rm = TRUE)
-  best_under_estimator <-  max(x$under_estimator)
+  if (length(x$under_estimator) > 0) best_under_estimator <-  max(x$under_estimator) 
+  else best_under_estimator <- -Inf
   if(is.infinite(ub)) ub <- c()
   else if (best_under_estimator > ub) ub <- best_under_estimator
   write(ub, file = paste0(folder, "/in_ubcosts.txt"), append = FALSE )

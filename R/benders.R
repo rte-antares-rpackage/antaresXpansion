@@ -256,15 +256,6 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # compute lole for each area
     x$digest[[current_it$id]] <- get_digest(output_antares, current_it)
     
-  
-    # print results of the ANTARES simulation
-    if(display & current_it$full)
-    {
-      for (c in candidates){cat( "     . ", c$name, " -- ", get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n), " invested MW -- rentability = ", round(x$rentability[c$name, current_it$id]/1000), "ke/MW \n" , sep="")}
-      cat("--- op.cost = ", op_cost/1000000, " Me --- inv.cost = ", inv_cost/1000000, " Me --- ov.cost = ", ov_cost/1000000, " Me ---\n")
-    }
-    
-    
     
     
     # ---- 5. Update cuts ---- 
@@ -302,7 +293,9 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     }
     
     # run AMPL with system command
+    if(display){  cat("   Solve master problem ... ", sep="")}
     log <- solve_master(opts, relax_integrality, ampl_path)
+    if(display){  cat("[done] \n", sep="")}
     
     # load AMPL output
     #     - underestimator
@@ -316,9 +309,18 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     new_sensitivity <- read_sensitivity(tmp_folder, candidates, current_it$n)
     x$sensitivity <- rbind(x$sensitivity, new_sensitivity)
     
-    #    - display
-    if(display)
+    #    - display results from the ANTARES simulation and sensitivity
+    if(display & current_it$full)
     {
+      for (c in candidates){
+        cat( "     . ", c$name, " -- ", 
+             get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n), " invested MW -- ",
+             "possible interval = [", round(subset(x$sensitivity, candidate == c$name & it == current_it$n)$lb), " , ",
+             round(subset(x$sensitivity, candidate == c$name & it == current_it$n)$ub), "] MW -- ",
+             "rentability = ", round(x$rentability[c$name, current_it$id]/1000), "ke/MW \n" , sep="")
+        }
+      
+      cat("--- op.cost = ", op_cost/1000000, " Me --- inv.cost = ", inv_cost/1000000, " Me --- ov.cost = ", ov_cost/1000000, " Me ---\n")
       cat("--- lower bound on ov.cost = ", best_under_estimator/1000000 ," Me --- best solution (it", best_solution, ") = ", subset(x$costs, it == best_solution)$overall_costs/1000000   ,"Me \n")
     }
     

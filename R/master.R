@@ -280,7 +280,7 @@ read_sensitivity <- function(tmp_folder, candidates, it_n)
 {
   assertthat::assert_that(file.exists(paste0(tmp_folder,"/in_out_capacitybounds.txt")))
   
-  if(file.size(paste0(tmp_folder,"/in_out_capacitybounds.txt")) > 0)
+  if(file.size(paste0(tmp_folder,"/in_out_capacitybounds.txt")) > 4)
   {  
     new_sensitivity <-  data.table::fread(paste0(tmp_folder,"/in_out_capacitybounds.txt"), sep =" ", col.names = c("candidate", "lb", "ub"))
   }
