@@ -54,7 +54,7 @@
 #' @export
 #' 
 
-get_margins <- function(area = "fr", cluster_name = "gas_pcomp_peak", LOLD = 3.00, tolerance = 0.01,  unit_size = 100,
+get_margins <- function(area = "fr", cluster_name = "gas_pcomp_peak", LOLD = 3.00, tolerance = 0.1,  unit_size = 100,
                         abaque = function(c){return(-3627*log(c)+3723.4)}, initial_margin = 0, path_solver, display = TRUE, clean = TRUE, 
                         parallel = TRUE, opts = antaresRead::simOptions())
 {
@@ -124,7 +124,7 @@ get_margins <- function(area = "fr", cluster_name = "gas_pcomp_peak", LOLD = 3.0
   playlist <- initial_playlist <- getPlaylist(opts) # identifier of mc years to simulate for all expansion planning optimisation
 
   # set margin 
-  set_margins_in_antares(margin = initial_margin, area, cluster_name, row_balance_init = initial_row_balance, opts = antaresRead::simOptions())
+  set_margins_in_antares(margin = initial_margin, area, cluster_name, row_balance_init = initial_row_balance, unit_size = unit_size, opts = antaresRead::simOptions())
 
     
    # ---- 1. Simulate with Antares once at the beginning : ---- 
@@ -176,7 +176,7 @@ get_margins <- function(area = "fr", cluster_name = "gas_pcomp_peak", LOLD = 3.0
   {
     if (new_LOLE==0){margin  <- 10000}
     else if (new_LOLE > LOLE) {margin <- abaque(new_LOLE)}
-    else if (new_LOLE < LOLE) {margin <- margin * 1.15}
+    else if (new_LOLE < LOLE) {margin <- abaque(new_LOLE) * 1.15}
     margin <- initial_margin + margin
     margin <- floor(margin/unit_size)*unit_size
     if(display){ cat("   First margin evaluated with the abacus : ", margin," MW\n", sep="")}
@@ -191,7 +191,7 @@ get_margins <- function(area = "fr", cluster_name = "gas_pcomp_peak", LOLD = 3.0
   {
     if(display){cat("\n------ Iteration ", current_it, " ------\n", sep="")}
     
-    set_margins_in_antares(margin, area, cluster_name, row_balance_init = initial_row_balance, opts = antaresRead::simOptions()) 
+    set_margins_in_antares(margin, area, cluster_name, row_balance_init = initial_row_balance, unit_size = unit_size, opts = antaresRead::simOptions()) 
     
     # ----------- change playlist and simulated weeks -------------
     
@@ -345,6 +345,8 @@ get_margins <- function(area = "fr", cluster_name = "gas_pcomp_peak", LOLD = 3.0
 #'   Example : if cluster_name = "gas_pcomp_peak" and area = "fr", the final name of the cluster will be "fr_gas_pcomp_peak".
 #' @param row_balance_init
 #'   Initial row_balance in the given area. Vector of size 8760 or 1 (if constant).
+#' @param unit_size
+#'   Minimal step of the generation margin. Given in MW.
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{antaresRead::setSimulationPath}
@@ -360,7 +362,7 @@ get_margins <- function(area = "fr", cluster_name = "gas_pcomp_peak", LOLD = 3.0
 #' 
 #' 
 #' 
-set_margins_in_antares <- function(margin, area, cluster_name, row_balance_init, opts = antaresRead::simOptions())
+set_margins_in_antares <- function(margin, area, cluster_name, row_balance_init, unit_size, opts = antaresRead::simOptions())
 {
   # 1.check cluster existence
   list_cluster <- antaresRead::readClusterDesc(opts = opts)
