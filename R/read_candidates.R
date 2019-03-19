@@ -57,11 +57,12 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
     candidate$relaxed <- FALSE
     candidate$has_link_profile <- FALSE
     candidate$has_link_profile_indirect <- FALSE
-    candidate$link_profile <- 1#  data.frame(rep(1,8760))
-    candidate$link_profile_indirect <- 1#  data.frame(rep(1,8760))
-    candidate$already_installed_capacity <- 0#     
-    candidate$already_installed_link_profile <- 1#  data.frame(rep(1,8760))
-    candidate$already_installed_link_profile_indirect <- 1#  data.frame(rep(1,8760))
+    candidate$link_profile <- 1 #data.frame(rep(1,8760))
+    candidate$link_profile_indirect <- 1 #data.frame(rep(1,8760))
+    candidate$already_installed_capacity <- 0 #     
+    candidate$already_installed_link_profile <- 1  #data.frame(rep(1,8760))
+    candidate$already_installed_link_profile_indirect <- 1  #data.frame(rep(1,8760))
+    
     
     # read candidate characteristics
     for(line in (index[pr]+1):(index[pr+1]-1))
@@ -246,7 +247,46 @@ read_candidates <- function(file, opts = antaresRead::simOptions())
   # check that candidates links are unique
   if(anyDuplicated(sapply(inv, FUN = function(c){c$link})) > 0)
   {
-    stop("investment candidate link must be unique")
+    # if they are not, candidate$already_installed_capacity, candidate$already_installed_link_profile
+    # and candidate$already_installed_link_profile_indirect should be equal for all candidates on the same
+    # link
+    links_with_candidates <- sapply(inv, FUN = function(c){c$link})
+    links_with_several_candidates <- unique(links_with_candidates[duplicated(links_with_candidates)])
+    
+    for(l in links_with_several_candidates)
+    {
+      id_list <- which(links_with_candidates == l)
+      assertthat::assert_that(length(id_list) >= 2)
+      ref_l <- id_list[1]
+      for(id_l in id_list[-1])
+      {
+        if( !(inv[[id_l]]$already_installed_capacity == inv[[ref_l]]$already_installed_capacity))
+        {
+          stop(inv[[ref_l]]$name, " and ", inv[[id_l]]$name, " are investment candidates applying on the same 
+               link and should therefore have similar already-installed-capacities")
+        }
+        if( !(length(inv[[id_l]]$already_installed_link_profile) == length(inv[[ref_l]]$already_installed_link_profile)))
+        {
+          stop(inv[[ref_l]]$name, " and ", inv[[id_l]]$name, " are investment candidates applying on the same 
+               link and should therefore have similar already-installed-link-profile")
+        }
+        if( ! all(inv[[id_l]]$already_installed_link_profile == inv[[ref_l]]$already_installed_link_profile))
+        {
+          stop(inv[[ref_l]]$name, " and ", inv[[id_l]]$name, " are investment candidates applying on the same 
+               link and should therefore have similar already-installed-link-profile")
+        }
+        if( !(length(inv[[id_l]]$already_installed_link_profile_indirect) == length(inv[[ref_l]]$already_installed_link_profile_indirect)))
+        {
+          stop(inv[[ref_l]]$name, " and ", inv[[id_l]]$name, " are investment candidates applying on the same 
+               link and should therefore have similar already-installed-link-profile")
+        }
+        if( ! all(inv[[id_l]]$already_installed_link_profile_indirect == inv[[ref_l]]$already_installed_link_profile_indirect))
+        {
+          stop(inv[[ref_l]]$name, " and ", inv[[id_l]]$name, " are investment candidates applying on the same 
+               link and should therefore have similar already-installed-link-profile")
+        }
+      }
+    }
   }
   return(inv)
 }
