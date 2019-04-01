@@ -311,7 +311,7 @@ with_profile <- function(candidates)
     else return (NA)
   }
   link_with_profile <- sapply(candidates, FUN = f)
-  return(link_with_profile[!is.na(link_with_profile)])
+  return(unique(link_with_profile[!is.na(link_with_profile)]))
 }
 
 #' Return vector of candidate names which have just a unique link profile
@@ -332,7 +332,7 @@ with_profile_unique <- function(candidates)
     else return (NA)
   }
   link_with_profile <- sapply(candidates, FUN = f)
-  return(link_with_profile[!is.na(link_with_profile)])
+  return(unique(link_with_profile[!is.na(link_with_profile)]))
 }
 
 
@@ -354,7 +354,7 @@ with_profile_indirect <- function(candidates)
     else return (NA)
   }
   link_with_profile <- sapply(candidates, FUN = f)
-  return(link_with_profile[!is.na(link_with_profile)])
+  return(unique(link_with_profile[!is.na(link_with_profile)]))
 }
 
 
@@ -376,8 +376,7 @@ without_profile <- function(candidates)
     else return (NA)
   }
   link_without_profile <- sapply(candidates, FUN = f)
-  return(link_without_profile[!is.na(link_without_profile)])
+  return(unique(link_without_profile[!is.na(link_without_profile)]))
 }
-
 
 

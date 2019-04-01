@@ -7,8 +7,6 @@
 #' @param candidates
 #'   list of investment candidates, as returned by
 #'   \code{\link{read_candidates}}
-#' @param capa_zero
-#'   invested capacity
 #' @param cut_type
 #'   cut_type parameter : average, yearly or weekly
 #' @return 
@@ -18,7 +16,7 @@
 #' @noRd
 
 
-extract_output <- function(output_antares, current_it, candidates, capa_zero, cut_type = "average")
+extract_output <- function(output_antares, current_it, candidates, cut_type = "average")
 {  
   output_link_s     <- data.table(NULL) # mcYear "annual" with_no_profile
   output_link_h_s   <- data.table(NULL) # mcYear "hourly" with_profile_unique
@@ -93,21 +91,21 @@ extract_output <- function(output_antares, current_it, candidates, capa_zero, cu
       output_link_h_s_i$sens_direct <- 0        
       output_link_h_s_i$`MARG. COST INDIRECT`<- output_link_h_s_i$"MARG. COST"
       output_link_h_s_i$sens_indirect <- 0        
-      output_link_h_s_i$"MARG. COST DIRECT"[which(output_link_h_s_i$"FLOW LIN." < 0)]= 0
+      output_link_h_s_i$"MARG. COST DIRECT"[which(output_link_h_s_i$"FLOW LIN." <= 0)]= 0
       output_link_h_s_i$sens_direct[which(output_link_h_s_i$"FLOW LIN." > 0)]= 1
-      output_link_h_s_i$"MARG. COST INDIRECT"[which(output_link_h_s_i$"FLOW LIN." > 0)]= 0
+      output_link_h_s_i$"MARG. COST INDIRECT"[which(output_link_h_s_i$"FLOW LIN." >= 0)]= 0
       output_link_h_s_i$sens_indirect[which(output_link_h_s_i$"FLOW LIN." < 0)]= 1
       
       # when FLOW LIN == 0 : "MARG. COST" can be different from 0 if (x$invested_capacities == 0) or if (x$invested_capacities !=0 and link_profile[direct or indirect] = 0) :
       # - if x$invested_capacities == 0 : "MARG. COST" is counted twice in both direct way and indirect way
       # - if x$invested_capacities !=0 and link_profile[direct or indirect] == 0 : "MARG. COST" is set to 0
-      output_link_h_s_i <-  merge(output_link_h_s_i, capa_zero , by = "link")
-      output_link_h_s_i$sens_direct[which(output_link_h_s_i$"capa" == 0 )] = 1
-      output_link_h_s_i$sens_indirect[which(output_link_h_s_i$"capa" == 0 )] = 1
-      output_link_h_s_i$"MARG. COST DIRECT"[which(output_link_h_s_i$"FLOW LIN." == 0 & output_link_h_s_i$"capa"!=0)]= 0
-      output_link_h_s_i$sens_direct[which(output_link_h_s_i$"FLOW LIN." == 0 & output_link_h_s_i$"capa"!=0 & output_link_h_s_i$"MARG. COST" == 0)]= 1
-      output_link_h_s_i$"MARG. COST INDIRECT"[which(output_link_h_s_i$"FLOW LIN." == 0 & output_link_h_s_i$"capa"!=0)]= 0
-      output_link_h_s_i$sens_indirect[which(output_link_h_s_i$"FLOW LIN." == 0 & output_link_h_s_i$"capa"!=0 & output_link_h_s_i$"MARG. COST" == 0)]= 1
+      # output_link_h_s_i <-  merge(output_link_h_s_i, capa_zero , by = "link", all.x = TRUE)
+      # output_link_h_s_i$sens_direct[which(output_link_h_s_i$"capa" == 0 )] = 1
+      # output_link_h_s_i$sens_indirect[which(output_link_h_s_i$"capa" == 0 )] = 1
+      # output_link_h_s_i$"MARG. COST DIRECT"[which(output_link_h_s_i$"FLOW LIN." == 0 & output_link_h_s_i$"capa"!=0)]= 0
+      # output_link_h_s_i$sens_direct[which(output_link_h_s_i$"FLOW LIN." == 0 & output_link_h_s_i$"capa"!=0 & output_link_h_s_i$"MARG. COST" == 0)]= 1
+      # output_link_h_s_i$"MARG. COST INDIRECT"[which(output_link_h_s_i$"FLOW LIN." == 0 & output_link_h_s_i$"capa"!=0)]= 0
+      # output_link_h_s_i$sens_indirect[which(output_link_h_s_i$"FLOW LIN." == 0 & output_link_h_s_i$"capa"!=0 & output_link_h_s_i$"MARG. COST" == 0)]= 1
 
 
       
