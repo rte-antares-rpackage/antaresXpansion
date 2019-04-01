@@ -5,8 +5,8 @@
 #' of the expansion planning problem and their characteristics. The information on
 #' the candidates is usually stored in the file antaresStudyPath/user/expansion/candidates.ini.
 #' 
-#' @param current_it
-#'   current iteration of the benders problem with its associated characteristics
+#' @param current_it_n
+#'   current iteration number
 #' @param candidates
 #'   list of investment candidates, as returned by
 #'   \code{\link{read_candidates}}
@@ -24,7 +24,7 @@
 #' 
 #' @noRd
 #' 
-update_link_capacities <- function(x, current_it, candidates, exp_options, opts)
+update_link_capacities <- function(x, current_it_n, candidates, exp_options, opts)
 {
   
   links_with_candidates <- sapply(candidates, FUN = function(c){c$link})
@@ -37,11 +37,11 @@ update_link_capacities <- function(x, current_it, candidates, exp_options, opts)
     
     for(id in id_list)
     {
-      new_capacity_direct <-  new_capacity_direct + get_capacity_profile(get_capacity(x$invested_capacities, candidate = candidates[[id]]$name, it = current_it$n),
+      new_capacity_direct <-  new_capacity_direct + get_capacity_profile(get_capacity(x$invested_capacities, candidate = candidates[[id]]$name, it = current_it_n),
                                                                          candidates[[id]]$link_profile, exp_options$uc_type)
         
     
-      new_capacity_indirect <- new_capacity_indirect + get_capacity_profile(get_capacity(x$invested_capacities, candidate = candidates[[id]]$name, it = current_it$n),
+      new_capacity_indirect <- new_capacity_indirect + get_capacity_profile(get_capacity(x$invested_capacities, candidate = candidates[[id]]$name, it = current_it_n),
                                                                             candidates[[id]]$link_profile_indirect, exp_options$uc_type)
     }
     

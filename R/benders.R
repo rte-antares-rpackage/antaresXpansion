@@ -166,7 +166,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # ---- 2. Set installed capacities ---- 
     
     # update study with current invested capacities on links
-    update_link_capacities(x, current_it, candidates, exp_options, opts)
+    update_link_capacities(x, current_it$n, candidates, exp_options, opts)
       
     
     
@@ -371,13 +371,7 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   
 
   # set link capacities to their optimal value
-  for(c in candidates)
-  {
-    update_link(c$link, "direct_capacity", c$link_profile*get_capacity(x$invested_capacities, candidate = c$name, it =best_solution)+c$already_installed_link_profile*c$already_installed_capacity , opts)
-    update_link(c$link, "indirect_capacity", c$link_profile_indirect*get_capacity(x$invested_capacities, candidate = c$name, it =best_solution)+c$already_installed_link_profile_indirect*c$already_installed_capacity , opts)
-
-  }
- 
+  update_link_capacities(x, best_solution, candidates, exp_options, opts)
  
 
   # save output file
