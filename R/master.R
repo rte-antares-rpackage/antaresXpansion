@@ -55,6 +55,7 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
   in_out_files$capacity_bounds <- "in_out_capacitybounds.txt"
   in_out_files$uper_bound_costs <-"in_ubcosts.txt"
   in_out_files$time_in_ampl <-"out_ampltime.txt"
+  in_out_files$additional_constraints <-"in_additional_constraints.txt"
   
   
   # check if temporary folder exists, if not create it
@@ -129,9 +130,11 @@ initiate_master <- function(candidates, exp_options , opts = antaresRead::simOpt
     change_option_master(option_name = names(v_opt), option_value = v_opt, opts = opts)
   }
   
-  
-  #change_option_master(option_name = "solver", option_value = exp_options$solver, opts = opts)
-  
+  # 7- additional constraint.txt
+  if(!is.null(exp_options$additional_constraints))
+  {
+    write(exp_options$additional_constraints, file = paste0(tmp_folder, "/", in_out_files$additional_constraints))
+  }
 }
 
 

@@ -42,6 +42,8 @@ read_options <- function(file, opts = antaresRead::simOptions())
   #options$solver <- "cbc"   
   options$y_weights <- NA
   options$ampl <- list()
+  options$additional_constraints <- NULL
+  
   
   # if the file is empty, the default values are kept 
   if(length(param_data) == 0){return(options)}
@@ -185,6 +187,13 @@ read_options <- function(file, opts = antaresRead::simOptions())
     {
       restricted_option_name <- gsub(pattern = "^ampl\\.", replacement = "", x =  option_name)
       options$ampl[[restricted_option_name]] <- option_value
+    }
+    else if (option_name == "additional-constraints")
+    {
+      constraints_file <- paste0(paste(opts$studyPath,"/user/expansion/", sep=""), option_value)
+      assert_that(file.exists(constraints_file))
+      constraints <- readChar(con = constraints_file, nchars = file.info(constraints_file)$size)
+      options$additional_constraints <- paste0(options$additional_constraints, "\n", constraints)
     }
     else
     {

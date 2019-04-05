@@ -190,11 +190,13 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     # analyse some outputs of the just finished ANTARES simulation
     
-    
     # compute system operationnal and investment costs 
     op_cost <- get_op_costs(output_antares, current_it, exp_options)
-    inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n)}))
-    inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation
+    if (current_it$n == 1 && !is.null(exp_options$additional_constraints))  inv_cost <-  Inf
+    else {
+      inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n)}))
+      inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation 
+    }
     ov_cost <-  op_cost + inv_cost
   
     # update output structure
