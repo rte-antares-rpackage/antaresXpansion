@@ -6,25 +6,48 @@
 #'   \code{\link{read_candidates}}
 #' @param horizon
 #'   representated year in the Antares Study
+#' @param exp_options
+#'   list of benders decomposition options, as returned by
+#'   \code{\link{read_options}}.
+#' @param ampl_path
+#'   Character containing the path to the ampl.exe file
+#' @param opts
+#'   list of simulation parameters returned by the function
+#'   \code{antaresRead::setSimulationPath}
 #'
 #' @return 
 #' Returns a vector of link name
 #' @noRd
-initiate_candidate_capacities <- function(candidates, horizon)
+initiate_candidate_capacities <- function(candidates, horizon, exp_options, ampl_path, opts)
 {
   n_candidates <- length(candidates)
   
-  # set initial value to each investment candidate 
-  # (here put to closest multiple of unit-size below max_invest/2)
-  cap <- sapply(candidates, FUN = function(c){
-    if(c$unit_size > 0)
-    {
-      out <- floor(c$max_invest/2/c$unit_size) * c$unit_size
-      out <- max(0, min(c$max_invest, out))
-    }
-    else
-    { out <- c$max_invest/2}
-    return(out)})
+  # if no additional constraints are added : all set of initial values are feasible
+  if (is.null(exp_options$additional_constraints))
+  {
+    # set initial value to each investment candidate 
+    # (here put to closest multiple of unit-size below max_invest/2)
+    cap <- sapply(candidates, FUN = function(c){
+      if(c$unit_size > 0)
+      {
+        out <- floor(c$max_invest/2/c$unit_size) * c$unit_size
+        out <- max(0, min(c$max_invest, out))
+      }
+      else
+      { out <- c$max_invest/2}
+      return(out)})
+  }
+  # if additional constraint are added : solve the master problem to return any feasible solution
+  else
+  {
+    # run AMPL with system command
+    log <- solve_master(opts, relax_integrality = FALSE, ampl_path)
+
+    # read AMPL output: investment solution
+    initial_cap <-  read.table(paste0(opts$studyPath,"/user/expansion/temp/out_solutionmaster.txt"), sep =";", col.names = c("candidate", "value"))
+    cap <- initial_cap$value
+    file.create(paste0(opts$studyPath,"/user/expansion/temp/out_underestimator.txt"))
+  }
   
   # build invested capacities data.frame
   invested_capacities <- data.frame(

@@ -86,13 +86,13 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   
   # create output structure 
   x <- list()
-  x$invested_capacities <- initiate_candidate_capacities(candidates, horizon)
+  x$invested_capacities <- initiate_candidate_capacities(candidates, horizon, exp_options, ampl_path, opts)
   x$costs <- data.frame(row.names = c("it", "year", "investment_costs", "operation_costs", "overall_costs"))
   x$rentability <- data.frame(row.names = sapply(candidates, FUN = function(c){c$name}))
   x$iterations <- list()
   x$digest <- list()
   x$sensitivity <- list()
-  
+
   # create iteration structure
   current_it <- list()
   current_it$n <- 1  # iteration number
@@ -192,11 +192,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     # compute system operationnal and investment costs 
     op_cost <- get_op_costs(output_antares, current_it, exp_options)
-    if (current_it$n == 1 && !is.null(exp_options$additional_constraints))  inv_cost <-  Inf
-    else {
-      inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n)}))
-      inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation 
-    }
+    inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n)}))
+    inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation 
     ov_cost <-  op_cost + inv_cost
   
     # update output structure
