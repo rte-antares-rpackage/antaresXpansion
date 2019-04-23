@@ -19,7 +19,7 @@
 #' @importFrom utils packageVersion tail
 #' @export
 
-get_sensitivity <- function(epsilon = 1000000, opts = antaresRead::simOptions())
+get_sensitivity <- function(epsilon = 0, opts = antaresRead::simOptions())
 {
 
   # ---- 0. Assert that a benders calculation has been previously perform :  ----  
@@ -40,7 +40,8 @@ get_sensitivity <- function(epsilon = 1000000, opts = antaresRead::simOptions())
   best_it <- best_it[1]
   ubcost_init <- unlist(read.table(paste0(tmp_folder,"/in_ubcosts.txt"), header = FALSE))
   max_underestimator <- max(unname(unlist(read.table(paste0(tmp_folder,"/out_underestimator.txt"), header = FALSE))))
-  cat(" - Optimality gap : ", ubcost_init - max_underestimator, " euros \n" , sep="")
+  best_cost <- min(benders_out$costs$overall_costs, na.rm = TRUE)
+  cat(" - Optimality gap : ", best_cost - max_underestimator, " euros \n" , sep="")
   cat(" - Best solution : \n", sep="")
   print(benders_out$invested_capacities[which(benders_out$invested_capacities$it == best_it),])
 
