@@ -64,7 +64,9 @@ get_sensitivity <- function(epsilon = 1000000, opts = antaresRead::simOptions())
   
   
   # ---- 6. Solve bounds problem :  ----  
-  solve_master()
+  if(benders_out$expansion_options$master == "relaxed") relaxed_p <- TRUE
+  else relaxed_p <- FALSE
+  solve_master(opts = opts, relax_integrality = relaxed_p)
   sensitivity <-  read.table(paste0(tmp_folder,"/in_out_capacitybounds.txt"), sep =" ", col.names = c("candidate", "min_capacity", "max_capacity"))
  
   write(ubcost_init, file = paste0(tmp_folder, "/in_ubcosts.txt"), append = FALSE )
