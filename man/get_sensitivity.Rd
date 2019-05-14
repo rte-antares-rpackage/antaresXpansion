@@ -4,7 +4,7 @@
 \alias{get_sensitivity}
 \title{This function examines how the optimal installed capacities of an ANTARES study will be impacted by solutions in the neighborhood of the optimal cost.}
 \usage{
-get_sensitivity(epsilon = 1e+06, opts = antaresRead::simOptions())
+get_sensitivity(epsilon = 0, opts = antaresRead::simOptions())
 }
 \arguments{
 \item{epsilon}{Epsilon (need to be taller than the optimality gap)}
