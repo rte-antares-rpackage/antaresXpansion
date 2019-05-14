@@ -23,26 +23,6 @@ if (option_v["solver"]) == "amplxpress" then
 if (option_v["solver"]) == "cbc" then 
 	option cbc_options "PassP=0";
  
-
-#define problems
-problem all_master :
-Invested_capacity, N_invested, Theta, master, ub, 
-bounds_on_invested_capacity_relaxed, bounds_on_invested_capacity_integer, integer_constraint,
-restrained_bounds_on_capacity, cut_avg, cut_yearly, cut_weekly;
-
-
-problem min_ca{z in INV_CANDIDATE} :  	
-Invested_capacity, N_invested, Theta, bound_capacity_min[z], ub, 
-bounds_on_invested_capacity_relaxed, bounds_on_invested_capacity_integer, integer_constraint,
-restrained_bounds_on_capacity, cut_avg, cut_yearly, cut_weekly;
-
-
-problem max_ca{z in INV_CANDIDATE} :  	
-Invested_capacity, N_invested, Theta, bound_capacity_max[z], ub, 
-bounds_on_invested_capacity_relaxed, bounds_on_invested_capacity_integer, integer_constraint,
-restrained_bounds_on_capacity, cut_avg, cut_yearly, cut_weekly;
-
-   		
    		
 
 
@@ -52,12 +32,11 @@ if (num0(option_v["solve_bounds"]) == 1 or (card(ITERATION) mod num0(option_v["s
    let epsilon := num0(option_v["epsilon"]);
    for{z in INV_CANDIDATE}
    {
-  
-   		solve min_ca[z] >> out_log.txt;
+   	  solve bound_capacity_min[z] >> out_log.txt;
    		if solve_result = "infeasible" then break;
    		let restrained_lb[z] := bound_capacity_min[z];
    		
-   		solve max_ca[z] >> out_log.txt;
+   		solve bound_capacity_max[z] >> out_log.txt;
    		if solve_result = "infeasible" then break;
    		let restrained_ub[z] := bound_capacity_max[z];	
    } 
@@ -67,13 +46,13 @@ if (num0(option_v["solve_bounds"]) == 1 or (card(ITERATION) mod num0(option_v["s
 # solver master problem
 if (num0(option_v["solve_master"]) == 1) then
 {
-	solve all_master >> out_log.txt;
+	solve master >> out_log.txt;
 
 	# relaxed ub constraint if problem is infeasible
 	if solve_result = "infeasible" then 
 	{
 		drop ub;
-		solve all_master >> out_log.txt;
+		solve master >> out_log.txt;
 		if solve_result = "infeasible" then printf "error infeasible problem";
 	}
 	# correct Invested_capacity, slight negative values are possible due to constraint tolerances
