@@ -86,11 +86,12 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   
   # create output structure 
   x <- list()
-  x$invested_capacities <- initiate_candidate_capacities(candidates, horizon)
+  x$invested_capacities <- initiate_candidate_capacities(candidates, horizon, exp_options, ampl_path, opts)
   x$costs <- data.frame(row.names = c("it", "year", "investment_costs", "operation_costs", "overall_costs"))
   x$rentability <- data.frame(row.names = sapply(candidates, FUN = function(c){c$name}))
   x$iterations <- list()
   x$digest <- list()
+  x$sensitivity <- list()
 
   # create iteration structure
   current_it <- list()
@@ -165,45 +166,8 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     # ---- 2. Set installed capacities ---- 
     
     # update study with current invested capacities on links
-    
-    
-    
-    for(c in candidates)
-    {
+    update_link_capacities(x, current_it$n, candidates, exp_options, opts)
       
-      new_capacity_direct   <- get_capacity_profile(get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n),
-                                                    c$link_profile, exp_options$uc_type)+c$already_installed_capacity*c$already_installed_link_profile
-
-      new_capacity_indirect <- get_capacity_profile(get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n),
-                                                    c$link_profile_indirect, exp_options$uc_type)+c$already_installed_capacity*c$already_installed_link_profile_indirect
-      
-      if(c$has_link_profile_indirect)
-      { 
-        new_capacity_direct[new_capacity_direct < 1 ] <- 1
-        new_capacity_indirect[new_capacity_indirect < 1 ] <- 1
-        # new_capacity_direct[new_capacity_direct < 1 && new_capacity_direct > 0] <- 1
-        # new_capacity_indirect[new_capacity_indirect < 1 && new_capacity_indirect > 0] <- 1
-        
-        # new_capacity_direct <-  as.data.table(new_capacity_direct)
-        # colnames(new_capacity_direct) <-  "value"
-        # #new_capacity_direct <- new_capacity_direct[, normalize_capacity := if (value>0 && value<1){1} else {value} ]
-        # new_capacity_direct <- new_capacity_direct[, normalize_capacity := if (value<1){1} else {value} ]
-        # 
-        # new_capacity_direct <- as.numeric(new_capacity_direct$normalize_capacity)
-        # new_capacity_indirect <-  as.data.table(new_capacity_indirect)
-        # colnames(new_capacity_indirect) <-  "value"
-        # #new_capacity_indirect <- new_capacity_indirect[, normalize_capacity := if (value>0 && value<1){1} else {value} ]
-        # new_capacity_indirect <- new_capacity_indirect[, normalize_capacity := if (value<1){1} else {value} ]
-        # 
-        # new_capacity_indirect <- as.numeric(new_capacity_indirect$normalize_capacity)
-      }
-
-            # update study
-      update_link(c$link, "direct_capacity", new_capacity_direct , opts)
-      update_link(c$link, "indirect_capacity", new_capacity_indirect, opts)
-    }
-    
-    
     
     
     # ---- 3. Simulate ---- 
@@ -226,11 +190,10 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     # analyse some outputs of the just finished ANTARES simulation
     
-    
     # compute system operationnal and investment costs 
     op_cost <- get_op_costs(output_antares, current_it, exp_options)
     inv_cost <- sum(sapply(candidates, FUN = function(c){c$cost * get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n)}))
-    inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation
+    inv_cost <- inv_cost * n_w / 52 # adjusted to the period of the simulation 
     ov_cost <-  op_cost + inv_cost
   
     # update output structure
@@ -254,15 +217,6 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     # compute lole for each area
     x$digest[[current_it$id]] <- get_digest(output_antares, current_it)
-    
-  
-    # print results of the ANTARES simulation
-    if(display & current_it$full)
-    {
-      for (c in candidates){cat( "     . ", c$name, " -- ", get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n), " invested MW -- rentability = ", round(x$rentability[c$name, current_it$id]/1000), "ke/MW \n" , sep="")}
-      cat("--- op.cost = ", op_cost/1000000, " Me --- inv.cost = ", inv_cost/1000000, " Me --- ov.cost = ", ov_cost/1000000, " Me ---\n")
-    }
-    
     
     
     
@@ -292,12 +246,18 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
         x$costs$overall_costs <- rep(NA, nrow(x$costs))
         current_it$need_full <- TRUE
         
+        # reinitialize ubcost and capacity bounds files (out of date)
+        write(c(), file = paste0(tmp_folder, "/in_out_capacitybounds.txt"), append = FALSE )
+        write(c(), file = paste0(tmp_folder, "/in_ubcosts.txt"), append = FALSE )
+        
         if (display){cat("--- ADDITION of INTEGER variables into investment decisions --- \n")}
       }
     }
     
     # run AMPL with system command
+    if(display){  cat("   Solve master problem ... ", sep="")}
     log <- solve_master(opts, relax_integrality, ampl_path)
+    if(display){  cat("[done] \n", sep="")}
     
     # load AMPL output
     #     - underestimator
@@ -306,11 +266,26 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
     
     #    - investment solution
     benders_sol <-  read.table(paste0(tmp_folder,"/out_solutionmaster.txt"), sep =";", col.names = c("candidate", "value"))
-    if(display)
+    
+    #    - sensitivity
+    new_sensitivity <- read_sensitivity(tmp_folder, candidates, current_it$n)
+    x$sensitivity <- rbind(x$sensitivity, new_sensitivity)
+    
+    #    - display results from the ANTARES simulation and sensitivity
+    if(display & current_it$full)
     {
+      for (c in candidates){
+        cat( "     . ", c$name, " -- ", 
+             get_capacity(x$invested_capacities, candidate = c$name, it = current_it$n), " invested MW -- ",
+             "possible interval = [", round(subset(x$sensitivity, candidate == c$name & it == current_it$n)$lb), " , ",
+             round(subset(x$sensitivity, candidate == c$name & it == current_it$n)$ub), "] MW -- ",
+             "rentability = ", round(x$rentability[c$name, current_it$id]/1000), "ke/MW \n" , sep="")
+        }
+      
+      cat("--- op.cost = ", op_cost/1000000, " Me --- inv.cost = ", inv_cost/1000000, " Me --- ov.cost = ", ov_cost/1000000, " Me ---\n")
       cat("--- lower bound on ov.cost = ", best_under_estimator/1000000 ," Me --- best solution (it", best_solution, ") = ", subset(x$costs, it == best_solution)$overall_costs/1000000   ,"Me \n")
     }
- 
+    
     
     # ---- 7. Check convergence ---- 
     
@@ -387,21 +362,15 @@ benders <- function(path_solver, display = TRUE, report = TRUE, clean = TRUE, pa
   }
   
   
-  
   # add information in the output file
   x$expansion_options <- read_options(file = paste(opts$studyPath,"/user/expansion/settings.ini",sep=""), opts)
   x$study_options <- opts
   x$candidates <- read_candidates(file = paste(opts$studyPath,"/user/expansion/candidates.ini",sep=""), opts)
-
+  x$best_iteration <- best_solution
+  
 
   # set link capacities to their optimal value
-  for(c in candidates)
-  {
-    update_link(c$link, "direct_capacity", c$link_profile*get_capacity(x$invested_capacities, candidate = c$name, it =best_solution)+c$already_installed_link_profile*c$already_installed_capacity , opts)
-    update_link(c$link, "indirect_capacity", c$link_profile_indirect*get_capacity(x$invested_capacities, candidate = c$name, it =best_solution)+c$already_installed_link_profile_indirect*c$already_installed_capacity , opts)
-
-  }
- 
+  update_link_capacities(x, best_solution, candidates, exp_options, opts)
  
 
   # save output file

@@ -25,6 +25,8 @@ param z0 := include in_z0.txt ;
 
 #investment candidates description
 param : INV_CANDIDATE : c_inv  unit_size max_unit relaxed := include in_candidates.txt ;
+param : restrained_lb restrained_ub := include in_out_capacitybounds.txt;
+
 
 #bender cuts 
 param : AVG_CUT : c0_avg := include in_avgcuts.txt ;
@@ -38,7 +40,14 @@ param lambda_avg := include in_avgrentability.txt ;
 param lambda_yearly := include in_yearlyrentability.txt ;
 param lambda_weekly := include in_weeklyrentability.txt ;
 
-# options 
 
-param prm_solver := include in_solver.txt;
+# uper bound on total costs
+param ub_cost := include in_ubcosts.txt;
+
+
+# options 
 param prob := include in_yweights.txt;
+
+param : OPTION : option_default_value := include master_default_options.txt;
+param : OPTION_REDIFINED : option_new_value = include in_options.txt;
+

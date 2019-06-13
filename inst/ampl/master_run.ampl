@@ -10,57 +10,82 @@ reset;
 model master_mod.ampl;    # load model
 data  master_dat.ampl;     # load data
 
-# include options
-include in_options.txt;
-option solver (prm_solver);    # set solver
+# set options
+option solver (option_v["solver"]);    # set solver
+option relax_integrality  (option_v["relaxed"]);  # relaxed master problem ?
+option presolve  (option_v["presolve"]);  # relaxed master problem ?
+
+
+# set solver options
+if (option_v["solver"]) == "amplxpress" then 
+	option xpress_options "presolve=0 mipabsstop=0 miprelstop= 0";
+ 
+if (option_v["solver"]) == "cbc" then 
+	option cbc_options "PassP=0";
+ 
+   		
+
+
+# compute restricted bounds on Invested capacities
+if (num0(option_v["solve_bounds"]) == 1 or (card(ITERATION) mod num0(option_v["solve_bounds_frequency"]) == 0)) then
+{
+   let epsilon := num0(option_v["epsilon"]);
+   for{z in INV_CANDIDATE}
+   {
+   	  solve bound_capacity_min[z] >> out_log.txt;
+   		if solve_result = "infeasible" then break;
+   		let restrained_lb[z] := bound_capacity_min[z];
+   		
+   		solve bound_capacity_max[z] >> out_log.txt;
+   		if solve_result = "infeasible" then break;
+   		let restrained_ub[z] := bound_capacity_max[z];	
+   } 
+}
 
 
 # solver master problem
-solve >> out_log.txt;
+if (num0(option_v["solve_master"]) == 1) then
+{
+	solve master >> out_log.txt;
 
-# correct Invested_capacity, slight negative values are possible due to constraint tolerances
-let {z in INV_CANDIDATE} Invested_capacity[z] := max(0, Invested_capacity[z]);
+	# relaxed ub constraint if problem is infeasible
+	if solve_result = "infeasible" then 
+	{
+		drop ub;
+		solve master >> out_log.txt;
+		if solve_result = "infeasible" then printf "error infeasible problem";
+	}
+	# correct Invested_capacity, slight negative values are possible due to constraint tolerances
+	let {z in INV_CANDIDATE} Invested_capacity[z] := max(0, Invested_capacity[z]);
+	
+}
+
 
 
 # write results (in the same folder)
-
-printf "" > out_solutionmaster.txt;
-for {z in INV_CANDIDATE}
+if (num0(option_v["solve_master"]) == 1) then
 {
-	printf "%s;%f\n", z, Invested_capacity[z] >> out_solutionmaster.txt;
+	printf "" > out_solutionmaster.txt;
+  printf{z in INV_CANDIDATE} "%s;%f\n", z, Invested_capacity[z] >> out_solutionmaster.txt;
+	printf "%f\n", master >> out_underestimator.txt;
 }
 
-printf "%f\n", master >> out_underestimator.txt;
+if (num0(option_v["solve_bounds"]) == 1 or (card(ITERATION) mod num0(option_v["solve_bounds_frequency"]) == 0)) then
+{
+	printf "" > in_out_capacitybounds.txt;
+  printf{z in INV_CANDIDATE} "%s %f %f\n", z, restrained_lb[z], restrained_ub[z] >> in_out_capacitybounds.txt;
+} 
 
+if (num0(option_v["write_time"]) == 1) then
+{
+	printf "%s;%f;%f;%f\n", card(ITERATION), _ampl_time + _total_solve_time  , _ampl_time  , _total_solve_time >> out_ampltime.txt;  
+};
 
 # write theta
 
-for {y in YEAR, w in WEEK}
-{
-	printf "%s;%s;%s;%f\n", card(ITERATION), y,w, Theta[y,w] >> out_theta.txt;
-}
-
-
-## solve the relaxed problem to compute dual variables of the cut
-
-#option presolve 0;
-#option relax_integrality 1;
-
-#solve ;
-
-# write dual of the cut
-
-#for {c in CUT : type[c] = "average"}
+#for {y in YEAR, w in WEEK}
 #{
-#	printf "%s;%s;%f\n", card(CUT), c, cut_avg.dual[c] >> out_dualaveragecut.txt;
+#	printf "%s;%s;%s;%f\n", card(ITERATION), y,w, Theta[y,w] >> out_theta.txt;
 #}
 
-#for {c in CUT, y in YEAR : type[c] = "yearly"}
-#{
-#	printf "%s;%s;%s;%f\n", card(CUT),c, y, cut_yearly.dual[c,y] >> out_dualyearlycut.txt;
-#}
 
-#for {c in CUT, y in YEAR, w in WEEK : type[c] = "weekly"}
-#{
-#	printf "%s;%s;%s;%s;%f\n", card(CUT),c, y,w,cut_weekly.dual[c,y,w] >> out_dualweeklycut.txt;
-#}

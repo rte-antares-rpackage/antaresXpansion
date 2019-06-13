@@ -56,7 +56,7 @@ get_aggr_rentability <- function(c,output, current_it, n_w)
     for(y in current_it$mc_years)
     {
       # if link_profile is constant during the 8760 hours, we prefer extract annual values from Antares (better rounding)          
-      if(length(unique(c$link_profile))==1 && sum(subset(output$output_link_h_s_i, mcYear == y)$sens_direct) == 8736)
+      if(length(unique(c$link_profile))==1 && sum(subset(output$output_link_h_s_i, mcYear == y & link == c$link)$sens_direct) == 8736)
       {
         tmp_rentability_direct <- tmp_rentability_direct + as.numeric(subset(output$output_link_y_s_i, link == c$link & mcYear == y)$"MARG. COST"*unique(c$link_profile))
       }
@@ -67,7 +67,7 @@ get_aggr_rentability <- function(c,output, current_it, n_w)
           first_h <- 7*24*(w-1)+1
           last_h <- 7*24*w
           # if link_profile is constant during a week, we prefer extract weekly values from Antares (better rounding)
-          if (length(unique(c$link_profile[first_h:last_h]))==1 && sum(subset(output$output_link_h_s_i,mcYear == y )$sens_direct[first_h:last_h]) == 168)
+          if (length(unique(c$link_profile[first_h:last_h]))==1 && sum(subset(output$output_link_h_s_i,mcYear == y & link == c$link)$sens_direct[first_h:last_h]) == 168)
           {
             tmp_rentability_direct <-  tmp_rentability_direct + as.numeric(subset(output$output_link_w_s_i, link == c$link & timeId == w  & mcYear == y)$"MARG. COST"*unique(c$link_profile[first_h:last_h]))
           }
@@ -79,7 +79,7 @@ get_aggr_rentability <- function(c,output, current_it, n_w)
       }  
       
       ###### # Indirect :          
-      if(length(unique(c$link_profile_indirect))==1 &&  sum(subset(output$output_link_h_s_i, mcYear == y)$sens_indirect) == 8736)
+      if(length(unique(c$link_profile_indirect))==1 &&  sum(subset(output$output_link_h_s_i, mcYear == y & link == c$link)$sens_indirect) == 8736)
       {
         tmp_rentability_indirect <-  as.numeric(subset(output$output_link_y_s_i, link == c$link & mcYear == y)$"MARG. COST"*unique(c$link_profile_indirect))
       }
@@ -90,13 +90,14 @@ get_aggr_rentability <- function(c,output, current_it, n_w)
           first_h <- 7*24*(w-1)+1
           last_h <- 7*24*w
           # if link_profile is constant during a week, we prefer extract weekly values from Antares (better rounding)
-          if (length(unique(c$link_profile_indirect[first_h:last_h]))==1 && sum(subset(output$output_link_h_s_i,mcYear == y )$sens_indirect[first_h:last_h]) == 168)
+          if (length(unique(c$link_profile_indirect[first_h:last_h]))==1 && sum(subset(output$output_link_h_s_i,mcYear == y & link == c$link)$sens_indirect[first_h:last_h]) == 168)
           {
             tmp_rentability_indirect <-  tmp_rentability_indirect + as.numeric(subset(output$output_link_w_s_i, link == c$link & timeId == w  & mcYear == y)$"MARG. COST"*unique(c$link_profile_indirect[first_h:last_h]))
           }
           else
           {
-            tmp_rentability_indirect <- tmp_rentability_indirect + sum(as.numeric(subset(output$output_link_h_s_i, link == c$link & timeId >= first_h & timeId <= last_h  & mcYear == y)$"MARG. COST INDIRECT")*c$link_profile_indirect[first_h:last_h])
+            tmp_rentability_indirect <- tmp_rentability_indirect + 
+              sum(as.numeric(subset(output$output_link_h_s_i, link == c$link & timeId >= first_h & timeId <= last_h  & mcYear == y)$"MARG. COST INDIRECT")*c$link_profile_indirect[first_h:last_h])
           }
         }
       }
@@ -167,7 +168,7 @@ get_aggr_rentability_yearly <- function(c,output, output_link_y, current_it, n_w
     tmp_rentability_direct <- 0
     tmp_rentability_indirect <- 0        
     # if link_profile is constant during the 8760 hours, we prefer extract annual values from Antares (better rounding)          
-    if(length(unique(c$link_profile))==1 && sum(subset(output$output_link_h_s_i, mcYear == y)$sens_direct) == 8736)
+    if(length(unique(c$link_profile))==1 && sum(subset(output$output_link_h_s_i, mcYear == y & link == c$link)$sens_direct) == 8736)
     {
       tmp_rentability_direct <- tmp_rentability_direct + as.numeric(subset(output_link_y, link == c$link & mcYear == y)$"MARG. COST"*unique(c$link_profile))
     }
@@ -178,7 +179,7 @@ get_aggr_rentability_yearly <- function(c,output, output_link_y, current_it, n_w
         first_h <- 7*24*(w-1)+1
         last_h <- 7*24*w
         # if link_profile is constant during a week, we prefer extract weekly values from Antares (better rounding)
-        if (length(unique(c$link_profile[first_h:last_h]))==1 && sum(subset(output$output_link_h_s_i,mcYear == y )$sens_direct[first_h:last_h]) == 168)
+        if (length(unique(c$link_profile[first_h:last_h]))==1 && sum(subset(output$output_link_h_s_i,mcYear == y & link == c$link)$sens_direct[first_h:last_h]) == 168)
         {
           tmp_rentability_direct <-  tmp_rentability_direct + as.numeric(subset(output$output_link_w_s_i, link == c$link & timeId == w  & mcYear == y)$"MARG. COST"*unique(c$link_profile[first_h:last_h]))
         }
@@ -190,7 +191,7 @@ get_aggr_rentability_yearly <- function(c,output, output_link_y, current_it, n_w
     }  
     
     ###### # Indirect :          
-    if(length(unique(c$link_profile_indirect))==1 &&  sum(subset(output$output_link_h_s_i, mcYear == y)$sens_indirect) == 8736)
+    if(length(unique(c$link_profile_indirect))==1 &&  sum(subset(output$output_link_h_s_i, mcYear == y & link == c$link)$sens_indirect) == 8736)
     {
       tmp_rentability_indirect <-  as.numeric(subset(output_link_y, link == c$link & mcYear == y)$"MARG. COST"*unique(c$link_profile_indirect))
     }
@@ -201,7 +202,7 @@ get_aggr_rentability_yearly <- function(c,output, output_link_y, current_it, n_w
         first_h <- 7*24*(w-1)+1
         last_h <- 7*24*w
         # if link_profile is constant during a week, we prefer extract weekly values from Antares (better rounding)
-        if (length(unique(c$link_profile_indirect[first_h:last_h]))==1 && sum(subset(output$output_link_h_s_i,mcYear == y )$sens_indirect[first_h:last_h]) == 168)
+        if (length(unique(c$link_profile_indirect[first_h:last_h]))==1 && sum(subset(output$output_link_h_s_i,mcYear == y & link == c$link)$sens_indirect[first_h:last_h]) == 168)
         {
           tmp_rentability_indirect <-  tmp_rentability_indirect + as.numeric(subset(output$output_link_w_s_i, link == c$link & timeId == w  & mcYear == y)$"MARG. COST"*unique(c$link_profile_indirect[first_h:last_h]))
         }
@@ -274,7 +275,7 @@ get_aggr_rentability_weekly <- function(c,output, output_link_w, current_it, n_w
     tmp_rentability_indirect <- 0        
     
     # if link_profile is constant during a week, we prefer extract weekly values from Antares (better rounding)
-    if (length(unique(c$link_profile[first_h:last_h]))==1 && sum(subset(output$output_link_h_s_i,mcYear == y )$sens_direct[first_h:last_h]) == 168)
+    if (length(unique(c$link_profile[first_h:last_h]))==1 && sum(subset(output$output_link_h_s_i,mcYear == y & link == c$link)$sens_direct[first_h:last_h]) == 168)
     {
       tmp_rentability_direct <-  tmp_rentability_direct + as.numeric(subset(output_link_w, link == c$link & timeId == w  & mcYear == y)$"MARG. COST"*unique(c$link_profile[first_h:last_h]))
     }
@@ -285,7 +286,7 @@ get_aggr_rentability_weekly <- function(c,output, output_link_w, current_it, n_w
     
     ###### # Indirect :          
     # if link_profile is constant during a week, we prefer extract weekly values from Antares (better rounding)
-    if (length(unique(c$link_profile_indirect[first_h:last_h]))==1 && sum(subset(output$output_link_h_s_i,mcYear == y )$sens_indirect[first_h:last_h]) == 168)
+    if (length(unique(c$link_profile_indirect[first_h:last_h]))==1 && sum(subset(output$output_link_h_s_i,mcYear == y & link == c$link)$sens_indirect[first_h:last_h]) == 168)
     {
       tmp_rentability_indirect <-  tmp_rentability_indirect + as.numeric(subset(output_link_w, link == c$link & timeId == w  & mcYear == y)$"MARG. COST"*unique(c$link_profile_indirect[first_h:last_h]))
     }

@@ -145,18 +145,35 @@ update_link <- function(link_name, property_name, new_value, opts = antaresRead:
   new_value <- as.matrix(new_value)
   
   # check which column have to be updated
-  n_col <- ifelse(property_name=='direct_capacity', 1,
-          ifelse(property_name=='indirect_capacity', 2,
-          ifelse(property_name=='impedance', 3,
-          ifelse(property_name=='direct_hurdle_cost', 4,
-          ifelse(property_name=='indirect_hurdle_cost', 5,
-          NA )))))
+  if(opts$antaresVersion < 700)
+  {
+    n_col_dataformat <- 5
+    n_col <- ifelse(property_name=='direct_capacity', 1,
+            ifelse(property_name=='indirect_capacity', 2,
+            ifelse(property_name=='impedance', 3,
+            ifelse(property_name=='direct_hurdle_cost', 4,
+            ifelse(property_name=='indirect_hurdle_cost', 5,
+            NA )))))
+  }
+  else
+  {
+    n_col_dataformat <- 8
+    n_col <- ifelse(property_name=='direct_capacity', 1,
+            ifelse(property_name=='indirect_capacity', 2,
+            ifelse(property_name=='direct_hurdle_cost', 3,
+            ifelse(property_name=='indirect_hurdle_cost', 4,
+            ifelse(property_name=='impedance', 5,
+            ifelse(property_name=="loop_flow",6),
+            ifelse(property_name=="p_shift_min",7),
+            ifelse(property_name=="p_shift_max",8),
+            NA )))))
+  }
   
   if(is.na(n_col)){stop("unknown property")}
   
   
-  #correct negative values for capacities and impedances             
-  if(n_col<=3)
+  #correct negative values for capacities        
+  if(n_col<=2)
   {
     f1 <- function(x){max(new_value[x],0)}
     new_value = sapply(1:length(new_value), FUN=f1)
@@ -180,20 +197,24 @@ update_link <- function(link_name, property_name, new_value, opts = antaresRead:
     # read file
     param_data <- read.table(link_file_name)
               
-    # update column with new value and write it 
+    # update column with new value 
     param_data[,n_col] = new_value
-    utils::write.table(param_data, link_file_name, sep="\t", col.names = FALSE, row.names = FALSE)
   }
   else if (file.info(link_file_name)$size ==0)
   {
     # The file exists but is empty : i.e. all column contains default value
     # file is built from scratch
                 
-    param_data <- as.table(matrix(0,8760,5))
-    param_data[,1:2] <- 1
-
-    # update column with new value and write it 
+    param_data <- as.table(matrix(0,8760,n_col_dataformat))
+    
+    # update column with new value
     param_data[,n_col] = new_value
-    utils::write.table(param_data, link_file_name, sep="\t", col.names = FALSE, row.names = FALSE)
   }
+  
+  # check if all value are null
+  if(all(param_data == 0)){param_data <- c()}
+  
+  # write file
+  utils::write.table(param_data, link_file_name, sep="\t", col.names = FALSE, row.names = FALSE)
+  
 }

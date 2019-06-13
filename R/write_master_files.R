@@ -35,16 +35,16 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
   # 2. write current invested capacity in in_z0.txt
   n_candidates <- length(candidates)
   script <-  ""
-  capa_zero <- data.frame(link = 0, capa = 0 )
+  #capa_zero <- data.frame(link = c(), capa = c() )
   for (c in 1:n_candidates)
   {
-    capacite <- antaresXpansion:::get_capacity(x$invested_capacities, candidate = candidates[[c]]$name, it = current_it$n)
+   capacite <- antaresXpansion:::get_capacity(x$invested_capacities, candidate = candidates[[c]]$name, it = current_it$n)
     script <- paste0(script, current_it$id, " ", candidates[[c]]$name, " ", capacite)
     if (c != n_candidates) {script <- paste0(script, "\n")}
-    temp <- data.frame(link = candidates[[c]]$link, capa = capacite)
-    capa_zero <- rbind(capa_zero, temp)
+  #  temp <- data.frame(link = candidates[[c]]$link, capa = capacite)
+  #  capa_zero <- rbind(capa_zero, temp)
   }
-  capa_zero <- capa_zero[-1,]
+  #capa_zero <- unique(capa_zero)
   write(script, file = paste0(folder, "/in_z0.txt"), append = TRUE )  
   
   # 3 and 4. write costs and cuts files 
@@ -59,7 +59,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
     write(script, file = paste0(folder, "/in_avgcuts.txt"), append = TRUE )      
     
     # read Antares data
-    output <- extract_output(output_antares, current_it, candidates, capa_zero)
+    output <- extract_output(output_antares, current_it, candidates)
            
     # write in_avgrentability.txt file
     script  <-  ""
@@ -91,7 +91,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
     
     # read antares data
     # first, read antares outputs 
-    output <- extract_output(output_antares, current_it, candidates, capa_zero, cut_type = "yearly")
+    output <- extract_output(output_antares, current_it, candidates, cut_type = "yearly")
   
     output_link_y = antaresRead::readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
                                                timeStep = "annual", opts = output_antares, showProgress = FALSE,
@@ -166,7 +166,7 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
     script_rentability  <-  ""
     script_cost <- ""
     
-    output <- extract_output(output_antares, current_it, candidates, capa_zero, cut_type = "weekly")
+    output <- extract_output(output_antares, current_it, candidates, cut_type = "weekly")
     
     output_link_w = antaresRead::readAntares(areas = NULL, links = "all", mcYears = current_it$mc_years, 
                                              timeStep = "weekly", opts = output_antares, showProgress = FALSE,
@@ -232,4 +232,15 @@ write_master_files <- function(folder, output_antares, current_it, candidates, e
     write(script_rentability, file = paste0(folder, "/in_weeklyrentability.txt"), append = TRUE )
     write(script_cost, file = paste0(folder, "/in_weeklycuts.txt"), append = TRUE )
   }
+  
+  
+  
+  #5. write ubcost file
+  
+  ub <- min(x$costs$overall_costs, na.rm = TRUE)
+  if (length(x$under_estimator) > 0) best_under_estimator <-  max(x$under_estimator) 
+  else best_under_estimator <- -Inf
+  if(is.infinite(ub)) ub <- c()
+  else if (best_under_estimator > ub) ub <- best_under_estimator
+  write(ub, file = paste0(folder, "/in_ubcosts.txt"), append = FALSE )
 }

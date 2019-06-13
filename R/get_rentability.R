@@ -20,15 +20,16 @@
 get_expected_rentability <- function(output_antares, current_it, candidates, n_w, x)
 {
   n_candidates <- length(candidates)
-  capa_zero <- data.frame(link = 0, capa = 0 )
-  for (c in 1:n_candidates)
-  {
-    capacite <- antaresXpansion:::get_capacity(x$invested_capacities, candidate = candidates[[c]]$name, it = current_it$n)
-    temp <- data.frame(link = candidates[[c]]$link, capa = capacite)
-    capa_zero <- rbind(capa_zero, temp)
-  }
-  capa_zero <- capa_zero[-1,]  
-
+  #capa_zero <- data.frame(link = c(), capa = c() )
+  #for (c in 1:n_candidates)
+  #{
+  #  capacite <- antaresXpansion:::get_capacity(x$invested_capacities, candidate = candidates[[c]]$name, it = current_it$n)
+  #  temp <- data.frame(link = candidates[[c]]$link, capa = capacite)
+  #  capa_zero <- rbind(capa_zero, temp)
+  #}
+  #capa_zero <- unique(capa_zero)
+  
+  
   if(!current_it$full)
   {
     # in case of a partial iteration, expected rentability over all weeks 
@@ -38,7 +39,7 @@ get_expected_rentability <- function(output_antares, current_it, candidates, n_w
   else
   {
     # first, read antares outputs 
-    output <- extract_output(output_antares, current_it, candidates, capa_zero)
+    output <- extract_output(output_antares, current_it, candidates)
     
     # second, get aggregated rentability for those links
 

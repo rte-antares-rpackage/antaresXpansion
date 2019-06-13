@@ -12,6 +12,10 @@
 #--- SETS ----
 #-------------
 
+# set of options
+set OPTION;  # set of all options
+set OPTION_REDIFINED; # set of all changed options
+
 # set of investment candidates
 set INV_CANDIDATE ;
 
@@ -34,11 +38,14 @@ set YEARLY_CUT_ALL within {ITERATION, YEAR} ;
 set WEEKLY_CUT_ALL within {ITERATION, YEAR, WEEK} ;
 
 
-#-------------
-#--- SETS ----
-#-------------
+#----------------
+#--- OPTIONS ----
+#----------------
 
-param prm_solver symbolic;  # solver
+param option_default_value {OPTION} symbolic; 
+param option_new_value {OPTION_REDIFINED} symbolic; 
+param option_v {o in OPTION} := if (o in OPTION_REDIFINED) then option_new_value[o] else option_default_value[o] symbolic;
+
 
 
 #-------------------
@@ -50,8 +57,12 @@ param c_inv{INV_CANDIDATE};      	# investment costs
 param unit_size{INV_CANDIDATE};  	# unit of each investment step
 param max_unit{INV_CANDIDATE};	 	# max number of units which can be invested
 param relaxed{INV_CANDIDATE} symbolic ;	  # (true or false) is the investment made continuously, or with steps ?
+param restrained_ub{INV_CANDIDATE} default Infinity; # uper bound on invested capacity
+param restrained_lb{INV_CANDIDATE} default 0 ; # lower bound on invested capacity
+param tol_bounds := 1e-3 ;   # to avoid infeasibility
+param z0{ITERATION, INV_CANDIDATE}  ;# invested capacity of each candidates for the given iteratoin
 
-param z0{ITERATION, INV_CANDIDATE} ;# invested capacity of each candidates for the given iteratoin
+
 
 # average cut
 param c0_avg{AVG_CUT} ;                 	# total costs (operation + investment) for the given iteration
@@ -66,9 +77,9 @@ param c0_weekly{WEEKLY_CUT_ALL} ;   					# weekly total costs
 param lambda_weekly{WEEKLY_CUT_ALL, INV_CANDIDATE} ;    # rentability (weekly values)
 
 # other
-param prob{YEAR}; 	# probability of occurence of each MC year
-
-
+param prob{YEAR}; 					# probability of occurence of each MC year
+param ub_cost default Infinity;     # ub on objective function (total of all costs)
+param epsilon default 10000;     # the sensibility of the optimal solution
 
 #-------------------------------------
 #--- SETS of CUTS WITHOUT DOUBLON ----
@@ -117,14 +128,23 @@ var Theta{YEAR, WEEK};
 #--- LP ----
 #-----------
 
-# objective :
+# objectives :
 minimize master : sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) ;
+
+minimize bound_capacity_min {z in INV_CANDIDATE} : Invested_capacity[z];
+maximize bound_capacity_max {z in INV_CANDIDATE} : Invested_capacity[z];
+
+# ub on objective function
+subject to ub {if (option_v["ub_constraint"] or option_v["solve_bounds"] or (card(ITERATION) mod option_v["solve_bounds_frequency"] == 0))}: 
+sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) <= ub_cost + epsilon + 1;
+
 
 # description of invested capacity :
 subject to bounds_on_invested_capacity_relaxed{z in INV_CANDIDATE : relaxed[z] == "true"} : Invested_capacity[z] <= max_unit[z] * unit_size[z]; 
-		 
 subject to bounds_on_invested_capacity_integer{z in INV_CANDIDATE : relaxed[z] != "true"} : N_invested[z] <= max_unit[z];
 subject to integer_constraint{z in INV_CANDIDATE : relaxed[z] != "true"} : Invested_capacity[z] = unit_size[z] * N_invested[z];		 
+
+subject to restrained_bounds_on_capacity {z in INV_CANDIDATE} : restrained_lb[z] - tol_bounds<= Invested_capacity[z] <= restrained_ub[z] + tol_bounds; 
 
 # bender's cut :
 subject to cut_avg{c in AVG_CUT} : sum{y in YEAR} ( prob[y] * sum{w in WEEK} Theta[y,w]) >=   c0_avg[c] - sum{z in INV_CANDIDATE}(lambda_avg[c,z] * (Invested_capacity[z] - z0[c,z])) ;
@@ -133,3 +153,5 @@ subject to cut_yearly{(c,y) in YEARLY_CUT} : sum{w in WEEK} Theta[y,w] >=  c0_ye
 
 subject to cut_weekly{(c,y,w) in WEEKLY_CUT} : Theta[y,w] >=  c0_weekly[c,y,w] - sum{z in INV_CANDIDATE} (lambda_weekly[c,y,w,z] * (Invested_capacity[z] - z0[c,z]));
 
+# additional constraints
+include in_additional_constraints.txt;

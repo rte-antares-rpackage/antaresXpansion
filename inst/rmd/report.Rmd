@@ -32,12 +32,7 @@ lubridate::now()
 
 Expansion planning options :
 ```{r print_exp_options, echo=FALSE, eval=TRUE}
-option_names <- names(x$expansion_options)
-for(i in 1:length(option_names))
-{
-  cat("   - ", option_names[i], " : ", x$expansion_options[[i]], "\n")
-}
-
+str(x$expansion_options)
 ```
 
 Package version :
